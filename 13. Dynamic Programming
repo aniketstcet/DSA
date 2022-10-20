@@ -1,0 +1,2633 @@
+https://github.com/archit-aggarwal/Pepcoding-DSA/tree/main/13.%20Dynamic%20Programming
+Dynamic Programming
+--------------------------------
+001. Fibonacci.java 
+------------------------------------
+import java.util.*;
+
+// Leetcode 509 - https://leetcode.com/problems/fibonacci-number/
+
+// Variation - Climb Stairs with 2 Moves - 
+// Leetcode 70 - https://leetcode.com/problems/climbing-stairs/
+
+// Recursion
+// Time - O(2^N), Space - O(N)
+class Fibonacci1 {
+    public int fib(int n) {
+        if (n == 0)
+            return 0;
+        if (n == 1)
+            return 1;
+
+        int prev1 = fib(n - 1);
+        int prev2 = fib(n - 2);
+
+        return prev1 + prev2;
+    }
+}
+
+// Memoization
+// Time - O(N), Space - O(N)
+class Fibonacci2 {
+    public int fib(int n, int[] dp) {
+        if (n == 0)
+            return 0;
+        if (n == 1)
+            return 1;
+        if (dp[n] != -1)
+            return dp[n];
+        // Already Calculated Value should be returned
+
+        int prev1 = fib(n - 1, dp);
+        int prev2 = fib(n - 2, dp);
+
+        dp[n] = prev1 + prev2;
+        // Before returning the calculated value, store it somewhere
+        return prev1 + prev2;
+    }
+
+    public int fib(int n) {
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+        return fib(n, dp);
+    }
+}
+
+// Tabulation
+// Time - O(N), Space - O(N)
+class Fibonacci3 {
+    public int fib(int n) {
+        if (n <= 1)
+            return n;
+
+        int[] dp = new int[n + 1];
+        dp[0] = 0;
+        dp[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            dp[i] = dp[i - 1] + dp[i - 2];
+        }
+        return dp[n];
+    }
+}
+
+// Two Pointer Space Optimization
+// Time - O(N), Space - O(1)
+class Fibonacci4 {
+    public int fib(int n) {
+        if (n <= 1)
+            return n;
+
+        int prev1 = 0, prev2 = 1;
+
+        for (int i = 2; i <= n; i++) {
+            int curr = prev1 + prev2;
+            prev1 = prev2;
+            prev2 = curr;
+        }
+
+        return prev2;
+    }
+}
+===================================================
+002. Climb Stairs.java
+------------------------------------
+import java.util.*;
+import java.io.*;
+
+// Link: https://www.pepcoding.com/resources/online-java-foundation/dynamic-programming-and-greedy/climb-stairs-official/ojquestion
+
+// This problem is nothing but Tribonacci Series
+// 1137. https://leetcode.com/problems/n-th-tribonacci-number/
+
+class Main {
+    public static void main(String[] args) throws Exception {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+
+        System.out.println(csRec(0, n));
+
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+        System.out.println(csMem(0, n, dp));
+
+        System.out.println(csTab(n));
+    }
+
+    // O(3^N) Time, O(N) Space
+    public static int csRec(int src, int dest) {
+        if (src > dest)
+            return 0;
+        // -ve base case
+
+        if (src == dest)
+            return 1;
+        // +ve base case
+
+        int x = csRec(src + 1, dest);
+        int y = csRec(src + 2, dest);
+        int z = csRec(src + 3, dest);
+
+        int totalPaths = x + y + z;
+        return totalPaths;
+    }
+
+    // O(N) Time, O(N) Space
+    public static int csMem(int src, int dest, int[] dp) {
+        if (src > dest)
+            return 0;
+        if (src == dest)
+            return 1;
+
+        if (dp[src] != -1) {
+            return dp[src];
+        }
+
+        int x = csMem(src + 1, dest, dp);
+        int y = csMem(src + 2, dest, dp);
+        int z = csMem(src + 3, dest, dp);
+
+        dp[src] = x + y + z;
+        return dp[src];
+    }
+
+    // O(N) Time, O(N) Space
+    public static int csTab(int dest) {
+        int[] dp = new int[dest + 1];
+        dp[dest] = 1;
+        for (int i = dest - 1; i >= 0; i--) {
+
+            dp[i] = dp[i + 1];
+            if (i + 2 < dp.length) {
+                dp[i] += dp[i + 2];
+            }
+
+            if (i + 3 < dp.length) {
+                dp[i] += dp[i + 3];
+            }
+        }
+
+        return dp[0];
+    }
+}
+===================================================
+003. Climb Stairs - Variable Jumps.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// Problem Link: https://www.pepcoding.com/resources/online-java-foundation/dynamic-programming-and-greedy/climb-stairs-with-variable-jumps-official/ojquestion
+
+class Main {
+    public static void main(String[] args) throws Exception {
+        // write your code here
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++)
+            arr[i] = scn.nextInt();
+
+        System.out.println(csvm(0, n, arr));
+
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+        System.out.println(csvmMem(0, n, arr, dp));
+
+        System.out.println(csvmTab(n, arr));
+    }
+
+    // Recursion -> O(Jumps^N + Jumps*N) Time, O(N) Space
+    public static int csvm(int src, int dest, int[] arr) {
+        if (src > dest)
+            return 0;
+        if (src == dest)
+            return 1;
+
+        int totalPaths = 0;
+        for (int jumps = 1; jumps <= arr[src]; jumps++) {
+            int xi = csvm(src + jumps, dest, arr);
+            totalPaths += xi;
+        }
+
+        return totalPaths;
+    }
+
+    // Memoization -> O(Jumps*N) Time, O(N) Space
+    public static int csvmMem(int src, int dest, int[] arr, int[] dp) {
+        if (src > dest)
+            return 0;
+        if (src == dest)
+            return 1;
+
+        if (dp[src] != -1) {
+            return dp[src];
+        }
+
+        int totalPaths = 0;
+        for (int jumps = 1; jumps <= arr[src]; jumps++) {
+            int xi = csvmMem(src + jumps, dest, arr, dp);
+            totalPaths += xi;
+        }
+
+        dp[src] = totalPaths;
+        return dp[src];
+    }
+
+    // Tabulation -> O(N*Jumps) Time, O(N) Space
+    public static int csvmTab(int dest, int[] arr) {
+        int n = arr.length;
+        int[] dp = new int[n + 1];
+        dp[dest] = 1;
+        for (int i = n - 1; i >= 0; i--) {
+
+            int totalPaths = 0;
+            for (int jumps = 1; jumps <= arr[i]; jumps++) {
+                if (i + jumps < dp.length) {
+                    totalPaths += dp[i + jumps];
+                }
+            }
+
+            dp[i] = totalPaths;
+        }
+
+        return dp[0];
+    }
+
+    // Space Optimization is Not Possible due to non-limited previous states.
+}
+===================================================
+004. Jump Game - II.java
+------------------------------------
+import java.util.*;
+
+// Climb Stairs with Minimum Moves
+// 45. https://leetcode.com/problems/jump-game-ii/
+
+class Memoization {
+    // O(N * Jumps) = O(N ^ 2) Time, O(N) Space
+    public long memo(int src, int[] jumps, long[] dp) {
+        if (src == jumps.length - 1)
+            return 0; // min moves to go to dest from dest is 0 (empty string)
+        if (dp[src] != -1)
+            return dp[src];
+
+        long min = Integer.MAX_VALUE;
+        for (int jump = 1; jump <= jumps[src]; jump++) {
+            if (src + jump < jumps.length) {
+                min = Math.min(min, memo(src + jump, jumps, dp) + 1l);
+            }
+        }
+
+        dp[src] = min;
+        return min;
+    }
+
+    public int jump(int[] jumps) {
+        long[] dp = new long[jumps.length + 1];
+        Arrays.fill(dp, -1);
+
+        return (int) memo(0, jumps, dp);
+    }
+
+    // Tabulation will also take O(N) Time and O(N) Space (Homework)
+    // Space Optimization is not possible due to non-limited previous states
+}
+===================================================
+005. Jump Game - I.java
+------------------------------------
+import java.util.*;
+
+// 55. https://leetcode.com/problems/jump-game/
+
+class DP {
+    // Top Down Dynamic Programming (Memoization)
+    // Time = O(N * Jumps) = O(N ^ 2) -> Time Limit Exceeded
+    // Space -> O(N)
+    public long memo(int src, int[] jumps, long[] dp) {
+        if (src == jumps.length - 1)
+            return 0; // min moves to go to dest from dest is 0 (empty string)
+        if (dp[src] != -1)
+            return dp[src];
+
+        long min = Integer.MAX_VALUE;
+        for (int jump = 1; jump <= jumps[src]; jump++) {
+            if (src + jump < jumps.length) {
+                min = Math.min(min, memo(src + jump, jumps, dp) + 1l);
+            }
+        }
+
+        dp[src] = min;
+        return min;
+    }
+
+    public boolean canJump(int[] jumps) {
+        long[] dp = new long[jumps.length + 1];
+        Arrays.fill(dp, -1);
+
+        return ((int) memo(0, jumps, dp) == Integer.MAX_VALUE)
+                ? false
+                : true;
+    }
+}
+
+class Greedy {
+    // Greedy Solution -> O(N) Time, O(1) Space
+    public boolean canJump(int[] jumps) {
+        int reach = 0;
+        for (int i = 0; i < jumps.length; i++) {
+            if (i > reach)
+                return false;
+
+            if (i + jumps[i] > reach) {
+                reach = i + jumps[i];
+            }
+        }
+
+        return true;
+    }
+}
+===================================================
+006. Climb Stairs with Min Cost.java
+------------------------------------
+import java.util.*;
+
+// 746. https://leetcode.com/problems/min-cost-climbing-stairs/
+
+class Solution {
+    // Memoization: O(N) Time, O(N) Space
+    public int memo(int src, int[] cost, int[] dp) {
+        if (src >= cost.length)
+            return 0;
+        if (dp[src] != -1)
+            return dp[src];
+
+        int ans1 = memo(src + 1, cost, dp);
+        int ans2 = memo(src + 2, cost, dp);
+
+        return dp[src] = Math.min(ans1, ans2) + cost[src];
+    }
+
+    public int minCostClimbingStairs(int[] cost) {
+        int[] dp = new int[cost.length + 1];
+        Arrays.fill(dp, -1);
+
+        memo(0, cost, dp);
+        return Math.min(dp[0], dp[1]);
+    }
+
+    // Do It Yourself:
+    // Tabulation: O(N) Time, O(N) Space
+    // Space Optimization (Two Pointer Technique)
+    // : (Also possible): O(N) Time, o(1) Space
+}
+===================================================
+007. Min Steps to Reduce to 1.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/minimum-steps-to-minimize-n-as-per-given-condition0618/1/
+
+class Solution {
+    // O(N) Time, O(N) Space
+    public int memo(int N, int[] dp) {
+        if (N == 1)
+            return 0;
+        if (dp[N] != -1)
+            return dp[N];
+
+        int ans1 = (N % 2 == 0) ? memo(N / 2, dp) : Integer.MAX_VALUE;
+        int ans2 = (N % 3 == 0) ? memo(N / 3, dp) : Integer.MAX_VALUE;
+        int ans3 = memo(N - 1, dp);
+
+        return dp[N] = Math.min(ans1, Math.min(ans2, ans3)) + 1;
+    }
+
+    public int minSteps(int N) {
+        int[] dp = new int[N + 1];
+        Arrays.fill(dp, -1);
+
+        return memo(N, dp);
+    }
+}
+===================================================
+008. 2 Key Keyboard.java 
+------------------------------------
+// 650. https://leetcode.com/problems/2-keys-keyboard/
+
+class Memoization {
+    // Memoization -> O(N ^ 2) Time, O(N ^ 2) Space
+    public long memo(int screen, int buffer, long dest, long[][] dp) {
+        if (screen > dest)
+            return Integer.MAX_VALUE;
+        if (screen == dest)
+            return 0;
+        if (dp[screen][buffer] != -1l)
+            return dp[screen][buffer];
+
+        long copyPaste = 2l + memo(2 * screen, screen, dest, dp);
+        long paste = 1l + memo(screen + buffer, buffer, dest, dp);
+
+        return dp[screen][buffer] = Math.min(paste, copyPaste);
+    }
+
+    public int minSteps(int n) {
+        if (n == 1)
+            return 0;
+
+        long[][] dp = new long[2 * n + 1][2 * n + 1];
+        for (int i = 0; i <= 2 * n; i++) {
+            for (int j = 0; j <= 2 * n; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        return (int) (1l + memo(1, 0, n, dp));
+    }
+}
+
+class Maths {
+    // Mathematics (Prime Factorization) -
+    // O(Root N) Time, O(1) Space
+
+    public int minSteps(int n) {
+        int ans = 0, d = 2;
+        while (n > 1) {
+            while (n % d == 0) {
+                ans += d;
+                n /= d;
+            }
+            d++;
+        }
+        return ans;
+    }
+}
+===================================================
+009. Min Taps to Water Garden.java
+------------------------------------
+import java.util.*;
+
+// 1326. https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/
+// O(N^2) Tabulation DP Solution, O(N) Space
+
+class Solution {
+    public int minTaps(int n, int[] ranges) {
+        // Creating Jumps Array by Making Interval's Left Value as Range Value
+        int[] jumps = new int[n + 1];
+        for (int i = 0; i <= n; i++) {
+            int left = Math.max(0, i - ranges[i]);
+            int right = Math.min(n, i + ranges[i]);
+            jumps[left] = Math.max(jumps[left], right - left);
+        }
+
+        // Same Code as Jump Game - II
+        long[] dp = new long[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[n] = 0;
+
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = 1; j <= jumps[i]; j++)
+                dp[i] = Math.min(dp[i], dp[i + j] + 1l);
+        }
+
+        return (dp[0] != Integer.MAX_VALUE) ? (int) dp[0] : -1;
+    }
+}
+===================================================
+010. Valid Binary Strings.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// Fibonacci Variation (GFG): https://practice.geeksforgeeks.org/problems/consecutive-1s-not-allowed1912/1
+
+// Memoization -> O(2*N) = O(N) Time, O(2*N) = O(N) Space
+class Memoization {
+    int mod = 1000000007;
+
+    long memo(int noOfDigits, int prevDigit, long[][] dp) {
+        if (noOfDigits == 0)
+            return 1; // Empty String
+        if (dp[noOfDigits][prevDigit] != 0)
+            return dp[noOfDigits][prevDigit];
+
+        long appending0 = memo(noOfDigits - 1, 0, dp);
+        long appending1 = (prevDigit == 0) ? memo(noOfDigits - 1, 1, dp) : 0l;
+        return dp[noOfDigits][prevDigit] = (appending0 + appending1) % mod;
+    }
+
+    long countStrings(int n) {
+        long[][] dp = new long[n + 1][2];
+        return memo(n, 0, dp);
+    }
+}
+
+class Solution {
+    public static void main(String[] args) throws Exception {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+
+        // Count Binary Strings - Tabulation
+        // O(n) Time, O(n) Space
+        int[] endWith0 = new int[n + 1];
+        int[] endWith1 = new int[n + 1];
+        endWith0[1] = endWith1[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            endWith0[i] = endWith1[i - 1];
+            endWith1[i] = endWith0[i - 1] + endWith1[i - 1];
+        }
+
+        System.out.println(endWith0[n] + endWith1[n]);
+
+        // Count Binary Strings - Tabulation (Two Pointer Space Optimization)
+        // O(n) Time, O(1) Space
+        int prev0 = 1, prev1 = 1;
+        for (int i = 2; i <= n; i++) {
+            int curr0 = prev1;
+            int curr1 = prev0 + prev1;
+            prev0 = curr0;
+            prev1 = curr1;
+        }
+
+        System.out.println(prev0 + prev1);
+
+        // Count Binary Strings - Recursion
+        Pair ans = helper(n);
+        System.out.println(ans.endWith0 + ans.endWith1);
+    }
+
+    static class Pair {
+        int endWith0 = 0;
+        int endWith1 = 0;
+
+        Pair(int x, int y) {
+            endWith0 = x;
+            endWith1 = y;
+        }
+    }
+
+    // Recursion -> O(N) Time (Linear Calls), O(N) Recursion Call Stack Space
+    public static Pair helper(int n) {
+        if (n == 0)
+            return new Pair(0, 0);
+        if (n == 1)
+            return new Pair(1, 1);
+
+        Pair smallProb = helper(n - 1);
+        int prev0 = smallProb.endWith0;
+        int prev1 = smallProb.endWith1;
+
+        int curr0 = prev1;
+        int curr1 = prev0 + prev1;
+        return new Pair(curr0, curr1);
+    }
+}
+
+// Arrange Building Follow Up:
+// https://practice.geeksforgeeks.org/problems/count-possible-ways-to-construct-buildings5007/1
+
+class ArrangeBuildings {
+    // O(N) Time, O(1) Space
+    public long TotalWays(int n) {
+        if (n == 1)
+            return 4l;
+        if (n == 2)
+            return 9l;
+        long a = 2l, b = 3l, c = 0l;
+        for (int i = 3; i <= n; i++) {
+            c = (a + b) % 1000000007l;
+            a = b;
+            b = c;
+        }
+        return (c * c) % 1000000007l;
+    }
+};
+===================================================
+011. Count Encodings.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// 91. https://leetcode.com/problems/decode-ways/
+
+class Main {
+    public static void main(String[] args) throws Exception {
+        Scanner scn = new Scanner(System.in);
+        String str = scn.nextLine();
+
+        int[] dp = new int[str.length()];
+        Arrays.fill(dp, -1);
+        System.out.println(countEncodingsMemo(str, 0, dp));
+
+        System.out.println(countEncodingsTab(str));
+    }
+
+    // Memoization -> O(n) Time, O(n) Space
+    public static int countEncodingsMemo(String str, int idx, int[] dp) {
+        if (idx == str.length()) {
+            return 1;
+        }
+
+        if (dp[idx] != -1)
+            return dp[idx];
+
+        int ans = 0;
+
+        int ch1 = (str.charAt(idx) - '0');
+        if (ch1 >= 1 && ch1 <= 9) {
+            ans += countEncodingsMemo(str, idx + 1, dp);
+        }
+
+        if (idx + 1 < str.length()) {
+            int ch12 = (str.charAt(idx) - '0') * 10 + (str.charAt(idx + 1) - '0');
+            if (ch12 >= 10 && ch12 <= 26)
+                ans += countEncodingsMemo(str, idx + 2, dp);
+        }
+
+        dp[idx] = ans;
+        return ans;
+    }
+
+    // Tabulation -> O(n) Time, O(n) Space
+    public static int countEncodingsTab(String str) {
+        int[] dp = new int[str.length() + 1];
+        dp[str.length()] = 1;
+
+        for (int i = str.length() - 1; i >= 0; i--) {
+            int ch1 = (str.charAt(i) - '0');
+            if (ch1 >= 1 && ch1 <= 9) {
+                dp[i] += dp[i + 1];
+            }
+
+            if (i + 1 < str.length()) {
+                int ch12 = (str.charAt(i) - '0') * 10 + (str.charAt(i + 1) - '0');
+                if (ch12 >= 10 && ch12 <= 26)
+                    dp[i] += dp[i + 2];
+            }
+        }
+        return dp[0];
+    }
+
+    // Space Optimization (Two Pointer Technique) is Also Possible
+    // Since there are limited previous states -> Do It Yourself
+    // Time - O(N), Space - O(1)
+}
+===================================================
+012. Tiling Problem - I.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// Fibonacci Variaton (Exactly Same Code with Modulo Operation)
+// https://practice.geeksforgeeks.org/problems/ways-to-tile-a-floor5836/1
+
+class Main {
+
+    public static void main(String[] args) throws Exception {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+
+        System.out.println(tiling(n, dp));
+    }
+
+    // Memoization -> O(n) time, O(n) Space
+    public static int tiling(int n, int[] dp) {
+        if (n == 1)
+            return 1;
+        if (n == 2)
+            return 2;
+
+        if (dp[n] != -1)
+            return dp[n];
+
+        int ans = (tiling(n - 1, dp) + tiling(n - 2, dp)) % 1000000007;
+        dp[n] = ans;
+
+        return ans;
+    }
+
+}
+===================================================
+013. Tiling Problem - II.java
+------------------------------------
+import java.util.*;
+
+// GfG Link: https://practice.geeksforgeeks.org/problems/count-the-number-of-ways-to-tile-the-floor-of-size-n-x-m-using-1-x-m-size-tiles0509/1
+
+class Solution {
+    int mod = 1000000007;
+
+    // Memoization -> O(n) Time, O(n) Space
+    public int memo(int n, int m, int[] dp) {
+        if (n < m)
+            return 1;
+        if (n == m)
+            return 2;
+        if (dp[n] != -1)
+            return dp[n];
+
+        int ans1 = memo(n - 1, m, dp);
+        int ans2 = memo(n - m, m, dp);
+        return dp[n] = (ans1 + ans2) % mod;
+    }
+
+    // Tabulation (with Sliding Window Space Optimization)
+    // O(N) Time, O(M) Space
+    // Note: Space cannot be Constant or O(1),
+    // i.e. Two Pointers Technique is not possible
+    public int spaceOpt(int n, int m) {
+        if (n < m)
+            return 1;
+        if (n == m)
+            return 2;
+
+        Deque<Integer> dp = new ArrayDeque<>();
+        for (int i = 1; i < m; i++) {
+            dp.add(1); // DP[N < M]
+        }
+        dp.add(2); // DP[N == M]
+
+        for (int i = m + 1; i <= n; i++) {
+            int ans = (dp.getFirst() + dp.getLast()) % mod;
+            dp.removeFirst();
+            dp.addLast(ans);
+        }
+
+        return dp.getLast();
+    }
+
+    public int countWays(int n, int m) {
+        // int[] dp = new int[n + 1];
+        // Arrays.fill(dp, -1);
+        // return memo(n, m, dp);
+
+        return spaceOpt(n, m);
+    }
+}
+===================================================
+014. House Robber - I.java 
+------------------------------------
+// 198. House Robber - I : https://leetcode.com/problems/house-robber/
+
+class Solution {
+    // Memoization -> Time - O(N * 2) = O(N), Space - O(N * 2) = O(N)
+
+    public int memo(int[] nums, int idx, int prev, int[][] dp) {
+        if (idx == nums.length)
+            return 0;
+        if (dp[idx][prev] != -1)
+            return dp[idx][prev];
+
+        int yes = (prev == 0) ? (memo(nums, idx + 1, 1, dp) + nums[idx]) : 0;
+        int no = memo(nums, idx + 1, 0, dp);
+
+        return dp[idx][prev] = Math.max(yes, no);
+    }
+
+    public int rob(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[n + 1][2];
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = -1;
+            dp[i][1] = -1;
+        }
+
+        return memo(nums, 0, 0, dp);
+    }
+}
+===================================================
+015. House Robber - II.java
+------------------------------------
+// 213. House Robber - II: https://leetcode.com/problems/house-robber-ii/
+
+class Solution {
+    // Memoization
+    public int memo(int[] nums, int idx, int n, int prev, int[][] dp) {
+        if (idx == n + 1)
+            return 0;
+        if (dp[idx][prev] != -1)
+            return dp[idx][prev];
+
+        int yes = (prev == 0) ? (memo(nums, idx + 1, n, 1, dp) + nums[idx]) : 0;
+        int no = memo(nums, idx + 1, n, 0, dp);
+
+        return dp[idx][prev] = Math.max(yes, no);
+    }
+
+    public int rob(int[] nums, int start, int end) {
+        int n = nums.length;
+
+        int[][] dp = new int[n + 1][2];
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = -1;
+            dp[i][1] = -1;
+        }
+
+        return memo(nums, start, end, 0, dp);
+    }
+
+    // Time - O(2 * (2 * N)) = O(N), Space - O(2 * (2 * N)) = O(N)
+    public int rob(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        if (nums.length == 1)
+            return nums[0];
+
+        return Math.max(rob(nums, 0, nums.length - 2), rob(nums, 1, nums.length - 1));
+    }
+}
+===================================================
+016. Paint House - I.java 
+------------------------------------
+// 515 Lintcode: https://www.lintcode.com/problem/515/
+
+// Approach 1: Memoization -> O(N * 3) = O(N) Time, O(N * 3) Space 
+// Run Time Error due to Stack Overflow for N > 10^5
+class Memoization {
+    public int helper(int[][] costs, int idx, int prev, int[][] dp) {
+        if (idx == costs.length)
+            return 0;
+        if (prev >= 0 && dp[idx][prev] != -1)
+            return dp[idx][prev];
+
+        int ansR = (prev == 0) ? Integer.MAX_VALUE
+                : helper(costs, idx + 1, 0, dp) + costs[idx][0];
+        int ansB = (prev == 1) ? Integer.MAX_VALUE
+                : helper(costs, idx + 1, 1, dp) + costs[idx][1];
+        int ansG = (prev == 2) ? Integer.MAX_VALUE
+                : helper(costs, idx + 1, 2, dp) + costs[idx][2];
+
+        if (prev == -1)
+            return Math.min(ansR, Math.min(ansB, ansG));
+        return dp[idx][prev] = Math.min(ansR, Math.min(ansB, ansG));
+    }
+
+    public int minCost(int[][] costs) {
+        if (costs.length == 0)
+            return 0;
+
+        int[][] dp = new int[costs.length + 1][3];
+        for (int i = 0; i <= costs.length; i++) {
+            dp[i][0] = -1;
+            dp[i][1] = -1;
+            dp[i][2] = -1;
+        }
+
+        return helper(costs, 0, -1, dp);
+    }
+}
+
+// Tabulation -> O(N * 3) = O(N) Time, O(N * 3) = O(N) Space
+class Tabulation {
+    public int minCost(int[][] costs) {
+        int n = costs.length;
+        if (n == 0)
+            return 0;
+
+        int[][] dp = new int[n + 1][3];
+        dp[0][0] = costs[0][0];
+        dp[0][1] = costs[0][1];
+        dp[0][2] = costs[0][2];
+
+        for (int i = 1; i < n; i++) {
+            // (0 - i houses) -> ith House Red
+            dp[i][0] = costs[i][0] + Math.min(dp[i - 1][1], dp[i - 1][2]);
+
+            // (0 - i houses) -> ith House Blue
+            dp[i][1] = costs[i][1] + Math.min(dp[i - 1][0], dp[i - 1][2]);
+
+            // (0 - i houses) -> ith House Green
+            dp[i][2] = costs[i][2] + Math.min(dp[i - 1][0], dp[i - 1][1]);
+        }
+
+        return Math.min(dp[n - 1][0], Math.min(dp[n - 1][1], dp[n - 1][2]));
+    }
+}
+
+// Space Optimization -> O(N * 3) = O(N) Time, O(1) Constant Extra Space
+class SpaceOptimization {
+    public int minCost(int[][] costs) {
+        int n = costs.length;
+        if (costs.length == 0)
+            return 0;
+
+        int prev0 = costs[0][0];
+        int prev1 = costs[0][1];
+        int prev2 = costs[0][2];
+
+        for (int i = 1; i < n; i++) {
+            // (0 - i houses) -> ith House Red
+            int curr0 = costs[i][0] + Math.min(prev1, prev2);
+
+            // (0 - i houses) -> ith House Blue
+            int curr1 = costs[i][1] + Math.min(prev0, prev2);
+
+            // (0 - i houses) -> ith House Green
+            int curr2 = costs[i][2] + Math.min(prev0, prev1);
+
+            prev0 = curr0;
+            prev1 = curr1;
+            prev2 = curr2;
+        }
+
+        return Math.min(prev0, Math.min(prev1, prev2));
+    }
+}
+===================================================
+017. Paint House - II.java 
+------------------------------------
+// 516. Lintcode: Paint House - II: https://www.lintcode.com/problem/516/
+
+// Memoization - Time O(N * K * K) (Cubic), Space -> O(N * K) (Matrix + Recursion Stack)
+// Runtime Error -> Stack Overflow -> N > 10^5
+class Memoization {
+    public int helper(int[][] costs, int idx, int k, int prev, int[][] dp) {
+        if (idx == costs.length)
+            return 0;
+        if (prev >= 0 && dp[idx][prev] != -1)
+            return dp[idx][prev];
+
+        int min = Integer.MAX_VALUE;
+        for (int color = 0; color < k; color++) {
+            min = Math.min(min, (prev == color) ? Integer.MAX_VALUE
+                    : costs[idx][color] + helper(costs, idx + 1, k, color, dp));
+        }
+
+        if (prev == -1)
+            return min;
+        return dp[idx][prev] = min;
+    }
+
+    public int minCostII(int[][] costs) {
+        int n = costs.length;
+        if (n == 0)
+            return 0;
+
+        int k = costs[0].length;
+
+        int[][] dp = new int[costs.length + 1][k];
+        for (int i = 0; i < costs.length; i++) {
+            for (int j = 0; j < k; j++)
+                dp[i][j] = -1;
+        }
+
+        return helper(costs, 0, k, -1, dp);
+    }
+}
+
+// Tabulation -> Time O(N * K * K) (Cubic), Space -> O(N * K) (Matrix)
+class Tabulation {
+    public int minCostII(int[][] costs) {
+        int n = costs.length;
+        if (n == 0)
+            return 0;
+
+        int k = costs[0].length;
+
+        int[][] dp = new int[costs.length + 1][k];
+        for (int c = 0; c < k; c++) {
+            dp[0][c] = costs[0][c];
+        }
+
+        for (int i = 1; i < n; i++) {
+            for (int c = 0; c < k; c++) {
+                int min = Integer.MAX_VALUE;
+
+                // Extracting Min of Previous Row Excluding Our Column
+                for (int prev = 0; prev < k; prev++) {
+                    if (prev == c)
+                        continue;
+                    min = Math.min(min, dp[i - 1][prev]);
+                }
+
+                dp[i][c] = costs[i][c] + min;
+            }
+        }
+
+        int min = Integer.MAX_VALUE;
+        for (int c = 0; c < k; c++) {
+            min = Math.min(dp[n - 1][c], min);
+        }
+        return min;
+    }
+}
+
+// Time -> O(N * K) (Quadratic), Space -> O(N * K) (Matrix)
+class TimeOptimization {
+    public int minCostII(int[][] costs) {
+        int n = costs.length;
+        if (n == 0)
+            return 0;
+
+        int k = costs[0].length;
+
+        int[][] dp = new int[costs.length + 1][k];
+        for (int c = 0; c < k; c++) {
+            dp[0][c] = costs[0][c];
+        }
+
+        for (int i = 1; i < n; i++) {
+
+            // Finding 1st Min and 2nd Min of Previous Row
+            int firstMin = Integer.MAX_VALUE;
+            int secondMin = Integer.MAX_VALUE;
+            for (int prev = 0; prev < k; prev++) {
+                if (dp[i - 1][prev] <= firstMin) {
+                    secondMin = firstMin;
+                    firstMin = dp[i - 1][prev];
+                } else if (dp[i - 1][prev] < secondMin) {
+                    secondMin = dp[i - 1][prev];
+                }
+            }
+
+            // Calculating Current Row DP Using 1st Min and 2nd Min
+            for (int c = 0; c < k; c++) {
+                if (dp[i - 1][c] == firstMin)
+                    dp[i][c] = costs[i][c] + secondMin;
+                else
+                    dp[i][c] = costs[i][c] + firstMin;
+            }
+        }
+
+        int min = Integer.MAX_VALUE;
+        for (int c = 0; c < k; c++) {
+            min = Math.min(dp[n - 1][c], min);
+        }
+        return min;
+    }
+}
+
+// Space Optimization: Time -> O(N * K) (Quadratic),
+// Space -> O(K) (Linear Array)
+class SpaceOptimization {
+    public int minCostII(int[][] costs) {
+        int n = costs.length;
+        if (n == 0)
+            return 0;
+
+        int k = costs[0].length;
+
+        int[] dp = new int[k];
+        for (int c = 0; c < k; c++) {
+            dp[c] = costs[0][c];
+        }
+
+        for (int i = 1; i < n; i++) {
+
+            int firstMin = Integer.MAX_VALUE;
+            int secondMin = Integer.MAX_VALUE;
+            for (int prev = 0; prev < k; prev++) {
+                if (dp[prev] <= firstMin) {
+                    secondMin = firstMin;
+                    firstMin = dp[prev];
+                } else if (dp[prev] < secondMin) {
+                    secondMin = dp[prev];
+                }
+            }
+
+            int[] curr = new int[k];
+
+            for (int c = 0; c < k; c++) {
+                // Extracting Min of Previous Row Excluding Our Column
+                if (dp[c] == firstMin)
+                    curr[c] = costs[i][c] + secondMin;
+                else
+                    curr[c] = costs[i][c] + firstMin;
+            }
+
+            dp = curr;
+        }
+
+        int min = Integer.MAX_VALUE;
+        for (int c = 0; c < k; c++) {
+            min = Math.min(dp[c], min);
+        }
+        return min;
+    }
+}
+===================================================
+018. Paint Fence.java 
+------------------------------------
+import java.util.*;
+// 514 Lintcode: https://www.lintcode.com/problem/514/
+
+// Using Memoization
+class Solution1 {
+    // Time - O(N), Space - O(N) for Recursion Call Stack + DP Array
+    public int memo(int n, int k, int[] dp) {
+        if (n == 1)
+            return k;
+        if (n == 2)
+            return k * k;
+        if (dp[n] != -1)
+            return dp[n];
+
+        int ans = (memo(n - 1, k, dp) + memo(n - 2, k, dp)) * (k - 1);
+        return dp[n] = ans;
+    }
+
+    public int numWays(int n, int k) {
+        if (n == 1)
+            return k;
+        if (n == 2)
+            return k * k;
+        if (k == 1)
+            return 0;
+
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+        return memo(n, k, dp);
+    }
+}
+
+// Using Tabulation
+class Solution2 {
+    // Time - O(N), Space - O(2 * N) = O(N)
+    public int numWays(int n, int k) {
+        if (n == 1)
+            return k;
+        if (n == 2)
+            return k * k;
+        if (k == 1)
+            return 0;
+
+        int[] same = new int[n + 1];
+        int[] diff = new int[n + 1];
+        same[2] = k;
+        diff[2] = k * (k - 1);
+
+        for (int i = 3; i <= n; i++) {
+            same[i] = diff[i - 1];
+            diff[i] = (same[i - 1] + diff[i - 1]) * (k - 1);
+        }
+
+        return same[n] + diff[n];
+    }
+}
+
+// Space Optimization in tabulation
+class Solution3 {
+    // Time - O(N), Space - O(1)
+    public int numWays(int n, int k) {
+        if (n == 1)
+            return k;
+        if (n == 2)
+            return k * k;
+        if (k == 1)
+            return 0;
+
+        int same = k;
+        int diff = k * (k - 1);
+
+        for (int i = 3; i <= n; i++) {
+            int newSame = diff;
+            int newDiff = (same + diff) * (k - 1);
+
+            same = newSame;
+            diff = newDiff;
+        }
+
+        return same + diff;
+    }
+}
+===================================================
+019. Friends Pairing.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/friends-pairing-problem5425/1
+
+class Solution {
+    public int mod = 1000000007;
+
+    // Time - O(N), Space - O(N) for Recursion Call Stack
+    
+    public long countFriendsPairing(int n, long[] dp) {
+        if (n == 0 || n == 1)
+            return 1l;
+        if (dp[n] != -1)
+            return dp[n];
+
+        long single = countFriendsPairing(n - 1, dp);
+        long pair = ((n - 1l) * countFriendsPairing(n - 2, dp)) % mod;
+
+        return dp[n] = (single + pair) % mod;
+    }
+
+    public long countFriendsPairings(int n) {
+        long[] dp = new long[n + 1];
+        Arrays.fill(dp, -1);
+        return countFriendsPairing(n, dp);
+    }
+
+    // Space Optimization in Tabulation is Possible
+    // O(N) Time, O(1) Space - Do It Yourself
+}
+===================================================
+020. Ugly No - I.java
+------------------------------------
+// 263. Ugly No - I: https://leetcode.com/problems/ugly-number/
+
+class Solution {
+    // Time - O(Root N) in Worst Case, O(log2 N + log3 N + log4N) in Average Case
+    public boolean isUgly(int n) {
+        if (n <= 0)
+            return false;
+
+        while (n % 2 == 0) {
+            n /= 2;
+        }
+        while (n % 3 == 0) {
+            n /= 3;
+        }
+        while (n % 5 == 0) {
+            n /= 5;
+        }
+
+        if (n == 1)
+            return true;
+        return false;
+    }
+}
+===================================================
+021. Ugly No - II.java
+------------------------------------
+import java.util.*;
+
+// 264. https://leetcode.com/problems/ugly-number-ii/
+
+// Using 3 Pointer Technique
+class Solution1 {
+    // Time: O(N), Space: O(N) for Visited Array
+    public int nthUglyNumber(int n) {
+        if (n == 1)
+            return 1;
+
+        // Pointers Pointing to Indices not Values
+        int ptr2 = 0, ptr3 = 0, ptr5 = 0;
+
+        ArrayList<Integer> ugly = new ArrayList<>();
+        ugly.add(1); // to add the 1st ugly no at index 0
+
+        for (int i = 1; i < n; i++) {
+            int a = ugly.get(ptr2) * 2;
+            int b = ugly.get(ptr3) * 3;
+            int c = ugly.get(ptr5) * 5;
+
+            int min = Math.min(a, Math.min(b, c));
+            ugly.add(min);
+
+            if (min == a)
+                ptr2++;
+            if (min == b)
+                ptr3++;
+            if (min == c)
+                ptr5++;
+        }
+
+        return ugly.get(n - 1);
+    }
+}
+
+// Using Priority Queue
+class Solution2 {
+    // O(N * Log N) Time, O(N) Space for Priority Queue + Visited HashSet
+    public int nthUglyNumber(int n) {
+        if (n == 1)
+            return 1;
+
+        PriorityQueue<Long> q = new PriorityQueue<>();
+        q.add(1l);
+        HashSet<Long> vis = new HashSet<>();
+
+        int idx = 0;
+        while (q.size() > 0) {
+            long min = q.remove();
+            if (vis.contains(min) == true)
+                continue;
+
+            idx++;
+            if (idx == n)
+                return (int) min;
+
+            vis.add(min);
+            q.add(min * 2l);
+            q.add(min * 3l);
+            q.add(min * 5l);
+        }
+
+        return 1;
+    }
+}
+===================================================
+22. Super Ugly No.java
+------------------------------------
+import java.util.*;
+
+// 313. https://leetcode.com/problems/super-ugly-number/
+
+class Solution {
+    // Time - O(N * Primes), Space - O(N) for Visited + O(K) for Primes Pointers
+    public int nthSuperUglyNumber(int n, int[] primes) {
+        int[] ptr = new int[primes.length];
+
+        ArrayList<Integer> ugly = new ArrayList<>();
+        ugly.add(1); // Add 1st Ugly No at Index 0
+
+        for (int i = 1; i < n; i++) {
+            // Finding the next Smallest Ugly No
+            int min = Integer.MAX_VALUE;
+            for (int j = 0; j < primes.length; j++)
+                min = Math.min(min, ugly.get(ptr[j]) * primes[j]);
+
+            ugly.add(min);
+
+            // Updating All Pointers Pointing to Min
+            for (int j = 0; j < primes.length; j++)
+                if (ugly.get(ptr[j]) * primes[j] == min)
+                    ptr[j]++;
+        }
+
+        return ugly.get(n - 1);
+    }
+}
+===================================================
+23. Indian Coin Change.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/-minimum-number-of-coins4426/1/
+
+class Solution {
+    // Time - O(N), Space - O(1) Extra Space, O(N) Output Space
+    static List<Integer> minPartition(int target) {
+        List<Integer> res = new ArrayList<>();
+        int[] coins = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 2000 };
+
+        for (int i = coins.length - 1; i >= 0; i--) {
+
+            while (target - coins[i] >= 0) {
+                res.add(coins[i]);
+                target -= coins[i];
+            }
+
+            if (target == 0)
+                break;
+        }
+
+        return res;
+    }
+
+    // For Just Counting the Minimum Coins, Time will be O(Coins) = O(10) = O(1)
+    static int minCoins(int target) {
+        int[] coins = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 2000 };
+        int count = 0;
+
+        for (int i = coins.length - 1; i >= 0; i--) {
+            count = count + (target * (target / coins[i]));
+            target -= (target / coins[i]);
+            if (target == 0)
+                break;
+        }
+
+        return count;
+    }
+}
+===================================================
+24. Minimum Coin Change.java
+------------------------------------
+import java.util.*;
+
+// 322. Coin Change: https://leetcode.com/problems/coin-change/
+
+// Memoization - Approach 1
+// Time - O(Amount * Coins), Space - O(Amount) for DP Table 
+// Recursion Call Stack -> O(Amount) Height, O(Coins) Calls/Breadth
+class Solution1 {
+    public int memo(int amount, int[] coins, int[] dp) {
+        if (amount == 0)
+            return 0;
+        if (dp[amount] != -1)
+            return dp[amount];
+
+        int minCoins = Integer.MAX_VALUE;
+        for (int i = 0; i < coins.length; i++) {
+            if (amount - coins[i] >= 0) {
+                minCoins = Math.min(minCoins, memo(amount - coins[i], coins, dp));
+            }
+        }
+
+        if (minCoins < Integer.MAX_VALUE)
+            minCoins += 1;
+        return dp[amount] = minCoins;
+    }
+
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, -1);
+
+        int ans = memo(amount, coins, dp);
+        return (ans == Integer.MAX_VALUE) ? -1 : ans;
+    }
+}
+
+// Memoization - Approach 2
+// Time - O(Amount * Coins), Space - O(Amount * Coins) for DP table
+// Recursion Call Stack -> O(Coins) Height, O(Amount) Calls/Breadth
+class Solution2 {
+    public int memo(int amount, int idx, int[] coins, int[][] dp) {
+        if (amount == 0)
+            return 0;
+        if (idx == coins.length)
+            return Integer.MAX_VALUE;
+        if (dp[amount][idx] != -1)
+            return dp[amount][idx];
+
+        int minCoins = Integer.MAX_VALUE;
+        for (int coin = 0; amount >= coins[idx] * coin; coin++) {
+            int ans = memo(amount - coins[idx] * coin, idx + 1, coins, dp);
+            if (ans < Integer.MAX_VALUE)
+                ans += coin;
+            minCoins = Math.min(minCoins, ans);
+        }
+
+        return dp[amount][idx] = minCoins;
+    }
+
+    public int coinChange(int[] coins, int amount) {
+        int[][] dp = new int[amount + 1][coins.length];
+        for (int i = 0; i <= amount; i++) {
+            for (int j = 0; j < coins.length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        int ans = memo(amount, 0, coins, dp);
+        if (ans == Integer.MAX_VALUE)
+            return -1;
+        return ans;
+    }
+}
+
+// Memoization - Approach 3
+// Time - O(Amount * Coins), Space - O(Amount * Coins) for DP table
+// Recursion Call Stack -> O(Amount) Height, Exactly 2 Calls/Breadth
+class Solution3 {
+    public int memo(int amount, int idx, int[] coins, int[][] dp) {
+        if (amount < 0)
+            return Integer.MAX_VALUE;
+        if (amount == 0)
+            return 0;
+        if (idx == coins.length)
+            return Integer.MAX_VALUE;
+        if (dp[amount][idx] != -1)
+            return dp[amount][idx];
+
+        int yes = memo(amount - coins[idx], idx, coins, dp);
+        if (yes != Integer.MAX_VALUE)
+            yes += 1;
+
+        int no = memo(amount, idx + 1, coins, dp);
+
+        return dp[amount][idx] = Math.min(yes, no);
+    }
+
+    public int coinChange(int[] coins, int amount) {
+        int[][] dp = new int[amount + 1][coins.length];
+        for (int i = 0; i <= amount; i++) {
+            for (int j = 0; j < coins.length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        int ans = memo(amount, 0, coins, dp);
+        if (ans == Integer.MAX_VALUE)
+            return -1;
+        return ans;
+    }
+}
+
+// Tabulation
+// Time - O(Amount * Coins), Space - O(Amount) 1D DP Array
+class Solution4 {
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+                if (i - coin >= 0 && dp[i - coin] != Integer.MAX_VALUE)
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+            }
+        }
+
+        return (dp[amount] == Integer.MAX_VALUE) ? -1 : dp[amount];
+    }
+}
+
+// Space Optimization for Above Tabulation is Not Possible, because
+// we have already reduced 2D to 1D. It cannot be Constant.
+===================================================
+25. Coin Change - Combination.java
+------------------------------------
+// 518. Coin Change 2: https://leetcode.com/problems/coin-change-2/
+
+class Memoization {
+    // Time - O(Amount * Coins), Space - O(Amount * Coins): 2D DP + RCS
+    public int memo(int amount, int lastCoin, int[] coins, int[][] dp) {
+        if (amount < 0)
+            return 0;
+        if (amount == 0)
+            return 1;
+        if (dp[amount][lastCoin] != -1)
+            return dp[amount][lastCoin];
+
+        int perm = 0;
+        for (int coin = lastCoin; coin < coins.length; coin++) {
+            perm += memo(amount - coins[coin], coin, coins, dp);
+        }
+
+        return dp[amount][lastCoin] = perm;
+    }
+
+    public int change(int amount, int[] coins) {
+        int[][] dp = new int[amount + 1][coins.length + 1];
+        for (int i = 0; i <= amount; i++) {
+            for (int j = 0; j <= coins.length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        return memo(amount, 0, coins, dp);
+    }
+}
+
+class Tabulation {
+    // Time - O(Amount * Coins), Space - O(Amount)
+    public int change(int amount, int[] coins) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 1; // Ways to reach dest when src = dest is 1. (Empty String)
+
+        for (int coin : coins) {
+            for (int i = coin; i <= amount; i++) {
+                dp[i] += dp[i - coin];
+            }
+        }
+        return dp[amount];
+    }
+}
+===================================================
+26. Coin Change - Permutation.java 
+------------------------------------
+import java.util.*;
+// 377. Combination Sum IV: https://leetcode.com/problems/combination-sum-iv/
+
+class Memoization {
+    // Time - O(Amount * Coins), Space - O(Amount): 1D DP + RCS
+    public int memo(int amount, int[] coins, int[] dp) {
+        if (amount < 0)
+            return 0;
+        if (amount == 0)
+            return 1;
+        if (dp[amount] != -1)
+            return dp[amount];
+
+        int perm = 0;
+        for (int i = 0; i < coins.length; i++) {
+            perm += memo(amount - coins[i], coins, dp);
+        }
+
+        return dp[amount] = perm;
+    }
+
+    public int combinationSum4(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        Arrays.fill(dp, -1);
+
+        return memo(amount, coins, dp);
+    }
+}
+
+class Tabulation {
+    // Time - O(Amount * Coins), Space - O(Amount): 1D DP + RCS
+    public int combinationSum4(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        dp[0] = 1; // Ways to reach dest when src = dest is 1. (Empty String)
+
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+                if (i >= coin) {
+                    dp[i] += dp[i - coin];
+                }
+            }
+        }
+        return dp[amount];
+    }
+}
+===================================================
+27. 01 Knapsack.java 
+------------------------------------
+// GfG - https://practice.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1/
+
+class Memoization {
+    // Time - O(Capacity * Items), Space - O(Capacity * Items) 2D DP
+    static int memo(int cap, int item, int[] wt, int[] cost, int[][] dp) {
+        if (item == cost.length)
+            return 0; // No Item No Profit
+        if (dp[cap][item] != -1)
+            return dp[cap][item];
+
+        int yes = (cap >= wt[item]) ? memo(cap - wt[item], item + 1, wt, cost, dp) + cost[item] : -1;
+        int no = memo(cap, item + 1, wt, cost, dp);
+
+        return dp[cap][item] = Math.max(yes, no);
+    }
+
+    static int knapSack(int cap, int wt[], int cost[], int n) {
+        int[][] dp = new int[cap + 1][cost.length];
+        for (int i = 0; i <= cap; i++) {
+            for (int j = 0; j < cost.length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        return memo(cap, 0, wt, cost, dp);
+    }
+}
+
+class Tabulation {
+    // Time - O(Capacity * Items), Space - O(Capacity * Items) 2d DP
+    static int knapSack(int caps, int wt[], int cost[], int n) {
+        int[][] dp = new int[caps + 1][cost.length + 1];
+
+        for (int item = 1; item <= cost.length; item++) {
+            for (int cap = 1; cap <= caps; cap++) {
+
+                int no = dp[cap][item - 1];
+                int yes = (cap >= wt[item - 1])
+                        ? cost[item - 1] + dp[cap - wt[item - 1]][item - 1]
+                        : -1;
+
+                dp[cap][item] = Math.max(yes, no);
+            }
+        }
+
+        return dp[caps][cost.length];
+    }
+}
+
+class SpaceOptimization {
+    // Time - O(Capacity * Items), Space - O(Capacity) 1D DP
+    static int knapSack(int caps, int wt[], int cost[], int n) {
+        int[] dp = new int[caps + 1];
+
+        for (int item = 1; item <= cost.length; item++) {
+            int[] newDp = new int[caps + 1];
+
+            for (int cap = 1; cap <= caps; cap++) {
+
+                int no = dp[cap];
+                int yes = (cap >= wt[item - 1])
+                        ? cost[item - 1] + dp[cap - wt[item - 1]]
+                        : -1;
+
+                newDp[cap] = Math.max(yes, no);
+            }
+
+            dp = newDp;
+        }
+
+        return dp[caps];
+    }
+}
+===================================================
+28. 01 Knapsack All Paths.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// Problem Link: NADOS: https://nados.io/question/print-all-results-in-0-1-knapsack?zen=true
+
+class Main {
+    public static class Pair {
+        int row;
+        int col;
+        String psf;
+
+        Pair(int row, int col, String psf) {
+            this.row = row;
+            this.col = col;
+            this.psf = psf;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+
+        int[] cost = new int[n];
+        String str1 = br.readLine();
+        for (int i = 0; i < n; i++) {
+            cost[i] = Integer.parseInt(str1.split(" ")[i]);
+        }
+
+        int[] wt = new int[n];
+        String str2 = br.readLine();
+        for (int i = 0; i < n; i++) {
+            wt[i] = Integer.parseInt(str2.split(" ")[i]);
+        }
+
+        int caps = Integer.parseInt(br.readLine());
+
+        int[][] dp = new int[caps + 1][cost.length + 1];
+
+        for (int item = 1; item <= cost.length; item++) {
+            for (int cap = 1; cap <= caps; cap++) {
+
+                int no = dp[cap][item - 1];
+                int yes = (cap >= wt[item - 1])
+                        ? cost[item - 1] + dp[cap - wt[item - 1]][item - 1]
+                        : -1;
+
+                dp[cap][item] = Math.max(yes, no);
+            }
+        }
+
+        System.out.println(dp[caps][cost.length]);
+
+        // Time - O(Exponential) in Worst Case (All Paths)
+        // but O(Capacity) in Average Case (1 Path)
+
+        Queue<Pair> q = new ArrayDeque<>();
+        q.add(new Pair(caps, cost.length, ""));
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+            int row = top.row;
+            int col = top.col;
+            String psf = top.psf;
+
+            if (top.col == 0) {
+                System.out.println(top.psf);
+                continue;
+            }
+
+            // If Item Can be Included and It gives Maximum Profit, then explore this edge
+            if (row >= wt[col - 1] &&
+                    dp[row][col] == cost[col - 1] + dp[row - wt[col - 1]][col - 1]) {
+                q.add(new Pair(row - wt[col - 1], col - 1, (col - 1) + " " + psf));
+            }
+
+            // If no call gives maximum profit, then only explore this edge
+            if (dp[row][col] == dp[row][col - 1]) {
+                q.add(new Pair(row, col - 1, psf));
+            }
+        }
+    }
+}
+===================================================
+29. Unbounded Knapsack.java
+------------------------------------
+// GfG: https://practice.geeksforgeeks.org/problems/knapsack-with-duplicate-items4201/1
+
+class App1 {
+    // Memoization Approach 1: Time - O(Cap * N * Cap), Space - O(Cap * N)
+    // Since Time is Cubic, It is Giving Time Limit Exceeded (TLE)
+    static int memo(int index, int cap, int cost[], int wt[], int N, int[][] dp) {
+        if (index == N || cap == 0)
+            return 0;
+        if (dp[index][cap] != -1)
+            return dp[index][cap];
+
+        int ans = -1;
+        for (int freq = 0; cap >= freq * wt[index]; freq++) {
+            int temp = memo(index + 1, cap - freq * wt[index], cost, wt, N, dp)
+                    + freq * cost[index];
+            ans = Math.max(ans, temp);
+        }
+        return dp[index][cap] = ans;
+    }
+
+    static int knapSack(int N, int cap, int cost[], int wt[]) {
+        int[][] dp = new int[N + 1][cap + 1];
+        for (int i = 0; i <= N; i++) {
+            for (int j = 0; j <= cap; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        return memo(0, cap, cost, wt, N, dp);
+    }
+}
+
+class App2 {
+    // Memoization Approach 2: Time - O(Cap * N), Space - O(Cap * N)
+    // Now, It is Quadratic, hence giving Accepted
+    static int memo(int index, int cap, int cost[], int wt[], int N, int[][] dp) {
+        if (index == N || cap == 0)
+            return 0;
+        if (dp[index][cap] != -1)
+            return dp[index][cap];
+
+        int no = memo(index + 1, cap, cost, wt, N, dp);
+        int yes = (cap >= wt[index])
+                ? cost[index] + memo(index, cap - wt[index], cost, wt, N, dp)
+                : -1;
+
+        return dp[index][cap] = Math.max(yes, no);
+    }
+
+    static int knapSack(int N, int cap, int cost[], int wt[]) {
+        int[][] dp = new int[N + 1][cap + 1];
+        for (int i = 0; i <= N; i++) {
+            for (int j = 0; j <= cap; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        return memo(0, cap, cost, wt, N, dp);
+    }
+}
+
+class App3 {
+    // Tabulation 2D DP: Time - O(Cap * N), Space - O(Cap * N)
+    static int knapSack(int N, int caps, int cost[], int wt[]) {
+        int[][] dp = new int[N + 1][caps + 1];
+
+        for (int item = 1; item <= N; item++) {
+            for (int cap = 1; cap <= caps; cap++) {
+                int no = dp[item - 1][cap];
+                int yes = (cap >= wt[item - 1])
+                        ? dp[item][cap - wt[item - 1]] + cost[item - 1]
+                        : -1;
+
+                dp[item][cap] = Math.max(no, yes);
+            }
+        }
+
+        return dp[N][caps];
+    }
+}
+
+class App4 {
+    // Tabulation 1D DP: Time - O(Cap * N), Space - O(Cap)
+    static int knapSack(int N, int caps, int cost[], int wt[]) {
+        int[] dp = new int[caps + 1];
+
+        for (int item = 1; item <= N; item++) {
+            for (int cap = 1; cap <= caps; cap++) {
+                int no = dp[cap];
+                int yes = (cap >= wt[item - 1])
+                        ? dp[cap - wt[item - 1]] + cost[item - 1]
+                        : -1;
+
+                dp[cap] = Math.max(no, yes);
+            }
+        }
+
+        return dp[caps];
+    }
+}
+===================================================
+030. Buy & Sell Stocks - 1 Transaction.java
+------------------------------------
+// 121: https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+
+class Greedy1 {
+    // Greedy Approach 1: Take Each Day as Potential Buying Day
+    // O(N) Time, O(1) Space
+
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+
+        int selling = prices[n - 1], profit = 0;
+
+        for (int i = n - 1; i >= 0; i--) {
+            selling = Math.max(selling, prices[i]);
+
+            int buying = prices[i]; // Today - Potential Buying Day
+
+            profit = Math.max(profit, selling - buying);
+        }
+
+        return profit;
+    }
+}
+
+class Greedy2 {
+    // Greedy Approach 2: Take Each Day as Potential Selling Day
+    // Time - O(N), Space - O(1)
+
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+
+        int buying = prices[0], profit = 0;
+
+        for (int i = 0; i < n; i++) {
+            buying = Math.min(buying, prices[i]);
+
+            int selling = prices[i]; // Today - Potential Selling Day
+
+            profit = Math.max(profit, selling - buying);
+        }
+
+        return profit;
+    }
+}
+===================================================
+031. Buy & Sell Stocks - Infinite Transactions.java 
+------------------------------------
+import java.util.*;
+// 122: https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
+
+class Greedy1 {
+    // Greedy Approach with Extra Space
+    // Time - O(N), Space - O(N)
+    public int maxProfit(int[] prices) {
+        Stack<Integer> stk = new Stack<>();
+        int profit = 0;
+
+        for (int i = 0; i < prices.length; i++) {
+            if (stk.size() > 0 && stk.peek() < prices[i]) {
+                profit += prices[i] - stk.pop();
+            }
+
+            stk.push(prices[i]);
+        }
+
+        return profit;
+    }
+}
+
+class Greedy2 {
+    // Greedy Approach without Extra Space
+    // Time - O(N), Space - O(1)
+    public int maxProfit(int[] prices) {
+        int buying = prices[0];
+        int profit = 0;
+
+        for (int i = 0; i < prices.length; i++) {
+            if (buying < prices[i]) {
+                profit += prices[i] - buying;
+            }
+
+            buying = prices[i];
+        }
+
+        return profit;
+    }
+}
+
+class Greedy3 {
+    // Time - O(N), Space - O(1)
+
+    public int maxProfit(int[] prices) {
+        int valley = 0, profit = 0;
+        while (valley < prices.length) {
+            int peak = valley;
+            while (peak + 1 < prices.length && prices[peak + 1] >= prices[peak]) {
+                peak++;
+            }
+
+            profit = profit + (prices[peak] - prices[valley]);
+            valley = peak + 1;
+        }
+        return profit;
+    }
+}
+
+class DP1 {
+    // Memoization (Recursion) - O(N * 2) Time, O(N * 2) Space
+    public int memo(int idx, int state, int[] prices, int[][] dp) {
+        if (idx == prices.length)
+            return 0;
+        if (dp[idx][state] != -1)
+            return dp[idx][state];
+
+        if (state == 1) // BUY
+            return dp[idx][state] = Math.max(memo(idx + 1, 1, prices, dp),
+                    memo(idx + 1, 0, prices, dp) - prices[idx]);
+
+        // SELL
+        return dp[idx][state] = Math.max(memo(idx + 1, 0, prices, dp),
+                memo(idx + 1, 1, prices, dp) + prices[idx]);
+    }
+
+    public int maxProfit(int[] prices) {
+        int[][] dp = new int[prices.length + 1][2];
+        for (int i = 0; i <= prices.length; i++) {
+            dp[i][0] = dp[i][1] = -1;
+        }
+
+        return memo(0, 1, prices, dp);
+    }
+}
+
+class DP2 {
+    // Tabulation with Exta Space
+    // Time - O(N), Space - O(2 * N) = O(N)
+    public int maxProfit(int[] prices) {
+        int[] buy = new int[prices.length];
+        int[] sell = new int[prices.length];
+
+        buy[0] = -prices[0];
+        sell[0] = 0;
+
+        for (int i = 1; i < prices.length; i++) {
+
+            // Treat today as Buying Day
+            buy[i] = Math.max(buy[i - 1], sell[i - 1] - prices[i]);
+
+            // Treat today as Selling Day
+            sell[i] = Math.max(sell[i - 1], buy[i - 1] + prices[i]);
+        }
+
+        return sell[prices.length - 1];
+    }
+}
+
+class DP3 {
+    // Tabulation without Exta Space - Space Optimization
+    // Time - O(N), Space - O(1)
+    public int maxProfit(int[] prices) {
+        int buy = -prices[0];
+        int sell = 0;
+
+        for (int i = 1; i < prices.length; i++) {
+
+            // Treat today as Buying Day
+            int newBuy = Math.max(buy, sell - prices[i]);
+
+            // Treat today as Selling Day
+            int newSell = Math.max(sell, buy + prices[i]);
+
+            buy = newBuy;
+            sell = newSell;
+        }
+
+        return sell;
+    }
+}
+===================================================
+32. Buy & Sell Stocks - Transaction Fee.java 
+------------------------------------
+// Leetcode 714:
+// https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/
+
+// Dynamic Programming: O(N) Time, O(1) Space
+class Solution {
+    public int maxProfit(int[] prices, int fee) {
+        int buy = -prices[0];
+        int sell = 0;
+
+        for (int i = 1; i < prices.length; i++) {
+
+            // Treat today as Buying Day
+            int newBuy = Math.max(buy, sell - prices[i]);
+
+            // Treat today as Selling Day
+            int newSell = Math.max(sell, buy + prices[i] - fee);
+
+            buy = newBuy;
+            sell = newSell;
+        }
+
+        return sell;
+    }
+}
+===================================================
+33. Buy & Sell Stocks - Cooldown.java
+------------------------------------
+// Leetcode 309. https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
+
+// Recursion - Memoization
+class Memoization {
+    // Time - O(N * 2), Space - O(N * 2) DP Table + O(N) RCS
+    public int memo(int idx, int state, int[] prices, int[][] dp) {
+        if (idx == prices.length)
+            return 0;
+        if (dp[idx][state] != -1)
+            return dp[idx][state];
+
+        if (state == 1) // BUY
+            return dp[idx][state] = Math.max(memo(idx + 1, 1, prices, dp),
+                    memo(idx + 1, 0, prices, dp) - prices[idx]);
+
+        // SELL
+        return dp[idx][state] = Math.max(memo(idx + 1, 0, prices, dp),
+                memo(idx + 2, 1, prices, dp) + prices[idx]);
+    }
+
+    public int maxProfit(int[] prices) {
+        int[][] dp = new int[prices.length + 2][2];
+        for (int i = 0; i <= prices.length; i++) {
+            dp[i][0] = dp[i][1] = -1;
+        }
+
+        return memo(0, 1, prices, dp);
+    }
+}
+
+// Tabulation Without Space Optimization
+class Tabulation {
+    // Time - O(N), Space - O(N * 2)
+    public int maxProfit(int[] prices) {
+        if (prices.length <= 1)
+            return 0;
+
+        int[] buy = new int[prices.length];
+        int[] sell = new int[prices.length];
+
+        buy[0] = -prices[0];
+        sell[0] = 0;
+        buy[1] = Math.max(-prices[0], -prices[1]); // Either buy 0th stock or 1st stock
+        sell[1] = Math.max(0, prices[1] - prices[0]); // Either do nothing or Buy 0 Sell 1
+
+        for (int i = 2; i < prices.length; i++) {
+            buy[i] = Math.max(buy[i - 1], sell[i - 2] - prices[i]);
+            sell[i] = Math.max(sell[i - 1], buy[i - 1] + prices[i]);
+        }
+
+        return sell[prices.length - 1];
+    }
+}
+
+// Tabulation With Space Optimization
+class SpaceOptimization {
+    // Time - O(N), Space - O(1), Constant (4 Pointers)
+    public int maxProfit(int[] prices) {
+        if (prices.length <= 1)
+            return 0;
+
+        int buy0 = -prices[0];
+        int sell0 = 0;
+        int buy1 = Math.max(-prices[0], -prices[1]); // Either buy 0th stock or 1st stock
+        int sell1 = Math.max(0, prices[1] - prices[0]); // Either do nothing or Buy 0 Sell 1
+
+        for (int i = 2; i < prices.length; i++) {
+            int newbuy = Math.max(buy1, sell0 - prices[i]);
+            int newsell = Math.max(sell1, buy1 + prices[i]);
+
+            buy0 = buy1;
+            sell0 = sell1;
+            buy1 = newbuy;
+            sell1 = newsell;
+        }
+
+        return sell1;
+    }
+}
+===================================================
+34. Buy & Sell Stocks - 2 Transactions.java
+------------------------------------
+// Leetcode 123. https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/
+
+// Recursion - Memoization
+class DP {
+    // Time - O(N), Space - O(N * 2)
+    public int memo(int idx, int state, int count, int[] prices, int[][][] dp) {
+        if (idx == prices.length || count == 0)
+            return 0;
+        if (dp[idx][state][count] != -1)
+            return dp[idx][state][count];
+
+        if (state == 1) // BUY
+            return dp[idx][state][count] = Math.max(memo(idx + 1, 1, count, prices, dp),
+                    memo(idx + 1, 0, count, prices, dp) - prices[idx]);
+
+        // SELL
+        return dp[idx][state][count] = Math.max(memo(idx + 1, 0, count, prices, dp),
+                memo(idx + 1, 1, count - 1, prices, dp) + prices[idx]);
+    }
+
+    public int maxProfit(int[] prices) {
+        int[][][] dp = new int[prices.length + 1][2][3];
+        for (int i = 0; i <= prices.length; i++) {
+            for (int j = 1; j <= 2; j++) {
+                dp[i][0][j] = dp[i][1][j] = -1;
+            }
+        }
+
+        return memo(0, 1, 2, prices, dp);
+    }
+}
+
+// Prefix & Suffix Approach
+class Greedy {
+    // Time - O(N * 2) = O(N), Space - O(N * 2)
+    public int maxProfit(int[] prices) {
+        int[] selling = new int[prices.length];
+
+        int min = prices[0];
+        for (int i = 0; i < prices.length; i++) {
+            min = Math.min(min, prices[i]);
+
+            if (i - 1 >= 0)
+                selling[i] = Math.max(selling[i - 1], prices[i] - min);
+            else
+                selling[i] = prices[i] - min;
+        }
+
+        int[] buying = new int[prices.length];
+
+        int max = prices[prices.length - 1];
+        for (int i = prices.length - 1; i >= 0; i--) {
+            max = Math.max(prices[i], max);
+
+            if (i != prices.length - 1)
+                buying[i] = Math.max(buying[i + 1], max - prices[i]);
+
+            else
+                buying[i] = max - prices[i];
+        }
+
+        int ans = 0;
+        for (int i = 0; i < prices.length; i++) {
+            ans = Math.max(ans, buying[i] + selling[i]);
+        }
+        return ans;
+    }
+}
+===================================================
+35. Buy & Sell Stocks - K Transactions.java
+------------------------------------
+// Leetcode 188. https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/
+
+// Recursion - Memoization
+class Greedy {
+    // Time - O(N * 2 * K), Space - O(N * 2 * K)
+    public int memo(int idx, int state, int count, int[] prices, int[][][] dp) {
+        if (idx == prices.length || count == 0)
+            return 0;
+        if (dp[idx][state][count] != -1)
+            return dp[idx][state][count];
+
+        if (state == 1) // BUY
+            return dp[idx][state][count] = Math.max(memo(idx + 1, 1, count, prices, dp),
+                    memo(idx + 1, 0, count, prices, dp) - prices[idx]);
+
+        // SELL
+        return dp[idx][state][count] = Math.max(memo(idx + 1, 0, count, prices, dp),
+                memo(idx + 1, 1, count - 1, prices, dp) + prices[idx]);
+    }
+
+    public int maxProfit(int k, int[] prices) {
+        int[][][] dp = new int[prices.length + 1][2][k + 1];
+        for (int i = 0; i <= prices.length; i++) {
+            for (int j = 1; j <= k; j++) {
+                dp[i][0][j] = dp[i][1][j] = -1;
+            }
+        }
+
+        return memo(0, 1, k, prices, dp);
+    }
+}
+
+// Tabulation
+class Tabulation {
+    // Time - O(N * N * K), Space - O(N * K)
+    public int maxProfit(int k, int[] prices) {
+        if (prices.length == 0 || k == 0)
+            return 0;
+
+        int[][] dp = new int[k + 1][prices.length];
+
+        for (int t = 1; t <= k; t++) {
+            for (int i = 0; i < prices.length; i++) {
+                dp[t][i] = (i - 1 >= 0) ? dp[t][i - 1] : 0;
+
+                for (int j = i - 1; j >= 0; j--) {
+                    // Last Transaction is between j and i, and remaining (t - 1)
+                    // transactions are before the jth day (Non-overlapping).
+
+                    dp[t][i] = Math.max(dp[t][i], (prices[i] - prices[j]) + dp[t - 1][j]);
+                }
+            }
+        }
+
+        return dp[k][prices.length - 1];
+    }
+}
+===================================================
+36. Count Target Sum Subset.java 
+------------------------------------
+// Count Target Sum Subset
+// GfG Perfect Sum: https://practice.geeksforgeeks.org/problems/perfect-sum-problem5633/1
+
+class Memoization {
+    // Time - O(N * Target), Space - O(N * Target)
+    public int memo(int index, int target, int[] arr, int[][] dp) {
+        if (target < 0)
+            return 0;
+        if (index == arr.length) {
+            if (target == 0)
+                return 1;
+            return 0;
+        }
+        if (dp[index][target] != -1)
+            return dp[index][target];
+
+        int no = memo(index + 1, target, arr, dp);
+        int yes = memo(index + 1, target - arr[index], arr, dp);
+        return dp[index][target] = (no + yes) % 1000000007;
+    }
+
+    public int perfectSum(int arr[], int n, int sum) {
+        int[][] dp = new int[n + 1][sum + 1];
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= sum; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        return memo(0, sum, arr, dp);
+    }
+}
+
+class Tabulation {
+    // Tabulation - O(N * Target) Time, O(N * Target) Space
+    public int perfectSum(int arr[], int n, int target) {
+        int[][] dp = new int[n + 1][target + 1];
+        dp[0][0] = 1; // Empty Subset to form 0 Target
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= target; j++) {
+                int no = dp[i - 1][j]; // No Call
+                int yes = (j >= arr[i - 1]) ? dp[i - 1][j - arr[i - 1]] : 0;
+
+                dp[i][j] = (no + yes) % 1000000007;
+            }
+        }
+
+        return dp[n][target];
+    }
+}
+
+class SpaceOptimization {
+    // Time - O(N * Target), Space - O(Target)
+    public int perfectSum(int arr[], int n, int target) {
+        int[] dp = new int[target + 1];
+        dp[0] = 1; // Empty Subset to form 0 Target
+
+        for (int i = 1; i <= n; i++) {
+            int[] newdp = new int[target + 1];
+
+            for (int j = 0; j <= target; j++) {
+                int no = dp[j]; // No Call
+                int yes = (j >= arr[i - 1]) ? dp[j - arr[i - 1]] : 0;
+
+                newdp[j] = (no + yes) % 1000000007;
+            }
+
+            dp = newdp;
+        }
+
+        return dp[target];
+    }
+}
+===================================================
+37. Check Target Sum Subset.java 
+------------------------------------
+// Check Target Sum Subset
+// InterviewBit: https://www.interviewbit.com/problems/subset-sum-problem/
+
+class CheckTargetSumSubset {
+    // Time - O(N * Target), Space Optimized Tabulation - O(Target)
+    public int solve(int[] arr, int target) {
+        int n = arr.length;
+        boolean[] dp = new boolean[target + 1];
+        dp[0] = true; // Empty Subset to form 0 Target
+
+        for (int i = 1; i <= n; i++) {
+            boolean[] newdp = new boolean[target + 1];
+
+            for (int j = 0; j <= target; j++) {
+                boolean no = dp[j]; // No Call
+                boolean yes = (j >= arr[i - 1]) ? dp[j - arr[i - 1]] : false;
+
+                newdp[j] = no || yes;
+            }
+
+            dp = newdp;
+        }
+
+        return (dp[target] == true) ? 1 : 0;
+    }
+}
+===================================================
+38. Partition Equal Subset Sum.java
+------------------------------------
+// Leetcode 416: https://leetcode.com/problems/partition-equal-subset-sum/
+
+// Time - O(N * Target), Space - O(Target) DP Table
+class Solution {
+    public boolean checkTargetSumSubset(int[] arr, int target) {
+        int n = arr.length;
+        boolean[] dp = new boolean[target + 1];
+        dp[0] = true; // Empty Subset to form 0 Target
+
+        for (int i = 1; i <= n; i++) {
+            boolean[] newdp = new boolean[target + 1];
+
+            for (int j = 0; j <= target; j++) {
+                boolean no = dp[j]; // No Call
+                boolean yes = (j >= arr[i - 1]) ? dp[j - arr[i - 1]] : false;
+
+                newdp[j] = no || yes;
+            }
+
+            dp = newdp;
+        }
+
+        return dp[target];
+    }
+
+    public boolean canPartition(int[] nums) {
+        int total = 0;
+        for (int val : nums)
+            total += val;
+
+        if (total % 2 == 1)
+            return false; // No Division Possible
+        return checkTargetSumSubset(nums, total / 2);
+    }
+}
+===================================================
+39. Target Sum.java
+------------------------------------
+// Leetcode 494: https://leetcode.com/problems/target-sum/
+
+// Time - O(N * Target), Space - O(Target)
+class Solution {
+    public int countTargetSumSubset(int[] arr, int target) {
+        int n = arr.length;
+        int[] dp = new int[target + 1];
+        dp[0] = 1; // Empty Subset to form 0 Target
+
+        for (int i = 1; i <= n; i++) {
+            int[] newdp = new int[target + 1];
+
+            for (int j = 0; j <= target; j++) {
+                int no = dp[j]; // No Call
+                int yes = (j >= arr[i - 1]) ? dp[j - arr[i - 1]] : 0;
+
+                newdp[j] = no + yes;
+            }
+
+            dp = newdp;
+        }
+
+        return dp[target];
+    }
+
+    public int findTargetSumWays(int[] nums, int target) {
+        int total = 0;
+        for (int val : nums)
+            total += val;
+
+        if (target > total)
+            return 0; // Even if every element is +ve, S1 - S2 = total
+
+        if ((total - target) % 2 == 1)
+            return 0;
+
+        return countTargetSumSubset(nums, (total - target) / 2);
+    }
+}
+===================================================
+40. Tug of War - Different Size.java
+------------------------------------
+// InterviewBit: Minimize Difference Subsets:
+// https://www.interviewbit.com/problems/minimum-difference-subsets/
+
+class Solution {
+    public int solve(int[] arr) {
+        int n = arr.length;
+
+        int total = 0;
+        for (int val : arr)
+            total += val;
+
+        // Check Target Sum Subset with Space Optimization:
+        // Time - O(N * Target), Space - O(Target)
+
+        boolean[] dp = new boolean[total + 1];
+        dp[0] = true; // Empty Subset to form 0 total
+
+        for (int i = 1; i <= n; i++) {
+            boolean[] newdp = new boolean[total + 1];
+
+            for (int j = 0; j <= total; j++) {
+                boolean no = dp[j]; // No Call
+                boolean yes = (j >= arr[i - 1]) ? dp[j - arr[i - 1]] : false;
+
+                newdp[j] = no || yes;
+            }
+
+            dp = newdp;
+        }
+
+        // Extra Work for this Variation - O(Total) Time, O(1) Space
+        int half = (total + 1) / 2;
+        for (int s1 = half; s1 <= total; s1++) {
+            if (dp[s1] == true) {
+                return (s1 - (total - s1));
+            }
+        }
+
+        return total;
+    }
+}
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+
+------------------------------------
+
+===================================================
+

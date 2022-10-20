@@ -1,0 +1,263 @@
+String
+===================================================
+1.Palindromic Substrings.java
+----------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static boolean isPalindrome(String str)
+    {
+        int left = 0, right = str.length() - 1;
+        while(left < right)
+        {
+            if(str.charAt(left) != str.charAt(right))
+                return false;
+            
+            left++; right--;
+        }
+        return true;
+    }
+    
+	public static void solution(String str){
+		Scanner scn = new Scanner(System.in);
+		for(int st=0; st< str.length(); st++)
+		{
+		    for(int end=st; end<str.length(); end++)
+		    {
+		        String subString = 
+		          str.substring(st, end + 1);
+		        
+		        if(isPalindrome(subString) == true)
+		            System.out.println(subString);
+		    }
+		}
+	}
+
+	public static void main(String[] args) {
+		Scanner scn = new Scanner(System.in);
+		String str = scn.next();
+		solution(str);
+	}
+
+}
+===================================================
+2.Remove Primes.java 
+------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static boolean isPrime(int val)
+    {
+        for(int i = 2; i * i <= val; i++)
+        {
+            if(val % i == 0) return false;
+        }
+        return true;
+    }
+    
+	public static void solution(ArrayList<Integer> al){
+		// Loop from right to left: to avoid skipping elements
+    for(int idx = al.size()-1; idx >= 0; idx--)
+		{
+		    if(isPrime(al.get(idx)))
+		    { al.remove(idx); }
+		}
+	}
+  
+	public static void main(String[] args) {
+		Scanner scn = new Scanner(System.in);
+		int n = scn.nextInt();
+		ArrayList<Integer> al = new ArrayList<>();
+		for(int i = 0 ; i < n; i++){
+			al.add(scn.nextInt());
+		}
+		solution(al);
+		System.out.println(al);
+	}
+
+}
+===================================================
+3. String Compression.java 
+------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static String compression1(String str) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < str.length(); i++)
+    {
+      if ((i == 0) || (str.charAt(i) != str.charAt(i - 1)))
+      {
+        // First occurence -> append the char
+        sb.append(str.charAt(i));
+      }
+    }
+    return sb.toString();
+  }
+
+  public static String compression2(String str) {
+    StringBuilder sb = new StringBuilder();
+    int counter = 0;
+    for (int i = 0; i < str.length(); i++)
+    {
+      if ((i == 0) || (str.charAt(i) != str.charAt(i - 1)))
+      {
+        // Previous Group -> Frequency
+        if (counter > 1 && i > 0)
+          sb.append(counter);
+
+        // Current Group -> First Occurence Letter
+        sb.append(str.charAt(i));
+
+        counter = 1;
+      }
+      else
+      {
+        counter++;
+      }
+    }
+
+    // last group frequency
+    if (counter > 1) sb.append(counter);
+
+    return sb.toString();
+  }
+  public static void main(String[] args) {
+    Scanner scn = new Scanner(System.in);
+    String str = scn.next();
+    System.out.println(compression1(str));
+    System.out.println(compression2(str));
+  }
+
+}
+
+===================================================
+4.String Diff Consecutive Char.java
+--------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+	public static String solution(String str){
+		    StringBuilder sb = new StringBuilder();
+        
+        for(int i=0; i<str.length()-1; i++)
+        {
+            sb.append(str.charAt(i)); // append first character in pair
+            sb.append(str.charAt(i+1) - str.charAt(i)); // append difference in ASCII values in pair
+        }
+        
+        sb.append(str.charAt(str.length() - 1)); // append last character (corner case) 
+		    return sb.toString();
+	}
+	public static void main(String[] args) {
+		Scanner scn = new Scanner(System.in);
+		String str = scn.next();
+		System.out.println(solution(str));
+	}
+
+}
+===================================================
+5.String Diff Consecutive Char.java
+---------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+	public static String solution(String str){
+		    StringBuilder sb = new StringBuilder();
+        
+        for(int i=0; i<str.length()-1; i++)
+        {
+            sb.append(str.charAt(i)); // append first character in pair
+            sb.append(str.charAt(i+1) - str.charAt(i)); // append difference in ASCII values in pair
+        }
+        
+        sb.append(str.charAt(str.length() - 1)); // append last character (corner case) 
+		    return sb.toString();
+	}
+	public static void main(String[] args) {
+		Scanner scn = new Scanner(System.in);
+		String str = scn.next();
+		System.out.println(solution(str));
+	}
+
+}
+
+===================================================
+6.Toggle Case.java
+-------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+	public static String toggleCase(String str){
+		    String ans = "";
+        
+        for(int i=0; i<str.length(); i++)
+        {
+            if(str.charAt(i) >= 'A' 
+               && str.charAt(i) <= 'Z') // uppercase
+            {
+                ans += (char)(str.charAt(i) + (32));
+            }
+            else
+            {
+                ans += (char)(str.charAt(i) - (32));  
+            }
+        }
+        
+		return ans;
+	}
+	public static void main(String[] args) {
+		Scanner scn = new Scanner(System.in);
+		String str = scn.next();
+		System.out.println(toggleCase(str));
+	}
+
+}
+===================================================
+
+7.
+===================================================
+8.
+===================================================
+
+9.
+===================================================
+10.
+===================================================
+
+11.
+===================================================
+12.
+===================================================
+
+13.
+===================================================
+14.
+===================================================
+15.
+===================================================
+16.
+===================================================
+17.
+===================================================
+18.
+===================================================
+19.
+===================================================
+20.
+===================================================
+
+
+===================================================

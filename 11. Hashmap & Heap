@@ -1,0 +1,1374 @@
+11. Hashmap & Heap
+---------------------
+
+==================================================
+1.001. Hashmap Basics.java
+------------------------------------
+import java.util.*; // Collection Frameworks
+
+class Main {
+    public static void main(String[] args) {
+        HashMap<String, Integer> ipl = new HashMap<>();
+
+        // Put / Insert
+        ipl.put("Chennai", 4);
+        ipl.put("Mumbai", 5);
+        ipl.put("Gujarat", 1);
+        ipl.put("Kolkata", 2);
+        ipl.put("Hyderabad", 2);
+        ipl.put("Rajasthan", 1);
+        System.out.println(ipl);
+
+        // Update
+        ipl.put("Chennai", 5);
+        System.out.println(ipl);
+
+        // Get
+        System.out.println(ipl.get("Mumbai")); // Key is present -> Value return
+        System.out.println(ipl.get("Delhi")); // Key is not present -> Value = null
+        System.out.println(ipl.getOrDefault("Mumbai", 0)); // Key is presnet -> Value
+        System.out.println(ipl.getOrDefault("Delhi", 0)); // If Key not Present -> Default
+
+        // Remove or Delete
+        // If Key is Found, Get Along with Delete Key-Value Pair
+        int trophies = ipl.remove("Rajasthan");
+        System.out.println(trophies);
+        System.out.println(ipl);
+
+        // If Key is not Found, Get -> null, No Deletion
+        Integer trophies2 = ipl.remove("Delhi");
+        System.out.println(trophies2);
+        System.out.println(ipl);
+
+        // Check if Key is Present or not -> containsKey
+        System.out.println(ipl.containsKey("Chennai")); // If Key is Present -> True
+        System.out.println(ipl.containsKey("Delhi")); // If Key is Present -> False
+
+        // Length or Size of Hashmap -> Count of Key-Value Pairs
+        System.out.println(ipl.size()); // Number of Keys
+
+        // Traverse or Iterate or Hashmap => keySet
+        for (String team : ipl.keySet()) {
+            System.out.println("Key : " + team + " = Value : " + ipl.get(team));
+        }
+
+    }
+}
+===================================================
+2.002. Intersection of Arrays - I.java 
+------------------------------------
+import java.util.*;
+// LC 349: https://leetcode.com/problems/intersection-of-two-arrays/
+// Time - O(N1 + N2), Space - O(N1) Extra Space for hashmap
+
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        HashMap<Integer, Integer> freq = new HashMap<>();
+
+        for (int i = 0; i < nums1.length; i++) {
+            // if(freq.containsKey(nums1[i]) == true){
+            // freq.put(nums1[i], freq.get(nums1[i] + 1);
+            // } else {
+            // freq.put(nums1[i], 1);
+            // }
+
+            freq.put(nums1[i], freq.getOrDefault(nums1[i], 0) + 1);
+        }
+
+        ArrayList<Integer> intersection = new ArrayList<>();
+
+        for (int j = 0; j < nums2.length; j++) {
+            if (freq.containsKey(nums2[j]) == true) {
+                intersection.add(nums2[j]);
+                freq.remove(nums2[j]);
+            }
+        }
+
+        int[] res = new int[intersection.size()];
+        for (int i = 0; i < res.length; i++)
+            res[i] = intersection.get(i);
+        return res;
+    }
+}
+===================================================
+3.003. Intersection of Arrays - II.java
+-------------------------------
+import java.util.*;
+// LC 350: https://leetcode.com/problems/intersection-of-two-arrays-ii/
+// Time - O(N1 + N2), Space - O(N1) Extra Space for hashmap
+
+class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        HashMap<Integer, Integer> freq = new HashMap<>();
+
+        for (int i = 0; i < nums1.length; i++)
+            freq.put(nums1[i], freq.getOrDefault(nums1[i], 0) + 1);
+
+        ArrayList<Integer> intersection = new ArrayList<>();
+
+        for (int j = 0; j < nums2.length; j++) {
+            if (freq.containsKey(nums2[j]) == true) {
+                intersection.add(nums2[j]);
+                freq.put(nums2[j], freq.getOrDefault(nums2[j], 0) - 1);
+                if (freq.get(nums2[j]) == 0)
+                    freq.remove(nums2[j]);
+            }
+        }
+
+        int[] res = new int[intersection.size()];
+        for (int i = 0; i < res.length; i++)
+            res[i] = intersection.get(i);
+        return res;
+    }
+}
+
+===================================================
+4.004. Sort Characters by Frequency.java
+----------------------------------
+import java.util.*;
+// LC 451: https://leetcode.com/problems/sort-characters-by-frequency/
+// Time - O(N + 52 + N) = O(N), Space - O(N + 52) for Two Hashmaps
+
+class Solution {
+    public String frequencySort(String s) {
+        HashMap<Character, Integer> freq = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            freq.put(ch, freq.getOrDefault(ch, 0) + 1);
+        }
+
+        HashMap<Integer, ArrayList<Character>> rev = new HashMap<>();
+        for (Character ch : freq.keySet()) {
+            int f = freq.get(ch);
+            if (rev.containsKey(f) == false)
+                rev.put(f, new ArrayList<>());
+            rev.get(f).add(ch);
+        }
+
+        StringBuilder res = new StringBuilder("");
+        for (int f = s.length(); f >= 1; f--) {
+            if (rev.containsKey(f) == true) {
+                for (Character ch : rev.get(f)) {
+                    for (int i = 0; i < f; i++)
+                        res.append(ch);
+                }
+            }
+        }
+
+        return res.toString();
+    }
+}
+===================================================
+5.005. K Closest Points to Origin.java
+------------------------------------
+import java.util.*;
+
+// 973: https://leetcode.com/problems/k-closest-points-to-origin/
+
+// Time - O(N + KLogN) if Efficient Constructor for Add 
+// Space - O(K)
+
+class Solution {
+    static class Pair {
+        public int x, y;
+    }
+
+    static class Euclidean implements Comparator<Pair> {
+        public int compare(Pair c1, Pair c2) {
+            double d1 = Math.sqrt(c1.x * c1.x + c1.y * c1.y);
+            double d2 = Math.sqrt(c2.x * c2.x + c2.y * c2.y);
+
+            if (d1 < d2) {
+                // Smaller Value -> Higher Priority
+                return -1;
+            } else if (d1 > d2) {
+                // Higher Value -> Lower Priority
+                return 1;
+            } else
+                return 0;
+        }
+    }
+
+    public int[][] kClosest(int[][] points, int k) {
+        PriorityQueue<Pair> q = new PriorityQueue<>(new Euclidean());
+
+        for (int i = 0; i < points.length; i++) {
+            Pair p = new Pair();
+            p.x = points[i][0];
+            p.y = points[i][1];
+            q.add(p);
+        }
+
+        int[][] res = new int[k][2];
+        int count = 0;
+        while (count < k) {
+            Pair closest = q.remove();
+            res[count][0] = closest.x;
+            res[count][1] = closest.y;
+            count++;
+        }
+
+        return res;
+    }
+}
+===================================================
+6.006. Sort Nearly Sorted Array.java
+------------------------------------
+// GfG: https://practice.geeksforgeeks.org/problems/nearly-sorted-algorithm/0
+
+import java.util.*;
+
+// Time - O(NLogK + KLogK), Space - O(K) Extra Space
+class Main {
+	public static void main(String[] args) {
+		Scanner scn = new Scanner(System.in);
+		int t = scn.nextInt();
+		while (t-- > 0) {
+			int n = scn.nextInt();
+			int k = scn.nextInt();
+
+			int[] arr = new int[n];
+			for (int i = 0; i < n; i++)
+				arr[i] = scn.nextInt();
+
+			PriorityQueue<Integer> q = new PriorityQueue<>();
+			for (int i = 0; i < n; i++) {
+				q.add(arr[i]);
+				if (i >= k) {
+					System.out.print(q.remove() + " ");
+				}
+			}
+
+			while (q.size() > 0) {
+				System.out.print(q.remove() + " ");
+			}
+
+			System.out.println();
+		}
+
+		scn.close();
+	}
+}
+===================================================
+
+7.007. Median of Stream.java 
+------------------------------------
+import java.util.*;
+// 295: https://leetcode.com/problems/find-median-from-data-stream/
+
+class MedianFinder {
+    PriorityQueue<Integer> left, right;
+
+    public MedianFinder() {
+        left = new PriorityQueue<>(Collections.reverseOrder()); // Max Heap
+        right = new PriorityQueue<>(); // Min Heap
+    }
+
+    public void addNum(int num) {
+        // Insertion
+        double median = findMedian();
+        if (num <= median) {
+            left.add(num);
+        } else {
+            right.add(num);
+        }
+
+        // Balancing
+        if (left.size() > right.size() + 1) {
+            right.add(left.remove());
+        } else if (right.size() > left.size() + 1) {
+            left.add(right.remove());
+        }
+    }
+
+    // Find Median -> Time = O(1)
+    public double findMedian() {
+        if (left.size() + right.size() == 0)
+            return -1;
+
+        if (left.size() == right.size()) {
+            return (left.peek() + right.peek()) / 2.0;
+        } else if (left.size() == right.size() + 1) {
+            return left.peek();
+        } else {
+            return right.peek();
+        }
+    }
+}
+
+===================================================
+8.008. Reorganize String.java 
+------------------------------------
+import java.util.*;
+
+class Solution {
+    public static class Pair {
+        char ch;
+        int freq;
+
+        Pair(char ch, int freq) {
+            this.ch = ch;
+            this.freq = freq;
+        }
+    }
+
+    public static class FreqComp implements Comparator<Pair> {
+        public int compare(Pair a, Pair b) {
+            if (a.freq == b.freq) {
+                return a.ch - b.ch;
+            }
+
+            // Higher Frequency -> Higher Priority
+            return (b.freq - a.freq);
+        }
+    }
+
+    // Time - O(Nlog26), Space - O(26)
+    public String reorganizeString(String s) {
+        HashMap<Character, Integer> freq = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            freq.put(s.charAt(i), freq.getOrDefault(s.charAt(i), 0) + 1);
+        }
+
+        PriorityQueue<Pair> q = new PriorityQueue<>(new FreqComp());
+        for (Character ch : freq.keySet()) {
+            q.add(new Pair(ch, freq.get(ch)));
+        }
+
+        StringBuilder str = new StringBuilder("");
+
+        while (q.size() > 0) {
+            Pair odd = q.remove();
+            str.append(odd.ch);
+            odd.freq--;
+
+            if (q.size() == 0 && odd.freq > 0) {
+                return "";
+            }
+
+            if (q.size() > 0) {
+                Pair even = q.remove();
+                str.append(even.ch);
+                even.freq--;
+
+                if (even.freq > 0) {
+                    q.add(even);
+                }
+            }
+
+            if (odd.freq > 0) {
+                q.add(odd);
+            }
+        }
+
+        return str.toString();
+    }
+}
+===================================================
+
+9.Common Elements - I.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n1 = scn.nextInt();
+    int[] arr1 = new int[n1];
+    for(int i=0; i<n1; i++){
+        arr1[i] = scn.nextInt();
+    }
+    
+    int n2 = scn.nextInt();
+    int[] arr2 = new int[n2];
+    for(int i=0; i<n2; i++){
+        arr2[i] = scn.nextInt();
+    }
+    
+    HashMap<Integer, Boolean> hm = new HashMap<>();
+    for(int i=0; i<n1; i++)
+        hm.put(arr1[i], true);
+    
+    for(int i=0; i<n2; i++){
+        
+        if(hm.containsKey(arr2[i]) == true && 
+                hm.get(arr2[i]) == true){
+            System.out.println(arr2[i]);
+            hm.put(arr2[i], false);
+        }
+        
+    }
+ }
+
+}
+===================================================
+10.Common Elements - II.java 
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+    int n1 = scn.nextInt();
+    int[] arr1 = new int[n1];
+    for(int i=0; i<n1; i++){
+        arr1[i] = scn.nextInt();
+    }
+    
+    int n2 = scn.nextInt();
+    int[] arr2 = new int[n2];
+    for(int i=0; i<n2; i++){
+        arr2[i] = scn.nextInt();
+    }
+    
+    HashMap<Integer, Integer> hm = new HashMap<>();
+    for(int i=0; i<n1; i++){
+        if(hm.containsKey(arr1[i])){
+            hm.put(arr1[i], hm.get(arr1[i]) + 1);
+        } else {
+            hm.put(arr1[i], 1);
+        }
+    }
+    
+    for(int i=0; i<n2; i++){
+        if(hm.containsKey(arr2[i]) && hm.get(arr2[i]) > 0){
+            System.out.println(arr2[i]);
+            hm.put(arr2[i], hm.get(arr2[i]) - 1);
+        }
+        
+    }
+ }
+
+}
+===================================================
+
+11.Highest Frequency Character.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Scanner scn = new Scanner(System.in);
+        String str = scn.nextLine();
+        
+        HashMap<Character, Integer> freq = new HashMap<>();
+        
+        for(int i=0; i<str.length(); i++){
+            char ch = str.charAt(i);
+            if(freq.containsKey(ch)){
+                int oldFreq = freq.get(ch);
+                freq.put(ch, oldFreq + 1);
+            }
+            else {
+                freq.put(ch, 1);
+            }
+        }
+        
+        char ch = str.charAt(0);
+        int maxFreq = freq.get(ch);
+        
+        for(Character key: freq.keySet()){
+            int currFreq = freq.get(key);
+            
+            if(currFreq > maxFreq){
+                ch = key;
+                maxFreq = currFreq;
+            }
+        }
+        
+        System.out.println(ch);
+    }
+
+}
+===================================================
+12. K Largest Elements.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+   // O(n + k logn)
+   public static void approach1(ArrayList<Integer> arr, int k){
+        // Max heap
+        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
+        
+        // o(n)
+        pq.addAll(arr);
+        
+        // o(klogN)
+        ArrayList<Integer> res = new ArrayList<>();
+        while(k-- > 0)
+            res.add(pq.remove());
+        
+        for(int i=res.size() - 1; i>=0; i--){
+            System.out.println(res.get(i));
+        }
+   }
+   
+   // O(n log k)
+   public static void approach2(ArrayList<Integer> arr, int k){
+       // Min heap 
+       PriorityQueue<Integer> pq = new PriorityQueue<>();
+       
+       // O(k logk)
+       for(int i=0; i<k; i++){
+           pq.add(arr.get(i));
+       }
+       
+       // O((n-k) logk)
+       for(int i=k; i<arr.size(); i++){
+           
+           if(arr.get(i) > pq.peek()){
+               pq.remove();
+               pq.add(arr.get(i));
+           }
+       }
+       
+       while(pq.size() > 0){
+           System.out.println(pq.remove());
+       }
+   }
+   
+   public static void main(String[] args) throws Exception {
+      Scanner scn = new Scanner(System.in);
+      int n = scn.nextInt();
+      ArrayList<Integer> arr = new ArrayList<>();
+
+      for (int i = 0; i < n; i++) {
+         int x = scn.nextInt();
+         arr.add(x);
+      }
+
+      int k = scn.nextInt();
+      // write your code here
+      approach2(arr, k);
+    }
+
+}
+===================================================
+
+13. Longest Consecutive Elements.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+// Time Complexity - O(n), Space Complexity - O(n)
+public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    
+    HashMap<Integer, Boolean> hm = new HashMap<>();
+    for(int i=0; i<n; i++){
+        int x = scn.nextInt();
+        hm.put(x, true);
+    }
+    
+    int maxChain = 0;
+    int startingPt = 0;
+    
+    for(Integer key: hm.keySet()){
+        
+        if(hm.containsKey(key - 1) == false){
+            // chain starting pt
+            
+            int length = 1;
+            while(hm.containsKey(key + length) == true){
+                length++;
+            }
+            
+            if(length > maxChain){
+                maxChain = length;
+                startingPt = key;
+            }
+        }
+    }
+    
+    for(int i=0; i<maxChain; i++){
+        System.out.println(startingPt + i);
+    }
+ }
+}
+===================================================
+14.Median Priority Queue.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static class MedianPriorityQueue {
+    PriorityQueue<Integer> left;
+    PriorityQueue<Integer> right;
+
+    public MedianPriorityQueue() {
+      left = new PriorityQueue<>(Collections.reverseOrder());
+      right = new PriorityQueue<>();
+    }
+
+    public void add(int val) {
+        if(right.size() == 0 || val >= right.peek()){
+            right.add(val);
+        } else left.add(val);
+        
+        if(left.size() - right.size() > 1){
+            right.add(left.remove());
+        } else if(right.size() - left.size() > 1){
+            left.add(right.remove());
+        }
+    }
+
+    public int remove() {
+        if(size() == 0){
+            System.out.println("Underflow");
+            return -1;
+        }
+        else if(left.size() >= right.size()){
+            return left.remove();
+        } else {
+            return right.remove();    
+        }
+    }
+
+    public int peek() {
+        if(size() == 0){
+            System.out.println("Underflow");
+            return -1;
+        }
+        else if(left.size() >= right.size()){
+            return left.peek();
+        } else {
+            return right.peek();    
+        }
+    }
+
+    public int size() {
+      return left.size() + right.size();
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    MedianPriorityQueue qu = new MedianPriorityQueue();
+
+    String str = br.readLine();
+    while (str.equals("quit") == false) {
+      if (str.startsWith("add")) {
+        int val = Integer.parseInt(str.split(" ")[1]);
+        qu.add(val);
+      } else if (str.startsWith("remove")) {
+        int val = qu.remove();
+        if (val != -1) {
+          System.out.println(val);
+        }
+      } else if (str.startsWith("peek")) {
+        int val = qu.peek();
+        if (val != -1) {
+          System.out.println(val);
+        }
+      } else if (str.startsWith("size")) {
+        System.out.println(qu.size());
+      }
+      str = br.readLine();
+    }
+  }
+}
+===================================================
+15. Merge K Sorted Lists.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    
+   public static class Pair implements Comparable<Pair> {
+       int data;
+       int listIdx; // to know that which arraylist element belongs to
+       int dataIdx; // to know index of next element to be inserted from that arraylist
+       
+       Pair() {}
+       
+       Pair(int data, int listIdx, int dataIdx){
+           this.data = data;
+           this.listIdx = listIdx;
+           this.dataIdx = dataIdx;
+       }
+       
+       public int compareTo(Pair other){
+           // compare Pair on basis of data, smaller data -> higher priority
+           return this.data - other.data;
+       }
+   }  
+   
+   public static ArrayList<Integer> mergeKSortedLists(ArrayList<ArrayList<Integer>> lists){
+      PriorityQueue<Pair> q = new PriorityQueue<>();
+      ArrayList<Integer> res = new ArrayList<>();
+      
+      // Insert 0th index element of each arraylist 
+      // O(k log k)
+      for(int i=0; i<lists.size(); i++){
+        q.add(new Pair(lists.get(i).get(0), i, 0));    
+      }
+      
+      // O(Nt * logk) 
+      while(q.size() > 0){
+          // Pop one pair
+          Pair top = q.remove();
+          res.add(top.data);
+          
+          if(top.dataIdx + 1 < lists.get(top.listIdx).size()){
+              // insert next pair
+              q.add(new Pair(lists.get(top.listIdx).get(top.dataIdx + 1), top.listIdx, top.dataIdx + 1));
+          }
+      }
+      
+      // O(Nt * logk + k * logk) where Nt = n1 + n2 + n3 + ... nk
+      return res;
+   }
+
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      int k = Integer.parseInt(br.readLine());
+      ArrayList<ArrayList<Integer>> lists = new ArrayList<>();
+      for(int i = 0; i < k; i++){
+         ArrayList<Integer> list = new ArrayList<>();
+
+         int n = Integer.parseInt(br.readLine());
+         String[] elements = br.readLine().split(" ");
+         for(int j = 0; j < n; j++){
+            list.add(Integer.parseInt(elements[j]));
+         }
+
+         lists.add(list);
+      }
+
+      ArrayList<Integer> mlist = mergeKSortedLists(lists);
+      for(int val: mlist){
+         System.out.print(val + " ");
+      }
+      System.out.println();
+   }
+
+}
+===================================================
+16. Write Hashmap.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static class HashMap<K, V> {
+    
+    private class HMNode {
+        K key;
+        V value;
+        
+        HMNode(){}
+        
+        HMNode(K key, V value){
+            this.key = key;
+            this.value = value;
+        }
+    }
+    
+    private LinkedList<HMNode>[] buckets;
+    private int noOfNodes;
+    private int noOfBuckets;
+    private double loadingFactor;
+    
+    public HashMap(){
+        noOfBuckets = 4;
+        noOfNodes = 0;
+        loadingFactor = 0.0;
+        init();
+    }
+    
+    public void init(){
+        buckets = new LinkedList[noOfBuckets];
+        
+        for(int i=0; i<noOfBuckets; i++){
+            buckets[i] = new LinkedList<>();           
+        }
+    }
+    
+    public int getBucketId(K key) throws Exception{
+        // O(1)
+        int hashCode = key.hashCode();
+        int bucketId = (Math.abs(hashCode)) % noOfBuckets;
+        return bucketId;
+    }
+    
+    private HMNode getData(int bucketId, K key) throws Exception{
+        
+        for(HMNode node: buckets[bucketId]){
+            if(node.key.equals(key) == true){
+                return node; // data already exist
+            }
+        }
+        
+        return null; // data not exist
+    }
+    
+    public void put(K key, V value) throws Exception {
+        
+        // O(1)
+        int bucketId = getBucketId(key);
+        HMNode data = getData(bucketId, key);    
+        
+        if(data == null){
+            // Insertion
+            
+            double newLoadingFactor = (noOfNodes + 1.0) / (noOfBuckets);
+            
+            if(newLoadingFactor > 2.0){
+                // rehashing
+                
+                LinkedList<HMNode>[] oldBuckets = buckets;
+                noOfBuckets = 2 * noOfBuckets;
+                init();
+                
+                
+                for(int i=0; i<oldBuckets.length; i++){
+                    for(HMNode node: oldBuckets[i]){
+                        int newBucketId = getBucketId(node.key);
+                        buckets[newBucketId].addLast(node);
+                    }
+                } 
+            }
+            
+            int newBucketId = getBucketId(key);
+            HMNode node = new HMNode(key, value);
+            buckets[newBucketId].addLast(node);
+            noOfNodes++;
+            loadingFactor = (noOfNodes * 1.0) / noOfBuckets;
+            
+        } else {
+            // Updation
+            data.value = value;
+        }
+        
+        
+    }
+
+    public V get(K key) throws Exception {
+        
+        int bucketId = getBucketId(key);
+        HMNode data = getData(bucketId, key);
+        
+        if(data != null){
+            return data.value;
+        } else {
+            return null;
+        }
+    }
+
+    public boolean containsKey(K key) throws Exception{
+        int bucketId = getBucketId(key);
+        HMNode data = getData(bucketId, key);
+        
+        if(data != null) return true;
+        return false;
+    }
+
+    public V remove(K key) throws Exception {
+        int bucketId = getBucketId(key);
+        HMNode data = getData(bucketId, key);
+        
+        if(data == null) return null;
+        
+        V value = data.value;
+        buckets[bucketId].remove(data);
+        noOfNodes--;
+        loadingFactor = (noOfNodes * 1.0) / noOfBuckets;
+        return value;
+    }
+
+    public ArrayList<K> keyset() throws Exception {
+        ArrayList<K> keys = new ArrayList<>();
+        
+        for(int i=0; i<noOfBuckets; i++){
+            for(HMNode node: buckets[i]){
+                keys.add(node.key);
+            }
+        }
+        
+        return keys;
+    }
+
+    public int size() throws Exception{
+        return noOfNodes;
+    }
+
+   public void display() throws Exception{
+      System.out.println("Display Begins");
+      for (int bi = 0; bi < buckets.length; bi++) {
+        System.out.print("Bucket" + bi + " ");
+        for (HMNode node : buckets[bi]) {
+          System.out.print( node.key + "@" + node.value + " ");
+        }
+        System.out.println(".");
+      }
+      System.out.println("Display Ends");
+  }
+}
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    HashMap<String, Integer> map = new HashMap();
+
+    String str = br.readLine();
+    while (str.equals("quit") == false) {
+      if (str.startsWith("put")) {
+        String[] parts = str.split(" ");
+        String key = parts[1];
+        Integer val = Integer.parseInt(parts[2]);
+        map.put(key, val);
+      } else if (str.startsWith("get")) {
+        String[] parts = str.split(" ");
+        String key = parts[1];
+        System.out.println(map.get(key));
+      } else if (str.startsWith("containsKey")) {
+        String[] parts = str.split(" ");
+        String key = parts[1];
+        System.out.println(map.containsKey(key));
+      } else if (str.startsWith("remove")) {
+        String[] parts = str.split(" ");
+        String key = parts[1];
+        System.out.println(map.remove(key));
+      } else if (str.startsWith("size")) {
+        System.out.println(map.size());
+      } else if (str.startsWith("keyset")) {
+        System.out.println(map.keyset());
+      } else if (str.startsWith("display")) {
+        map.display();
+      }
+      str = br.readLine();
+    }
+  }
+}
+===================================================
+17.Write Priority Queue.java 
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static class Student implements Comparable<Student>{
+    int rollNo, marks, weight;
+    
+    Student(){}
+    Student(int rollNo, int marks, int weight){
+        this.rollNo = rollNo;
+        this.marks = marks;
+        this.weight = weight;
+    }
+    public String toString(){
+        return ("rollNo = " + this.rollNo + ", marks = " + this.marks + ", weight = " + this.weight);
+    }
+    
+    public int compareTo(Student other){
+        // Smaller Roll No -> Greater Priority
+        return this.rollNo - other.rollNo;
+    }
+  }
+  
+  public static class StudentWtComparator implements Comparator<Student>{
+      public int compare(Student s1, Student s2){
+          // Higher Weight - Higher Priority
+          return s2.weight - s1.weight;
+      }
+  }
+  
+  public static class StudentMrksComparator implements Comparator<Student>{
+      public int compare(Student s1, Student s2){
+          // Higher Marks - Higher Priority
+          return s2.marks - s1.marks;
+      }
+  }
+  
+  public static class Priorityqueue<K> {
+    public ArrayList<K> data;
+    private int size;
+    private Comparator<K> comp;
+    
+    public Priorityqueue() {
+      data = new ArrayList<>();
+      size = 0;
+      this.comp = null;
+    }
+    
+    public Priorityqueue(Comparator<K> comp) {
+        data = new ArrayList<>();
+        size = 0;
+        this.comp = comp;
+    }
+    
+    // O(n) for inserting n elements -> per element O(1)
+    public Priorityqueue(K[] arr){
+        data = new ArrayList<>();
+        
+        for(K val: arr){
+            data.add(val);
+            size++;
+        }
+        
+        int lastIdx = size() - 1;
+        int lastIdxPar = (lastIdx - 1) /2;
+        for(int i=lastIdxPar; i>=0; i--){
+            downheapify(i);
+        }
+    }
+
+    public void add(K val) {
+        // O(log n)
+        
+        data.add(val);
+        size++;
+        upheapify(size() - 1);
+    }
+    
+    public boolean isSmaller(int i1, int i2){
+        K s1 = data.get(i1);
+        K s2 = data.get(i2);
+        
+        if(comp == null){
+            // Comparable -> Compare To
+            Comparable s1c = (Comparable)s1;
+            Comparable s2c = (Comparable)s2;
+            
+            // s1.compareTo(s2) will not work
+            if(s1c.compareTo(s2c) < 0) 
+                return true;
+            return false;
+        } else {
+            // Comparator
+            if(comp.compare(s1, s2) < 0) 
+                return true;
+            return false;
+        }
+    }
+    
+    public void swap(int i1, int i2){
+        K temp = data.get(i1);
+        data.set(i1, data.get(i2));
+        data.set(i2, temp);
+    }
+    
+    // O(log N) where N = number of nodes in CBT, & logN is height of tree
+    public void upheapify(int idx){
+        int parIdx = (idx - 1) / 2;
+        
+        if(isSmaller(idx, parIdx)){
+            swap(idx, parIdx);
+            upheapify(parIdx);
+        }
+    }
+    
+    
+    public K remove() {
+        // O(log n)
+        if(size() == 0){
+            System.out.println("Underflow");
+            return null;
+        }
+        
+        K val = peek();
+        swap(0, size() - 1);
+        // data.remove(size() - 1);
+        size--;
+        
+        downheapify(0);
+        return val;
+    }
+    
+    public void downheapify(int idx){
+        int min = idx;
+        int left = 2 * idx + 1;
+        int right = 2 * idx + 2;
+        
+        if(left < size && isSmaller(left, min)){
+            min = left;
+        }
+        
+        if(right < size && isSmaller(right, min)){
+            min = right;
+        }
+        
+        if(min != idx){
+            swap(idx, min);
+            downheapify(min);
+        }
+    }
+
+    public K peek() {
+        // O(1)
+        if(size() == 0){
+            System.out.println("Underflow");
+            return null;
+        }
+        
+        return data.get(0);
+    }
+
+    public int size() {
+        // O(1)
+        return size;
+    }
+    
+    // public ArrayList<Integer> heapSort(){
+    //     ArrayList<Integer> sorted = new ArrayList<>();
+        
+    //     // nlogn        
+    //     while(size() > 0){
+    //         int val = remove();
+    //         sorted.add(val);
+    //     }
+        
+    //     return sorted;
+    // }
+    
+    // In Place Heap Sort -> O(1) Extra Space
+    public ArrayList<K> heapSort(){
+        while(size() > 0){
+            remove();
+        }
+        
+        return data;
+    }
+  }
+
+//   public static class Priorityqueue {
+//     public ArrayList<Student> data;
+//     private int size;
+    
+//     public Priorityqueue() {
+//       data = new ArrayList<>();
+//       size = 0;
+//     }
+    
+//     // O(n) for inserting n elements -> per element O(1)
+//     public Priorityqueue(Student[] arr){
+//         data = new ArrayList<>();
+        
+//         for(Student val: arr){
+//             data.add(val);
+//             size++;
+//         }
+        
+//         int lastIdx = size() - 1;
+//         int lastIdxPar = (lastIdx - 1) /2;
+//         for(int i=lastIdxPar; i>=0; i--){
+//             downheapify(i);
+//         }
+//     }
+
+//     public void add(Student val) {
+//         // O(log n)
+        
+//         data.add(val);
+//         size++;
+//         upheapify(size() - 1);
+//     }
+    
+//     public boolean isSmaller(int i1, int i2){
+//         Student s1 = data.get(i1);
+//         Student s2 = data.get(i2);
+        
+//         // Comparable s1c = (Comparable)s1;
+//         // Comparable s2c = (Comparable)s2;
+        
+//         if(s1.compareTo(s2) < 0) 
+//             return true;
+//         return false;
+//     }
+    
+//     public void swap(int i1, int i2){
+//         Student temp = data.get(i1);
+//         data.set(i1, data.get(i2));
+//         data.set(i2, temp);
+//     }
+    
+//     // O(log N) where N = number of nodes in CBT, & logN is height of tree
+//     public void upheapify(int idx){
+//         int parIdx = (idx - 1) / 2;
+        
+//         if(isSmaller(idx, parIdx)){
+//             swap(idx, parIdx);
+//             upheapify(parIdx);
+//         }
+//     }
+    
+    
+//     public Student remove() {
+//         // O(log n)
+//         if(size() == 0){
+//             System.out.println("Underflow");
+//             return null;
+//         }
+        
+//         Student val = peek();
+//         swap(0, size() - 1);
+//         // data.remove(size() - 1);
+//         size--;
+        
+//         downheapify(0);
+//         return val;
+//     }
+    
+//     public void downheapify(int idx){
+//         int min = idx;
+//         int left = 2 * idx + 1;
+//         int right = 2 * idx + 2;
+        
+//         if(left < size && isSmaller(left, min)){
+//             min = left;
+//         }
+        
+//         if(right < size && isSmaller(right, min)){
+//             min = right;
+//         }
+        
+//         if(min != idx){
+//             swap(idx, min);
+//             downheapify(min);
+//         }
+//     }
+
+//     public Student peek() {
+//         // O(1)
+//         if(size() == 0){
+//             System.out.println("Underflow");
+//             return null;
+//         }
+        
+//         return data.get(0);
+//     }
+
+//     public int size() {
+//         // O(1)
+//         return size;
+//     }
+    
+//     // public ArrayList<Integer> heapSort(){
+//     //     ArrayList<Integer> sorted = new ArrayList<>();
+        
+//     //     // nlogn        
+//     //     while(size() > 0){
+//     //         int val = remove();
+//     //         sorted.add(val);
+//     //     }
+        
+//     //     return sorted;
+//     // }
+    
+//     // In Place Heap Sort -> O(1) Extra Space
+//     public ArrayList<Student> heapSort(){
+//         while(size() > 0){
+//             remove();
+//         }
+        
+//         return data;
+//     }
+//   }
+
+  public static void main(String[] args) throws Exception {
+    // int[] arr = {20, 50, 30, 10, 40, 60};
+    // PriorityQueue qu = new PriorityQueue(arr);
+    
+    // // qu.add(20);
+    // // qu.add(50);
+    // // qu.add(30);
+    // // qu.add(10);
+    // // qu.add(40);
+    // // qu.add(60);
+    
+    // ArrayList<Integer> res = qu.heapSort();
+    // System.out.println(res);
+    
+    Priorityqueue<Student> pq = new Priorityqueue<>(new StudentWtComparator());
+    
+    pq.add(new Student(30, 90, 40));
+    pq.add(new Student(20, 99, 60));
+    pq.add(new Student(50, 97, 80));
+    pq.add(new Student(10, 100, 50));
+    pq.add(new Student(40, 80, 110));
+    
+    while(pq.size() > 0){
+        Student top = pq.remove();
+        System.out.println(top);
+    }
+    
+  }
+  
+  
+  
+  
+  
+  
+  
+}
+===================================================
+18.
+------------------------------------
+
+===================================================
+19.
+------------------------------------
+
+===================================================
+20.
+------------------------------------
+
+===================================================
+
+21.
+------------------------------------
+
+
+===================================================
+22.
+------------------------------------
+
+===================================================
+23.
+------------------------------------
+
+===================================================
+24.
+------------------------------------
+
+===================================================
+25.
+------------------------------------
+
+===================================================
+26.
+------------------------------------
+
+===================================================
+27.
+------------------------------------
+
+===================================================
+28.
+------------------------------------
+
+===================================================
+29.
+------------------------------------
+
+===================================================
+30.
+------------------------------------
+
+===================================================

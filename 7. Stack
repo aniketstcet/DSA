@@ -1,0 +1,2030 @@
+https://github.com/archit-aggarwal/Pepcoding-DSA
+7. Stack
+
+===================================================
+1. Balanced Brackets.java 
+-----------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    String str = scn.nextLine();
+    Stack<Character> stk = new Stack<>();
+
+    for (int i = 0; i < str.length(); i++) {
+      char ch = str.charAt(i);
+
+
+      if (ch == '[' || ch == '{' || ch == '(') {
+        stk.push(ch);
+      } else if (ch == ']') {
+
+        if (stk.isEmpty() == true || stk.peek() != '[')
+        {
+          System.out.println(false);
+          return;
+        }
+        
+        stk.pop();
+        
+      } else if (ch == ')') {
+        if (stk.isEmpty() == true || stk.peek() != '(')
+        {
+          System.out.println(false);
+          return;
+        }
+        
+        stk.pop();      
+          
+      } else if (ch == '}') {
+        if (stk.isEmpty() == true || stk.peek() != '{')
+        {
+          System.out.println(false);
+          return;
+        }
+        
+        stk.pop();      
+      }
+    }
+    
+    if(stk.size() > 0){
+        System.out.println(false);
+        return;
+    }
+    
+    System.out.println(true);
+  }
+
+}
+
+
+
+===================================================
+2.Celebrity Problem.java
+-----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        // write your code here
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+        int[][] arr = new int[n][n];
+
+        for (int j = 0; j < n; j++) {
+            String line = br.readLine();
+            for (int k = 0; k < n; k++) {
+                arr[j][k] = line.charAt(k) - '0';
+            }
+        }
+
+        findCelebrity(arr);
+
+    }
+
+    public static void findCelebrity(int[][] arr) {
+        // if a celebrity is there print it's index (not position), if there is not then
+        // print "none"
+        int n = arr.length;
+        Stack<Integer> stk = new Stack<>();
+        
+        for(int i=0; i<n; i++){
+            stk.push(i);
+        }
+        
+        
+        while(stk.size() > 1){
+            int v2 = stk.pop();
+            int v1 = stk.pop();
+            
+            if(arr[v1][v2] == 1){
+                // v1 janta hai v2 ko => reject v1
+                stk.push(v2);
+            } else {
+                // v1 nahi janta v2 ko => reject v2
+                stk.push(v1);
+            }
+        }
+        
+        int potCeleb = stk.pop();
+        boolean check = true;
+        for(int r=0; r<n; r++){
+            if(r == potCeleb) continue;
+            
+            if(arr[r][potCeleb] == 0){
+                check = false;
+                break;
+            }
+        }
+        
+        if(check == false) 
+        {
+            System.out.println("none");
+            return;
+        }
+        
+        for(int c=0; c<n; c++){
+            if(c == potCeleb) continue;
+            
+            if(arr[potCeleb][c] == 1){
+                check = false;
+                break;
+            }
+        }
+        
+        if(check == true){
+            System.out.println(potCeleb);
+        } else {
+            System.out.println("none");
+        }
+    }
+
+}
+===================================================
+3. Duplicate Brackets.java
+-------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Scanner scn = new Scanner(System.in);
+        String str = scn.nextLine();
+        
+        Stack<Character> stk = new Stack<>();
+        
+        for(int i=0; i<str.length(); i++)
+        {
+            char ch = str.charAt(i);
+            
+            if(ch == ')'){
+                
+                int count = 0;
+                while(stk.peek() != '(')
+                {
+                    count++;
+                    stk.pop();
+                }
+                stk.pop(); // opening ( pop
+                
+                
+                if(count == 0){
+                    System.out.println(true);
+                    return;
+                }
+                
+            } else {
+                stk.push(ch);
+            }
+        }
+        
+        System.out.println(false);
+    }
+
+}
+
+===================================================
+4.Dynamic Queue.java
+----------------------------------
+import java.io.*;
+import java.util.*;
+
+public static class CustomQueue {
+    int[] data;
+    int front, rear, size;
+
+    public CustomQueue(int cap) {
+      data = new int[cap];
+      front = 0;
+      rear = 0;
+      size = 0;
+    }
+
+    int size() {
+        return size;
+    }
+
+    void display() {
+        int count = 0, idx = front;
+        while(count < size)
+        {
+            System.out.print(data[idx] + " ");
+            count++;
+            idx = (idx + 1) % data.length;
+        }
+        System.out.println();
+    }
+
+    void add(int val) {
+        if(size == data.length){
+            int[] temp = new int[data.length * 2];
+            int count = 0, idx = front;
+            while(count < size)
+            {
+                temp[count] = data[idx];
+                count++;
+                idx = (idx + 1) % data.length;
+            }   
+            
+            front = 0; rear = data.length;            
+            data = temp;
+        }
+        
+        data[rear] = val;
+        rear = (rear + 1) % data.length;
+        size++;
+    }
+
+    int remove() {
+        if(size == 0){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        
+        int val = data[front];
+        front = (front + 1) % data.length;
+        size--;
+        return val;
+    }
+
+    int peek() {
+        if(size == 0){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        return data[front];
+    }
+  }
+===================================================
+5.Dynamic Stack.java 
+------------------------------------
+public static class CustomStack {
+    int[] data;
+    int tos;
+    
+    public CustomStack(){
+        data = new int[16];
+        tos = -1;
+    }
+    
+    public CustomStack(int cap) {
+      data = new int[cap];
+      tos = -1;
+    }
+
+    int size() {
+      return tos + 1;
+    }
+
+    void display() {
+      for (int i = tos; i >= 0; i--) {
+        System.out.print(data[i] + " ");
+      }
+      System.out.println();
+    }
+
+    // change the code of this function according to question
+    void push(int val) {
+        if (tos == data.length - 1) {
+          int[] temp = new int[data.length * 2];
+          for(int i=0; i<data.length; i++){
+              temp[i] = data[i];
+          }
+          data = temp;
+        }
+        
+        tos++;
+        data[tos] = val;
+    }
+
+    int pop() {
+      if (tos == -1) {
+        System.out.println("Stack underflow");
+        return -1;
+      } else {
+        int val = data[tos];
+        tos--;
+        return val;
+      }
+    }
+
+    int top() {
+      if (tos == -1) {
+        System.out.println("Stack underflow");
+        return -1;
+      } else {
+        return data[tos];
+      }
+    }
+  }
+===================================================
+6.Infix Conversion.java 
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  
+public static int precedence(char op){
+    if(op == '+' || op == '-') return 1;
+    if(op == '/' || op == '*') return 2;
+    return 0;
+}
+
+public static void performOp(Stack<String> prefix, Stack<String> postfix, char op){
+    
+    String prev2 = prefix.pop();
+    String prev1 = prefix.pop();
+    
+    
+    String postv2 = postfix.pop();
+    String postv1 = postfix.pop();
+    
+    
+    prefix.push(op + prev1 + prev2);
+    postfix.push(postv1 + postv2 + op);
+}
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String exp = br.readLine();
+    
+    Stack<String> prefix = new Stack<>();
+    Stack<String> postfix = new Stack<>();
+    Stack<Character> operator = new Stack<>();
+    
+    for(int i=0; i<exp.length(); i++)
+    {
+        char ch = exp.charAt(i);
+        
+        if(ch == '('){
+            
+            operator.push(ch);
+            
+        } else if(ch == ')'){
+            
+            while(operator.peek() != '(') {
+                char op = operator.pop();
+                performOp(prefix, postfix, op);
+            }
+            
+            operator.pop();
+            
+        } else if(ch == '+' || ch == '-' || ch == '/' || ch == '*'){
+            
+            while(operator.size() > 0 && operator.peek() != '(' && precedence(operator.peek()) >= precedence(ch))
+            {
+                char op = operator.pop();
+                performOp(prefix, postfix, op);                
+            }
+            
+            operator.push(ch);
+            
+        } else {
+            
+            // operand
+            prefix.push(ch + "");
+            postfix.push(ch + "");
+            
+        }
+    }
+    
+    while(operator.size() > 0) {
+        char op = operator.pop();
+        performOp(prefix, postfix, op);
+    }
+    
+    System.out.println(postfix.peek());
+    System.out.println(prefix.peek());
+    
+ }
+}
+===================================================
+
+7.Infix Evaluation.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  
+public static int precedence(char op){
+    if(op == '+' || op == '-') return 1;
+    if(op == '/' || op == '*') return 2;
+    return 0;
+}
+public static int performOp(int val1, char op, int val2){
+    if(op == '+')
+        return val1 + val2;
+    
+    if(op == '-')
+        return val1 - val2;
+        
+    if(op == '/')
+        return val1 / val2;
+        
+    return val1 * val2;
+}
+
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String exp = br.readLine();
+    
+    Stack<Character> operatorStk = new Stack<>();
+    Stack<Integer> operandStk = new Stack<>();
+    
+    
+    for(int i=0; i<exp.length(); i++)
+    {
+        char ch = exp.charAt(i);
+        if(ch >= '0' && ch <= '9')
+        {
+            // operand -> Push in operand stack
+            operandStk.push(ch - '0');
+        }
+        else
+        {
+            if(ch == '('){
+                operatorStk.push(ch);
+                
+            } else if(ch == ')'){
+                
+                while(operatorStk.peek() != '(')
+                {
+                    int val2 = operandStk.pop();
+                    int val1 = operandStk.pop();
+                    char op = operatorStk.pop();
+                    int res = performOp(val1, op, val2);
+                    operandStk.push(res);
+                }
+                
+                operatorStk.pop(); // '(' pop 
+                
+            } else if(ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                
+                
+                while(operatorStk.size() > 0 && operatorStk.peek() != '(' && precedence(operatorStk.peek()) >= precedence(ch))
+                {
+                    int val2 = operandStk.pop();
+                    int val1 = operandStk.pop();
+                    char op = operatorStk.pop();
+                    int res = performOp(val1, op, val2);
+                    operandStk.push(res);                    
+                }
+                
+                operatorStk.push(ch);
+            }
+        }
+    }
+    
+    // perform operations remaining in stack after traversal
+    while(operatorStk.size() > 0)
+    {
+        int val2 = operandStk.pop();
+        int val1 = operandStk.pop();
+        char op = operatorStk.pop();
+        int res = performOp(val1, op, val2);
+        operandStk.push(res);
+    }
+    
+    // our answer is the only element present in operand
+    System.out.println(operandStk.peek());
+ }
+}
+
+===================================================
+8.Largest Area Histogram.java 
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  
+public static int[] nsl(int[] arr){
+    int n = arr.length;
+    int[] left = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=0; i<n; i++){
+        
+        // Pop Smaller Elements
+        while(stk.size() > 0 && arr[stk.peek()] >= arr[i]){
+            stk.pop();
+        }
+        
+        // Answer -> Stack's top
+        if(stk.size() == 0){
+            left[i] = -1;
+        } else {
+            left[i] = stk.peek();
+        }
+        
+        // Push Yourself
+        stk.push(i);
+        
+    }
+    
+    return left;
+}
+
+public static int[] nsr(int[] arr){
+    int n = arr.length;
+    int[] right = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=n-1; i>=0; i--){
+        
+        // Pop Smaller Elements
+        while(stk.size() > 0 && arr[stk.peek()] >= arr[i]){
+            stk.pop();
+        }
+        
+        // Answer -> Stack's top
+        if(stk.size() == 0){
+            right[i] = arr.length;
+        } else {
+            right[i] = stk.peek();
+        }
+        
+        // Push Yourself
+        stk.push(i);
+    }
+    
+    return right;
+}
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] arr = new int[n];
+    for(int i = 0; i < n; i++){
+       arr[i] = Integer.parseInt(br.readLine());
+    }
+
+    // code
+    int[] left = nsl(arr);
+    int[] right = nsr(arr);
+    
+    int maxArea = 0;
+    for(int i=0; i<n; i++)
+    {
+        int length = right[i] - left[i] - 1;
+        int height = arr[i];
+        
+        int currArea = length * height;
+        
+        maxArea = Math.max(maxArea, currArea);
+    }
+    
+    System.out.println(maxArea);
+ }
+}
+===================================================
+
+9./Merge Overlapping Intervals.java 
+--------------------------------------
+Method -1 (Sir's)
+----------
+import java.io.*;
+
+import java.util.*;
+
+public class Main {
+
+  public static void main(String[] args) throws Exception {
+    // write your code here
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    int n = Integer.parseInt(br.readLine());
+    int[][] arr = new int[n][2];
+
+    for (int j = 0; j < n; j++) {
+      String line = br.readLine();
+      arr[j][0] = Integer.parseInt(line.split(" ")[0]);
+      arr[j][1] = Integer.parseInt(line.split(" ")[1]);
+    }
+
+    mergeOverlappingIntervals(arr);
+  }
+
+  public static void mergeOverlappingIntervals(int[][] arr) {
+    Pair[] pairs = new Pair[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      pairs[i] = new Pair(arr[i][0], arr[i][1]);
+    }
+
+    Arrays.sort(pairs);
+    Stack< Pair> st = new Stack< >();
+    for (int i = 0; i < pairs.length; i++) {
+      if (i == 0) {
+        st.push(pairs[i]);
+      } else {
+        Pair top = st.peek();
+        if (pairs[i].st > top.et) {
+          st.push(pairs[i]);
+        } else {
+          top.et = Math.max(top.et, pairs[i].et);
+        }
+      }
+    }
+
+    Stack< Pair> rs = new Stack< >();
+    while (st.size() > 0) {
+      rs.push(st.pop());
+    }
+
+    while (rs.size() > 0) {
+      Pair p = rs.pop();
+      System.out.println(p.st + " " + p.et);
+    }
+
+  }
+
+  public static class Pair implements Comparable< Pair> {
+    int st;
+    int et;
+
+    Pair(int st, int et) {
+      this.st = st;
+      this.et = et;
+    }
+
+    public int compareTo(Pair other) {
+      if (this.st != other.st) {
+        return this.st - other.st;
+      } else {
+        return this.et - other.et;
+      }
+    }
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        // write your code here
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+        int[][] arr = new int[n][2];
+
+        for (int j = 0; j < n; j++) {
+            String line = br.readLine();
+            arr[j][0] = Integer.parseInt(line.split(" ")[0]);
+            arr[j][1] = Integer.parseInt(line.split(" ")[1]);
+        }
+
+        mergeOverlappingIntervals(arr);
+    }
+
+    public static void mergeOverlappingIntervals(int[][] arr) {
+        // merge overlapping intervals and print in increasing order of start time
+       
+        // sort intervals based on starting time.
+        Arrays.sort(arr, (a, b) -> { return a[0] - b[0]; });
+      
+     
+        Stack<Integer[]> stk = new Stack<>();
+        
+        for(int i=0; i<arr.length; i++)
+        {
+            int start = arr[i][0];
+            int end = arr[i][1];
+            
+            if(stk.empty())
+            {
+                // first interval
+                Integer[] ans = {start, end};
+                stk.push(ans);
+            }
+            else
+            {
+                Integer[] prevInterval = stk.pop();
+                if(start <= prevInterval[1])
+                {
+                    // overlapping -> merge
+                    prevInterval[1] = Math.max(end, prevInterval[1]);
+                    stk.push(prevInterval);
+                } 
+                else
+                {
+                    // new Interval
+                    stk.push(prevInterval);
+                    Integer[] ans = {start, end};
+                    stk.push(ans);    
+                }
+            }
+        }
+        
+        // Stack Elements are in reverse order.
+        Stack<Integer[]> res = new Stack<>();
+        while(!stk.isEmpty())
+            res.push(stk.pop());
+        
+        while(!res.isEmpty())
+        {
+            Integer[] curr = res.pop();
+            System.out.println(curr[0] + " " + curr[1]);
+        }
+    }
+
+}
+===================================================
+10.Minimum Stack - Constant Space.java 
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static class MinStack {
+    Stack<Integer> stk;
+    int min;
+
+    public MinStack() {
+      stk = new Stack<>();
+      min = Integer.MAX_VALUE;
+    }
+
+
+    int size() {
+        return stk.size();
+    }
+
+    void push(int val) {
+        
+        if(val > min){
+            stk.push(val);
+        } else {
+            int currMin = val;
+            int encodedVal = 2 * currMin - min;
+            min = currMin;
+            stk.push(encodedVal);
+        }
+        
+    }
+
+    int pop() {
+        if(stk.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;   
+        }
+        
+        if(stk.peek() >= min){
+            // it is actual value
+            int val = stk.pop();
+            return val;
+        }
+        
+        // encoded value
+        int encodedVal = stk.pop();
+        int actualVal = min;
+        int prevMin = 2 * actualVal - encodedVal;
+        min = prevMin;
+        return actualVal;
+    }
+
+    int top() {
+        if(stk.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;   
+        }
+        
+        if(stk.peek() >= min)
+        {
+            // actual val
+            return stk.peek();
+        }
+        
+        int actualVal = min;
+        return actualVal;
+    }
+
+    int min(){
+        if(stk.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;   
+        }
+        
+        return min;
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    MinStack st = new MinStack();
+
+    String str = br.readLine();
+    while (str.equals("quit") == false) {
+      if (str.startsWith("push")) {
+        int val = Integer.parseInt(str.split(" ")[1]);
+        st.push(val);
+      } else if (str.startsWith("pop")) {
+        int val = st.pop();
+        if (val != -1) {
+          System.out.println(val);
+        }
+      } else if (str.startsWith("top")) {
+        int val = st.top();
+        if (val != -1) {
+          System.out.println(val);
+        }
+      } else if (str.startsWith("size")) {
+        System.out.println(st.size());
+      } else if (str.startsWith("min")) {
+        int val = st.min();
+        if (val != -1) {
+          System.out.println(val);
+        }
+      }
+      str = br.readLine();
+    }
+  }
+}
+===================================================
+
+11.Minimum Stack - Extra Stack.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static class MinStack {
+    Stack<Integer> stk;
+    Stack<Integer> min;
+
+    public MinStack() {
+      stk = new Stack<>();
+      min = new Stack<>();
+    }
+
+
+    int size() {
+        return stk.size();
+    }
+
+    void push(int val) {
+        
+        stk.push(val);
+        
+        if(min.isEmpty() || min.peek() >= val)
+            min.push(val);
+        
+    }
+
+    int pop() {
+        if(stk.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;   
+        }
+        
+        int ele = stk.pop(); 
+        
+        if(ele == min.peek())
+            min.pop();
+            
+        return ele;
+    }
+
+    int top() {
+        if(stk.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;   
+        }
+        return stk.peek();
+    }
+
+    int min(){
+        if(stk.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;   
+        }
+        
+        return min.peek();
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    MinStack st = new MinStack();
+
+    String str = br.readLine();
+    while(str.equals("quit") == false){
+      if(str.startsWith("push")){
+        int val = Integer.parseInt(str.split(" ")[1]);
+        st.push(val);
+      } else if(str.startsWith("pop")){
+        int val = st.pop();
+        if(val != -1){
+          System.out.println(val);
+        }
+      } else if(str.startsWith("top")){
+        int val = st.top();
+        if(val != -1){
+          System.out.println(val);
+        }
+      } else if(str.startsWith("size")){
+        System.out.println(st.size());
+      } else if(str.startsWith("min")){
+        int val = st.min();
+        if(val != -1){
+          System.out.println(val);
+        }
+      }
+      str = br.readLine();
+    }
+  }
+}
+===================================================
+12. Next Greater to Left.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+  public static void display(int[] a) {
+    StringBuilder sb = new StringBuilder();
+
+    for (int val : a) {
+      sb.append(val + "
+");
+    }
+    System.out.println(sb);
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for (int i = 0; i < n; i++) {
+      a[i] = Integer.parseInt(br.readLine());
+    }
+
+    int[] ngl = solve(a);
+    display(ngl);
+  }
+
+  public static int[] solve(int[] arr) {
+    int n = arr.length;
+    int[] nge = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=0; i<n; i++){
+        
+        // Pop Smaller Elements
+        while(stk.size() > 0 && stk.peek() < arr[i]){
+            stk.pop();
+        }
+        
+        // Answer -> Stack's top
+        if(stk.size() == 0){
+            nge[i] = -1;
+        } else {
+            nge[i] = stk.peek();
+        }
+        
+        // Push Yourself
+        stk.push(arr[i]);
+    }
+    
+    return nge;
+  }
+
+}
+===================================================
+
+13. Next Greater to Right.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  public static void display(int[] a){
+    StringBuilder sb = new StringBuilder();
+
+    for(int val: a){
+      sb.append(val + " ");
+    }
+    System.out.println(sb);
+  }
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for(int i = 0; i < n; i++){
+       a[i] = Integer.parseInt(br.readLine());
+    }
+
+    int[] nge = solve2(a);
+    display(nge);
+ }
+
+ public static int[] solve(int[] arr){
+    int n = arr.length;
+    int[] nge = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=n-1; i>=0; i--){
+        
+        // Pop Smaller Elements
+        while(stk.size() > 0 && stk.peek() < arr[i]){
+            stk.pop();
+        }
+        
+        // Answer -> Stack's top
+        if(stk.size() == 0){
+            nge[i] = -1;
+        } else {
+            nge[i] = stk.peek();
+        }
+        
+        // Push Yourself
+        stk.push(arr[i]);
+    }
+    
+    return nge;
+ }
+ 
+ public static int[] solve2(int[] arr){
+    int n = arr.length;
+    int[] nge = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=0; i<n; i++){
+        
+        while(stk.size() > 0 && arr[stk.peek()] < arr[i])
+        {
+            nge[stk.peek()] = arr[i];
+            stk.pop();
+        }
+        
+        stk.push(i);
+    }
+    
+    
+    while(!stk.isEmpty())
+    {
+        nge[stk.peek()] = -1;
+        stk.pop();
+    }
+    return nge;    
+ }
+
+}
+===================================================
+14.Next Smaller to Left.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+  public static void display(int[] a) {
+    StringBuilder sb = new StringBuilder();
+
+    for (int val : a) {
+      sb.append(val + "
+");
+    }
+    System.out.println(sb);
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for (int i = 0; i < n; i++) {
+      a[i] = Integer.parseInt(br.readLine());
+    }
+
+    int[] nge = solve(a);
+    display(nge);
+  }
+
+  public static int[] solve(int[] arr) {
+    int n = arr.length;
+    int[] nse = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=0; i<n; i++){
+        
+        // Pop Smaller Elements
+        while(stk.size() > 0 && stk.peek() > arr[i]){
+            stk.pop();
+        }
+        
+        // Answer -> Stack's top
+        if(stk.size() == 0){
+            nse[i] = -1;
+        } else {
+            nse[i] = stk.peek();
+        }
+        
+        // Push Yourself
+        stk.push(arr[i]);
+    }
+    
+    return nse;
+ 
+  }
+
+}
+===================================================
+15.Next Smaller to Right.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+  public static void display(int[] a) {
+    StringBuilder sb = new StringBuilder();
+
+    for (int val : a) {
+      sb.append(val + "
+");
+    }
+    System.out.println(sb);
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for (int i = 0; i < n; i++) {
+      a[i] = Integer.parseInt(br.readLine());
+    }
+
+    int[] nge = solve(a);
+    display(nge);
+  }
+
+  public static int[] solve(int[] arr) {
+    int n = arr.length;
+    int[] nse = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=n-1; i>=0; i--){
+        
+        // Pop Smaller Elements
+        while(stk.size() > 0 && stk.peek() > arr[i]){
+            stk.pop();
+        }
+        
+        // Answer -> Stack's top
+        if(stk.size() == 0){
+            nse[i] = -1;
+        } else {
+            nse[i] = stk.peek();
+        }
+        
+        // Push Yourself
+        stk.push(arr[i]);
+    }
+    
+    return nse;
+  }
+
+}
+===================================================
+16.Normal Queue.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static class CustomQueue {
+    int[] data;
+    int front;
+    int rear;
+    int size;
+    int cap;
+
+    public CustomQueue(int cap) {
+      data = new int[cap];
+      this.cap = cap;
+      front = 0;
+      rear = 0;
+      size = 0;
+    }
+
+    int size() {
+        return size;
+    }
+
+    void display() {
+        int count = 0, idx = front;
+        while(count < size)
+        {
+            System.out.print(data[idx] + " ");
+            count++;
+            idx = (idx + 1) % cap;
+        }
+        System.out.println();
+    }
+
+    void add(int val) {
+        if(size == data.length){
+            System.out.println("Queue overflow");
+            return;
+        }
+        
+        data[rear] = val;
+        rear = (rear + 1) % cap;
+        size++;
+    }
+
+    int remove() {
+        if(size == 0){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        
+        int val = data[front];
+        front = (front + 1) % cap;
+        size--;
+        return val;
+    }
+
+    int peek() {
+        if(size == 0){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        return data[front];
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    int n = Integer.parseInt(br.readLine());
+    CustomQueue qu = new CustomQueue(n);
+
+    String str = br.readLine();
+    while(str.equals("quit") == false){
+      if(str.startsWith("add")){
+        int val = Integer.parseInt(str.split(" ")[1]);
+        qu.add(val);
+      } else if(str.startsWith("remove")){
+        int val = qu.remove();
+        if(val != -1){
+          System.out.println(val);
+        }
+      } else if(str.startsWith("peek")){
+        int val = qu.peek();
+        if(val != -1){
+          System.out.println(val);
+        }
+      } else if(str.startsWith("size")){
+        System.out.println(qu.size());
+      } else if(str.startsWith("display")){
+        qu.display();
+      }
+      str = br.readLine();
+    }
+  }
+}
+===================================================
+17.Normal Stack.java 
+------------------------------------
+public static class CustomStack {
+    int[] data;
+    int top;
+
+    public CustomStack(int maxSize) {
+      data = new int[maxSize];
+      top = -1;
+    }
+
+    int size() {
+      return top + 1;  
+    }
+
+    void display() {
+      // write ur code here
+      for(int i=top; i>=0; i--){
+          System.out.print(data[i] + " ");
+      }
+      System.out.println();
+    }
+
+    void push(int val) {
+      if(top == data.length - 1){
+        System.out.println("Stack overflow");
+        return;
+      }
+      
+      top++;
+      data[top] = val;
+    }
+
+    int pop() {
+        if(top == -1){
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        int topEle = data[top];
+        top--;
+        return topEle;
+    }
+
+    int top() {
+        if(top == -1){
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        return data[top];
+    }
+  }
+===================================================
+18.Queue to Stack.java
+------------------------------------
+// Push Efficient
+public static class QueueToStackAdapter {
+    Queue<Integer> mainQ;
+
+    public QueueToStackAdapter() {
+      mainQ = new ArrayDeque<>();
+    }
+
+    int size() {
+        return mainQ.size();
+    }
+
+    void push(int val) {
+        mainQ.add(val);
+    }
+
+    int pop() {
+        Queue<Integer> helperQ = new ArrayDeque<>();
+        int counter = mainQ.size() - 1;
+        for(int i = 1; i <= counter; i++)
+            helperQ.add(mainQ.remove());
+        
+        int val = mainQ.remove();
+        mainQ = helperQ;
+        return val;
+    }
+
+    int top() {
+        Queue<Integer> helperQ = new ArrayDeque<>();
+        int counter = mainQ.size() - 1;
+        for(int i = 1; i <= counter; i++)
+            helperQ.add(mainQ.remove());
+        
+        int val = mainQ.remove();
+        helperQ.add(val);
+        mainQ = helperQ;
+        return val;
+    }
+}
+
+// Pop Efficient
+public static class QueueToStackAdapter {
+    Queue<Integer> mainQ;
+
+    public QueueToStackAdapter() {
+      mainQ = new ArrayDeque<>();
+    }
+
+    int size() {
+        return mainQ.size();
+    }
+
+    void push(int val) {
+        Queue<Integer> helperQ = new ArrayDeque<>();
+        while(mainQ.size() > 0){
+            helperQ.add(mainQ.remove());
+        }
+        
+        mainQ.add(val);
+        while(helperQ.size() > 0){
+            mainQ.add(helperQ.remove());
+        }
+    }
+
+    int pop() {
+        if(size() == 0){
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        return mainQ.remove();
+    }
+
+    int top() {
+        if(size() == 0){
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        return mainQ.peek();
+    }
+  }
+===================================================
+19.Sliding Window Maximum.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static int[] solve(int[] arr) {
+    int n = arr.length;
+    int[] nge = new int[n];
+
+    Stack<Integer> stk = new Stack<>();
+    for (int i = n - 1; i >= 0; i--) {
+
+      // Pop Smaller Elements
+      while (stk.size() > 0 && arr[stk.peek()] < arr[i]) {
+        stk.pop();
+      }
+
+      // Answer -> Stack's top
+      if (stk.size() == 0) {
+        nge[i] = arr.length;
+      } else {
+        nge[i] = stk.peek();
+      }
+
+      // Push Yourself
+      stk.push(i);
+    }
+
+    return nge;
+  }
+  public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = Integer.parseInt(br.readLine());
+    }
+    int k = Integer.parseInt(br.readLine());
+
+    // code
+    int[] nge = solve(arr);
+
+    int prevWinMax = 0;
+    for (int st = 0; st <= n-k; st++)
+    {
+      int curr;
+      if (prevWinMax >= st && prevWinMax < st + k) // prevWinMax in current Window
+        curr = prevWinMax;
+      else curr = st;
+
+      while (nge[curr] >= st && nge[curr] < st + k) // exists in current window
+        curr = nge[curr];
+      
+      prevWinMax = curr;
+      System.out.println(arr[curr]);
+    }
+  }
+}
+===================================================
+20.Smallest No Following Pattern.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String str = br.readLine();
+    
+    int maxSofar = 0;
+    Stack<Integer> stk = new Stack<>();
+    
+    for(int i=0; i<str.length(); i++){
+        maxSofar++;
+        stk.push(maxSofar);
+            
+        if(str.charAt(i) == 'i'){
+            while(!stk.isEmpty()){
+                System.out.print(stk.pop());
+            }
+        }
+    }
+    
+    maxSofar++;
+    stk.push(maxSofar);
+    while(!stk.isEmpty()){
+        System.out.print(stk.pop());
+    }
+    
+ }
+}
+===================================================
+
+21.Stack to Queue.java 
+------------------------------------
+// Push Efficient
+public static class StackToQueueAdapter {
+    Stack<Integer> mainS;
+
+    public StackToQueueAdapter() {
+      mainS = new Stack<>();
+    }
+
+    int size() {
+        return mainS.size();
+    }
+
+    void add(int val) {
+        mainS.push(val);
+    }
+
+    int remove() {
+        if(mainS.isEmpty()){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        Stack<Integer> helperS = new Stack<>();
+        
+        int count = mainS.size() - 1;
+        for(int i=1; i<=count; i++){
+            helperS.push(mainS.pop());
+        }
+        
+        int val = mainS.pop();
+        while(!helperS.isEmpty()){
+            mainS.push(helperS.pop());
+        }
+        return val;
+    }
+
+    int peek() {
+        if(mainS.isEmpty()){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        Stack<Integer> helperS = new Stack<>();
+        
+        int count = mainS.size() - 1;
+        for(int i=1; i<=count; i++){
+            helperS.push(mainS.pop());
+        }
+        
+        int val = mainS.peek();
+        while(!helperS.isEmpty()){
+            mainS.push(helperS.pop());
+        }
+        return val;
+    }
+  }
+
+// Pop Efficient 
+public static class StackToQueueAdapter {
+    Stack<Integer> mainS;
+
+    public StackToQueueAdapter() {
+      mainS = new Stack<>();
+    }
+
+    int size() {
+        return mainS.size();
+    }
+
+    void add(int val) {
+        Stack<Integer> helperS = new Stack<>();
+        while(!mainS.isEmpty()){
+            helperS.push(mainS.pop());
+        }
+        
+        mainS.push(val);
+        while(!helperS.isEmpty()){
+            mainS.push(helperS.pop());
+        }
+    }
+
+    int remove() {
+        if(mainS.isEmpty()){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        return mainS.pop();
+    }
+
+    int peek() {
+        if(mainS.isEmpty()){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        return mainS.peek();        
+    }
+}
+
+===================================================
+22.Stock Span.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  public static void display(int[] a){
+    StringBuilder sb = new StringBuilder();
+
+    for(int val: a){
+      sb.append(val + "\n");
+    }
+    System.out.println(sb);
+  }
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for(int i = 0; i < n; i++){
+       a[i] = Integer.parseInt(br.readLine());
+    }
+
+    int[] span = solve(a);
+    display(span);
+ }
+
+ public static int[] solve(int[] arr){
+    int n = arr.length;
+    int[] stockSpan = new int[n];
+    
+    Stack<Integer> stk = new Stack<>();
+    for(int i=0; i<n; i++){
+        
+        // Pop Smaller Elements
+        while(stk.size() > 0 && arr[stk.peek()] < arr[i]){
+            stk.pop();
+        }
+        
+        // Answer -> Stack's top
+        if(stk.size() == 0){
+            stockSpan[i] = i + 1;
+        } else {
+            stockSpan[i] = i - stk.peek();
+        }
+        
+        // Push Yourself
+        stk.push(i);
+    }
+    
+    return stockSpan;
+ }
+
+}
+===================================================
+23.Two Stacks in Array.java 
+------------------------------------
+public static class TwoStack {
+    int[] data;
+    int top1, top2, size1, size2;
+    
+
+    public TwoStack(int cap) {
+      data = new int[cap];
+      top1 = -1;
+      top2 = cap;
+      size1 = size2 = 0;
+    }
+
+    int size1() {
+        return size1;
+    }
+
+    int size2() {
+        return size2;
+    }
+
+    void push1(int val) {
+        if(size1 + size2 == data.length){
+            System.out.println("Stack overflow");
+            return;
+        }
+        
+        top1++;
+        size1++;
+        data[top1] = val;
+    }
+
+    void push2(int val) {
+        if(size1 + size2 == data.length){
+            System.out.println("Stack overflow");
+            return;
+        }
+        
+        top2--;
+        size2++;
+        data[top2] = val;        
+    }
+
+    int pop1() {
+        if(top1 == -1) {
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        int val = data[top1];
+        top1--;
+        size1--;
+        return val;
+    }
+
+    int pop2() {
+        if(top2 == data.length) {
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        int val = data[top2];
+        top2++;
+        size2--;
+        return val;        
+    }
+
+    int top1() {
+        if(top1 == -1) {
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        return data[top1];
+    }
+
+    int top2() {
+        if(top2 == data.length) {
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        return data[top2];
+    }
+  }
+=================================================================================================================================================
+=================================================================================================================================================
+24.Client.java 
+------------------------------------
+package stack;
+
+public class Client {
+
+	public static void main(String[] args) throws StackOverflowException, StackUnderflowException {
+		
+		IStack normalStack = new CustomStack(3);
+		
+		normalStack.push(10);
+		normalStack.push(20);
+		normalStack.push(30);
+//		normalStack.push(50); -> Uncomment to see StackOverFlowException
+		System.out.println(normalStack.peek());
+		System.out.println(normalStack.pop());
+		System.out.println(normalStack.pop());
+		System.out.println("Size: " +normalStack.size());
+		normalStack.push(40);
+		normalStack.push(50);
+		System.out.println(normalStack.peek());
+		System.out.println(normalStack.size());
+		normalStack.display();
+		System.out.println(normalStack.pop());
+		System.out.println(normalStack.pop());
+		System.out.println(normalStack.pop());
+		System.out.println("Size: " + normalStack.size());
+		
+		//System.out.println(normalStack.pop()); 
+		// Uncomment Line 26 to see StackUnderflow because size=0 when we're trying to pop
+	
+		IStack dStack = new DynamicStack(3); //dStack denotes dynamic stack
+		dStack.push(10);
+		dStack.push(20);
+		dStack.push(30);
+		dStack.push(10);
+		dStack.push(20);
+		dStack.push(30);
+		//System.out.println(dStack.size());
+		dStack.push(40);
+		dStack.push(50);
+		dStack.push(60);
+		dStack.push(50);
+		dStack.push(60);
+		dStack.display();
+		System.out.println("Size: "+dStack.size());
+		System.out.println(dStack.pop());
+		System.out.println(dStack.pop());
+	}
+
+}
+===================================================
+25.CustomStack.java
+------------------------------------
+package stack;
+
+public class CustomStack implements IStack {
+	protected int[] data;
+	protected int top; // index of top element
+	protected int cap; // capacity of stack, can be provided at runtime else defaults to 10
+	private static final int DEFAULT_CAPACITY = 10;
+
+	protected CustomStack(int cap) {
+		this.data = new int[cap];
+		this.top = -1;
+		this.cap = cap;
+	}
+
+	protected CustomStack() {
+		this(DEFAULT_CAPACITY);
+
+	}
+
+	protected int[] getData() {
+		return data;
+	}
+
+	protected int getData(int index) {
+		return data[index];
+	}
+
+	protected void setData(int[] data) {
+		this.data = data;
+		this.cap = data.length;
+	}
+
+	protected void setData(int index, int val) {
+		data[index] = val;
+	}
+
+	protected int getTop() {
+		return top;
+	}
+
+	protected void setTop(int top) {
+		this.top = top;
+	}
+
+
+	protected int getCap() {
+		return cap;
+	}
+	
+	private int getSize() {
+		return top + 1;
+	}
+
+	public int size() {
+		return getSize();
+	}
+
+	public void display() {
+
+		for (int j = top; j >= 0; j--) {
+			System.out.print(data[j] + " ");
+		}
+		System.out.println();
+	}
+
+	public void push(int val) throws StackOverflowException {
+
+		if (top == data.length - 1) {
+			throw new StackOverflowException();
+		} else {
+			top++;
+			data[top] = val;
+		}
+	}
+
+	public int pop() throws StackUnderflowException {
+
+		if (top == -1) {
+			throw new StackUnderflowException();
+		} else {
+			top--;
+			return data[top + 1];
+		}
+	}
+
+	public int peek() throws StackUnderflowException {
+
+		if (top == -1) {
+			throw new StackUnderflowException();
+		}
+		return data[top];
+	}
+
+}
+===================================================
+26.DynamicStack.java 
+------------------------------------
+package stack;
+
+public class DynamicStack extends CustomStack {
+	private static final int DEFAULT_CAPACITY = 10;
+
+	public DynamicStack() {
+		super(DEFAULT_CAPACITY);
+	}
+
+	public DynamicStack(int cap) {
+		super(cap);
+	}
+
+	@Override
+	public void push(int val) throws StackOverflowException {
+		int top = getTop();
+		int cap = getCap();
+		if (top == cap - 1) {
+			int[] newData = new int[2 * cap];
+			for (int i = 0; i < cap; i++) {
+				newData[i] = data[i];
+			}
+			setData(newData);
+
+		}
+		super.push(val);
+	}
+
+}
+===================================================
+27.IStack.java 
+------------------------------------
+package stack;
+
+public interface IStack {
+	public void push(int val) throws StackOverflowException;
+	public int pop() throws StackUnderflowException;
+	public int peek() throws StackUnderflowException;
+	public int size();
+	public void display();
+}
+===================================================
+28.StackOverflowException.java
+------------------------------------
+package stack;
+
+public class StackOverflowException extends Exception{
+	public StackOverflowException() {
+		super("Stack Overflow occurred");
+	}
+	
+	public StackOverflowException(String error) {
+		super(error);
+	}
+
+}
+===================================================
+29.StackUnderflowException.java 
+------------------------------------
+package stack;
+
+public class StackUnderflowException extends Exception{
+	
+	public StackUnderflowException() {
+		super("Stack Underflow occurred");
+	}
+	
+	public StackUnderflowException(String error) {
+		super(error);
+	}
+
+
+}
+===================================================
+30.
+------------------------------------
+
+===================================================

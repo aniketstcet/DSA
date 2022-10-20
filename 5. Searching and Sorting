@@ -1,0 +1,838 @@
+Searching & Sorting
+===================================================
+1.Bubble Sort.java
+
+
+------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void bubbleSort(int[] arr) {
+    //write your code here
+    for(int i = 0; i < arr.length -1; i++)
+    {
+        for(int j=0; j<arr.length-i-1; j++)
+        {
+            if(isSmaller(arr, j + 1, j))
+            {
+                swap(arr, j + 1, j);
+            }
+        }
+    }
+  }
+
+  // used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping " + arr[i] + " and " + arr[j]);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  // return true if ith element is smaller than jth element
+  public static boolean isSmaller(int[] arr, int i, int j) {
+    System.out.println("Comparing " + arr[i] + " and " + arr[j]);
+    if (arr[i] < arr[j]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.println(arr[i]);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    bubbleSort(arr);
+    print(arr);
+  }
+
+}
+===================================================
+2. Count Sort.java
+---------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void countSort(int[] arr, int min, int max) {
+       // Create Frequency of size equal to range of elements
+       int[] freq = new int[max - min + 1];
+       for(int i=0; i<arr.length; i++)
+       {
+           int idx = arr[i] - min;
+           freq[idx]++;
+       }
+       
+       // Build Prefix Sum Array using Frequency Array
+       // prefix[i] = freq[0] + freq[1] + freq[2] + ... freq[i]
+       // prefix[i] = prefix[i - 1] + freq[i]
+       // But if i == 0, then prefix[i - 1] does not exists
+    
+       int[] prefixSum = new int[max - min + 1];
+       for(int i=0; i<freq.length; i++)
+       {
+           if(i == 0) prefixSum[i] = freq[i];
+           else prefixSum[i] = prefixSum[i - 1] + freq[i];
+       }
+       // We are processing input array in reverse order because prefix sum array contains the last index
+       // of that element. Hence, last element should be processed first
+    
+       // Form New Answer Array (To not modify input array while traversing the input array)
+       // Answer array will store all the elemnents in sorted order
+      
+       int[] ans = new int[arr.length];
+       for(int i=arr.length - 1; i>=0; i--)
+       {
+           // This idx is index of element in prefixSum array (or frequency array)
+           int idx = arr[i] - min;
+         
+           // If 2 occurs 4 times, then last index of 2 is (4 - 1) = 3.
+           // Hence prefixSum[idx] - 1 = 4 - 1 = 3 is taken
+           ans[prefixSum[idx] - 1] = arr[i];
+         
+           // PrefixSum is updated to store the value of last occurence of next element
+           prefixSum[idx]--;
+       }
+       
+       // Now, we needed to sort the input array, hence storing the answer array back to input array.
+       for(int i=0; i<arr.length; i++)
+        arr[i] = ans[i];
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.println(arr[i]);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    int max = Integer.MIN_VALUE;
+    int min = Integer.MAX_VALUE;
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+      max = Math.max(max, arr[i]);
+      min = Math.min(min, arr[i]);
+    }
+    countSort(arr,min,max);
+    print(arr);
+  }
+
+}
+===================================================
+3. Insertion Sort.java
+------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void insertionSort(int[] arr) {
+    //write your code here
+    for(int i=1; i<arr.length; i++)
+    {
+        for(int j=i-1; j>=0; j--)
+        {
+            if(isGreater(arr, j, j + 1))
+                swap(arr, j, j + 1);
+            else break;
+        }
+    }
+  }
+
+  // used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping " + arr[i] + " and " + arr[j]);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  // return true if jth element is greater than ith element
+  public static boolean isGreater(int[] arr, int j, int i) {
+    System.out.println("Comparing " + arr[i] + " and " + arr[j]);
+    if (arr[i] < arr[j]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.println(arr[i]);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    insertionSort(arr);
+    print(arr);
+  }
+
+}
+
+===================================================
+4.Merge Sort.java
+----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+//   public static void mergeSort(int[] arr, int left, int right) {
+//     // base case
+//     if(left == right)
+//     { return; }
+    
+//     int mid = (left + right) / 2;
+    
+//     // Faith
+//     mergeSort(arr, left, mid);
+//     mergeSort(arr, mid + 1, right);
+    
+//     // Meeting Faith with Expectation
+//     int[] mergedArray = mergeTwoSortedArrays(arr, left, mid, mid + 1, right);
+//     for(int i=left; i<=right; i++)
+//         arr[i] = mergedArray[i - left];
+//   }
+ //   public static int[] mergeTwoSortedArrays(int[] a, int p1, int p2, int p3, int p4) {
+//     int i = p1, j = p3, k = 0;
+//     int[] ans = new int[(p2 - p1 + 1) + (p4 - p3 + 1)];
+//     while(i <= p2 && j <= p4){
+//         if(a[i] <= a[j]){
+//           ans[k] = a[i];
+//           i++;
+//           k++;
+//         }else{
+//           ans[k] = a[j];
+//           j++;
+//           k++;
+//         }
+//     }
+
+//     while(i <= p2){
+//       ans[k] = a[i];
+//       k++;
+//       i++;
+//     }
+
+//     while(j <= p4){
+//       ans[k] = a[j];
+//       k++;
+//       j++;
+//     }
+    
+//     return ans;
+//   }
+  
+  public static int[] mergeSort(int[] arr, int left, int right) {
+    // base case
+    if(left == right)
+    {
+        int[] res = new int[1];
+        res[0] = arr[left];
+        return res;
+    }
+    
+    int mid = (left + right) / 2;
+    
+    // Faith
+    int[] leftSortedArray = mergeSort(arr, left, mid);
+    int[] rightSortedArray = mergeSort(arr, mid + 1, right);
+    
+    // Meeting Faith with Expectation
+    int[] mergedArray = mergeTwoSortedArrays(leftSortedArray, rightSortedArray);
+    return mergedArray;
+  }
+  //used for merging two sorted arrays
+  public static int[] mergeTwoSortedArrays(int[] a, int[] b){
+    System.out.println("Merging these two arrays ");
+    System.out.print("left array -> ");
+    print(a);
+    System.out.print("right array -> ");
+    print(b);
+    int i = 0, j =0, k = 0;
+    int[] ans = new int[a.length + b.length];
+    while(i < a.length && j < b.length){
+        if(a[i] <= b[j]){
+          ans[k] = a[i];
+          i++;
+          k++;
+        }else{
+          ans[k] = b[j];
+          j++;
+          k++;
+        }
+    }
+
+    while(i < a.length){
+      ans[k] = a[i];
+      k++;
+      i++;
+    }
+
+    while(j < b.length){
+      ans[k] = b[j];
+      k++;
+      j++;
+    }
+    
+    return ans;
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.print(arr[i] + " ");
+    }
+    System.out.println();
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    int[] sa = mergeSort(arr,0,arr.length - 1);
+    System.out.print("Sorted Array -> ");
+    // mergeSort(arr, 0, arr.length - 1);
+    // print(arr);
+    print(sa);
+  }
+
+}
+===================================================
+5.Merge Two Sorted Arrays.java
+----------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static int[] mergeTwoSortedArrays(int[] a, int[] b){
+    //write your code here
+    int[] res = new int[a.length + b.length];
+    
+    int i = 0, j = 0, k = 0;
+    
+    while(i < a.length && j < b.length)
+    {
+        if(a[i] < b[j])
+        {
+            res[k] = a[i];
+            i++; k++;
+        }
+        else
+        {
+            res[k] = b[j];
+            j++; k++;
+        }
+    }
+    while(j < b.length)
+    {
+        res[k] = b[j];
+        j++; k++;
+    }
+    while(i < a.length)
+    {
+        res[k] = a[i];
+        i++; k++;
+    }
+
+    return res;
+  }
+
+  public static void print(int[] arr){
+    for(int i = 0 ; i < arr.length; i++){
+      System.out.println(arr[i]);
+    }
+  }
+  public static void main(String[] args){
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] a = new int[n];
+    for(int i = 0 ; i < n; i++){
+      a[i] = scn.nextInt();
+    }
+    int m = scn.nextInt();
+    int[] b = new int[m];
+    for(int i = 0 ; i < m; i++){
+      b[i] = scn.nextInt();
+    }
+    int[] mergedArray = mergeTwoSortedArrays(a,b);
+    print(mergedArray);
+  }
+
+}
+
+===================================================
+6.Partition Array.java
+-----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void partition(int[] arr, int pivot){
+    //write your code here
+    int i = 0, j = 0;
+    while(i < arr.length)
+    {
+        // unexplored region : i to n-1
+        // Smaller or equal region : 0 to j - 1
+        // Greater region : j to i - 1
+        
+        if(arr[i] <= pivot)
+        {
+            // add unexplored element in smaller or equal region
+            swap(arr, i, j);
+            i++; j++;
+        }
+        else
+        {
+            // add unexplored element in greater region
+            i++;
+        }
+    }
+  }
+
+  // used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping " + arr[i] + " and " + arr[j]);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.print(arr[i] + " ");
+    }
+    System.out.println();
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    int pivot = scn.nextInt();
+    partition(arr,pivot);
+    print(arr);
+  }
+
+}
+===================================================
+
+7. Quick Select.java
+----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static int quickSelect(int[] arr, int lo, int hi, int k) {
+        if(lo == hi) return arr[lo];
+        
+        int pivotIdx = partition(arr, arr[hi], lo, hi);
+        
+        if(pivotIdx == k){
+            return arr[pivotIdx];
+        } else if(pivotIdx > k){
+            return quickSelect(arr, lo, pivotIdx - 1, k);
+        } else {
+            return quickSelect(arr, pivotIdx + 1, hi, k);
+        }
+  }
+
+  public static int partition(int[] arr, int pivot, int lo, int hi) {
+    System.out.println("pivot -> " + pivot);
+    int i = lo, j = lo;
+    while (i <= hi) {
+      if (arr[i] <= pivot) {
+        swap(arr, i, j);
+        i++;
+        j++;
+      } else {
+        i++;
+      }
+    }
+    System.out.println("pivot index -> " + (j - 1));
+    return (j - 1);
+  }
+
+  // used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping " + arr[i] + " and " + arr[j]);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.print(arr[i] + " ");
+    }
+    System.out.println();
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    int k = scn.nextInt();
+    System.out.println(quickSelect(arr,0,arr.length - 1,k - 1));
+  }
+
+}
+===================================================
+8.Quick Sort.java 
+-------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void quickSort(int[] arr, int left, int right)   {
+    if(left > right) return;
+    // if(left == right) return;
+    
+    int pivotIdx = partition(arr, arr[right], left, right);
+    quickSort(arr, left, pivotIdx - 1);
+    quickSort(arr, pivotIdx + 1, right);
+  }
+
+  public static int partition(int[] arr, int pivot, int lo, int hi) {
+    System.out.println("pivot -> " + pivot);
+    int i = lo, j = lo;
+    while (i <= hi) {
+      if (arr[i] <= pivot) {
+        swap(arr, i, j);
+        i++;
+        j++;
+      } else {
+        i++;
+      }
+    }
+    System.out.println("pivot index -> " + (j - 1));
+    return (j - 1);
+  }
+
+  // used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping " + arr[i] + " and " + arr[j]);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.print(arr[i] + " ");
+    }
+    System.out.println();
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    quickSort(arr, 0, arr.length - 1);
+    print(arr);
+  }
+
+}
+===================================================
+
+9.Radix Sort.java
+-----------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void radixSort(int[] arr) {
+    int Max = Integer.MIN_VALUE;
+    for(int i=0; i<arr.length; i++){
+        if(Max < arr[i])
+            Max = arr[i];
+    }
+    
+    for(int exp = 1; exp <= Max; exp *= 10){
+        countSort(arr, exp);
+    }
+    
+  }
+
+  public static void countSort(int[] arr, int exp) {
+    int[] freq = new int[10];
+    for(int i=0; i<arr.length; i++)
+    {
+        int dig = (arr[i] / exp) % 10;
+        freq[dig]++;
+    }
+    
+    int[] pref = new int[10];
+    for(int i=0; i<freq.length; i++) {
+        if(i == 0){
+            pref[i] = freq[i];
+        } else {
+            pref[i] = freq[i] + pref[i - 1];
+        }
+    }
+    
+    int[] ans = new int[arr.length];
+    for(int i=arr.length - 1; i>=0; i--)
+    {
+        int idx = (arr[i] / exp) % 10;
+        int lastOcc = pref[idx] - 1;
+        ans[lastOcc] = arr[i];
+        pref[idx] -= 1;
+    }
+    
+    for(int i=0; i<arr.length; i++)
+        arr[i] = ans[i];
+        
+    System.out.print("After sorting on ");
+    System.out.print(exp + " place -> ");
+    print(arr);
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.print(arr[i] + " ");
+    }
+    System.out.println();
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    radixSort(arr);
+    print(arr);
+  }
+
+}
+===================================================
+10. Selection Sort.java 
+--------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void selectionSort(int[] arr) {
+    //write your code here
+    for(int i=0; i<arr.length-1; i++)
+    {
+        int minIdx = i;
+        for(int j=i+1; j<arr.length; j++)
+        {
+            if(isSmaller(arr, j, minIdx))
+                minIdx = j;
+        }
+        swap(arr, i, minIdx);
+    }
+  }
+
+  // used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping " + arr[i] + " and " + arr[j]);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  // return true if ith element is smaller than jth element
+  public static boolean isSmaller(int[] arr, int i, int j) {
+    System.out.println("Comparing " + arr[i] + " and " + arr[j]);
+    if (arr[i] < arr[j]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      System.out.println(arr[i]);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    selectionSort(arr);
+    print(arr);
+  }
+
+}
+===================================================
+
+11.Sort 01.java
+---------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void sort01(int[] arr) {
+    int unexploredFirst = 0, greaterFirst = 0;
+    while (unexploredFirst < arr.length)
+    {
+      // unexplored region : i to n-1
+      // 0s region : 0 to j - 1
+      // 1s region : j to i - 1
+
+      if (arr[unexploredFirst] == 0)
+      {
+        // add unexplored element in smaller or equal region
+        swap(arr, unexploredFirst, greaterFirst);
+        greaterFirst++;
+        unexploredFirst++;
+      }
+      else
+      {
+        // add unexplored element in greater region
+        unexploredFirst++;
+      }
+    }
+  }
+
+// used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping index " + i + " and index " + j);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  public static void print(int[] arr) {
+    for (int i = 0 ; i < arr.length; i++) {
+      System.out.println(arr[i]);
+    }
+  }
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for (int i = 0 ; i < n; i++) {
+      arr[i] = scn.nextInt();
+    }
+    sort01(arr);
+    print(arr);
+  }
+
+}
+===================================================
+12. Sort 012.java
+----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void sort012(int[] arr){
+    int i = 0, j = 0, k = arr.length - 1;
+    while(i <= k)
+    {
+        if(arr[i] == 0)
+        {
+            swap(arr, i, j);
+            i++; j++;
+        }
+        else if(arr[i] == 1) 
+        {
+            i++;
+        }
+        else // arr[i] == 2
+        {
+            swap(arr, i, k);
+            k--;
+        }
+    }
+  }
+
+  // used for swapping ith and jth elements of array
+  public static void swap(int[] arr, int i, int j) {
+    System.out.println("Swapping index " + i + " and index " + j);
+    int temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+
+  public static void print(int[] arr){
+    for(int i = 0 ; i < arr.length; i++){
+      System.out.println(arr[i]);
+    }
+  }
+  public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for(int i = 0 ;i < n; i++){
+      arr[i] = scn.nextInt();
+    }
+    sort012(arr);
+    print(arr);
+  }
+
+}
+===================================================
+
+13.
+===================================================
+14.
+===================================================
+15.
+===================================================
+16.
+===================================================
+17.
+===================================================
+18.
+===================================================
+19.
+===================================================
+20.
+===================================================
+
+
+===================================================

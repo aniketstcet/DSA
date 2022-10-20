@@ -1,0 +1,411 @@
+https://github.com/archit-aggarwal/Pepcoding-DSA
+
+Getting started
+============================
+1. Rotate a Number.java
+----------------------
+import java.util.*;
+
+public class Main {
+
+  public static void main(String[] args) {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int k = scn.nextInt();
+
+    int counter = 0;
+    int temp = n;
+    while (temp > 0)
+    {
+      counter++;
+      temp = temp / 10;
+    }
+
+    // k = k % counter;
+    // if (k < 0)
+    //     { k = k + counter; }
+
+    k = ((k % counter) + counter) % counter;
+
+    int div = (int)Math.pow(10, k);
+    int rem = n % div;
+    n = n / div;
+
+    int mult = (int)Math.pow(10, counter - k);
+    int res = rem * mult + n;
+    System.out.println(res);
+
+  }
+}
+===================================================
+2.Reverse of Number.java
+-----------------------
+
+import java.util.*;
+   
+   public class Main{
+   
+   public static void main(String[] args) {
+     // write your code here 
+      Scanner scn = new Scanner(System.in);
+      int n = scn.nextInt();
+      
+      while(n > 0)
+      {
+          System.out.println(n % 10);
+          n = n / 10;
+      }
+    }
+   }
+===================================================
+3. Print Z.java
+------------------
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        // Write your code here
+        
+     System.out.println("*****");
+     System.out.println("   *");
+     System.out.println("  *");
+     System.out.println(" *");
+     System.out.println("*****");
+    }
+}
+===================================================
+4. Print N Fibonacci Nos.java 
+--------------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+      // write your code here
+      Scanner scn = new Scanner(System.in);
+      int n = scn.nextInt();
+      
+      // Initializing Three pointers
+      int a = 0, b = 1, c = 1;
+      
+      for(int i=0; i<n; i++)
+      {
+          System.out.println(a);
+          
+          // Moving Three Pointer
+          a = b;
+          b = c;
+          c = a + b;
+      }
+   }
+  }
+===================================================
+5. Print All Primes till N.java
+------------------------------------
+import java.util.*;
+
+public class Main{
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int lo = scn.nextInt();
+        int hi = scn.nextInt();
+        
+        for(int n = lo; n <= hi; n++){
+            int factors = 0;
+            for(int div = 2; div * div <= n; div = div + 1){
+                if(n % div == 0){
+                    factors = factors + 1;
+                    break;
+                }
+            }
+            
+            if(factors == 0){
+                System.out.println(n);
+            }
+        }
+    }
+}
+
+===================================================
+6. Prime Factorization.java
+------------------------------
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    
+    // Approach 1
+//     for(int factor = 2; factor <= n; factor++)
+//     {
+//         while(n % factor == 0)
+//         {
+//             System.out.print(factor + " ");
+//             n = n / factor;
+//         }
+//     }
+  
+    // Approach 2: Optimization
+    for(int factor = 2; factor * factor <= n; factor++)
+    {
+        while(n % factor == 0)
+        {
+            System.out.print(factor + " ");
+            n = n / factor;
+        }
+    }
+    
+    // Prime Factor greater than root n, there can be only one such prime factor
+    if(n != 1) System.out.print(n);
+ }
+}
+===================================================
+7. Is a No Prime.java
+---------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+       Scanner scn = new Scanner(System.in);
+       int t = scn.nextInt();
+    
+       for(int i = 1; i <= t; i = i + 1){
+           int n = scn.nextInt();
+            
+            int factors = 0;
+            for(int div = 2; div * div <= n; div = div + 1){
+                if(n % div == 0){
+                    factors = factors + 1;
+                    break;
+                }
+            }
+            
+            if(factors == 0){
+                System.out.println("prime");
+            }else{
+                System.out.println("not prime");
+            }
+       }    
+   }
+  }
+
+===================================================
+8. Inverse of No.java 
+-------------------------
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) {
+  Scanner scn = new Scanner(System.in);
+  int n = scn.nextInt();
+  
+  int num = n;
+  int nod = 0;
+  
+  while(num != 0){
+      num = num / 10;
+      nod++;
+  }
+  
+  int ans = 0;
+  for(int i = 1; i <= nod; i++){
+      int ld = n % 10;
+      n = n / 10;
+      
+      ans = ans + i * (int)Math.pow(10, ld - 1);
+  }
+  
+  System.out.println(ans);
+  
+ }
+}
+===================================================
+9. Grading System.java
+---------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+      // input - don't change this code
+      Scanner scn = new Scanner(System.in);
+      int marks = scn.nextInt();
+      // input - don't change this code
+      
+      // code here      
+      
+      if(marks > 90){
+          System.out.println("excellent");
+      }else if(marks > 80){
+          System.out.println("good");
+      }else if(marks > 70){
+          System.out.println("fair");
+      }else if(marks > 60){
+          System.out.println("meets expectations");
+      }else{
+          System.out.println("below par");
+      }
+  
+   }
+  }
+
+===================================================
+10. GCD and LCM.java 
+------------------
+import java.util.*;
+    
+    public class Main{
+    
+    public static void main(String[] args) {
+        // write your code here 
+        Scanner scn = new Scanner(System.in);
+        
+        int n1 = scn.nextInt();
+        int n2 = scn.nextInt();
+        
+        int dvd = n1;
+        int dsr = n2;
+        
+        while(dvd % dsr != 0)
+        {
+            int rem = dvd % dsr;
+            dvd = dsr;
+            dsr = rem;
+        }
+        
+        System.out.println(dsr);
+        System.out.println((n1 * n2) / dsr);
+     }
+    }
+===================================================
+11. Count Digits of No.java
+--------------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+    // write your code here
+     Scanner scn = new Scanner(System.in);
+     int n = scn.nextInt();
+    
+     int counter = 0;
+     while(n > 0)
+     {
+        n = n / 10; 
+        counter++;
+     }
+     
+     System.out.println(counter);
+   }
+  }
+
+===================================================
+12. Benjamin Bulbs.java
+-----------------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    
+    for(int i = 1; i * i <= n; i++){
+        System.out.println(i*i);
+    }
+   }
+  }
+===================================================
+1.
+------------------------------------
+
+===================================================
+2.
+------------------------------------
+
+===================================================
+3.
+-------------------------------
+
+
+===================================================
+4.
+----------------------------------
+
+===================================================
+5.
+------------------------------------
+
+===================================================
+6.
+------------------------------------
+
+===================================================
+
+7.
+------------------------------------
+
+
+===================================================
+8.
+------------------------------------
+
+===================================================
+
+9.
+------------------------------------
+
+===================================================
+10.
+------------------------------------
+
+===================================================
+
+11.
+------------------------------------
+
+===================================================
+12.
+------------------------------------
+
+===================================================
+
+13.
+------------------------------------
+
+===================================================
+14.
+------------------------------------
+
+===================================================
+15.
+------------------------------------
+
+===================================================
+16.
+------------------------------------
+
+===================================================
+17.
+------------------------------------
+
+===================================================
+18.
+------------------------------------
+
+===================================================
+19.
+------------------------------------
+
+===================================================
+20.
+------------------------------------
+
+===================================================
+===================================================

@@ -1,0 +1,1455 @@
+3. Arrays
+----------
+2D Arrays Demo.java
+----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    
+    // Declaration & Initialization
+    int n = scn.nextInt();
+    int m = scn.nextInt();
+    int[][] arr = new int[n][m];
+    
+    // INPUT
+    for(int rows = 0; rows <= n-1; rows++)
+    {
+        for(int cols = 0; cols <= m-1; cols++)
+        {
+            arr[rows][cols] = scn.nextInt();
+        }
+    }
+
+    // OUTPUT
+    for(int i=0; i<n; i++)
+    {
+        for(int j=0; j<m; j++)
+        {
+            System.out.print(arr[i][j] + " ");
+        }
+        System.out.println();
+    }
+ }
+
+}
+
+===================================================
+2. Any Base Addition.java
+------------------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+      Scanner scn = new Scanner(System.in);
+      int b = scn.nextInt();
+      int n1 = scn.nextInt();
+      int n2 = scn.nextInt();
+  
+      int d = getSum(b, n1, n2);
+      System.out.println(d);
+   }
+  
+   public static int getSum(int b, int n1, int n2){
+       int ans = 0;
+       int carry = 0;
+       int power = 1;
+       
+       while(n1 != 0 || n2 != 0 || carry != 0){
+           int l1 = n1 % 10;
+           int l2 = n2 % 10;
+           n1 /= 10;
+           n2 /= 10;
+           
+           int sum = l1 + l2 + carry;
+           int q = sum / b;
+           int r = sum % b;
+           
+           ans += (r * power);
+           carry = q;
+           power *= 10;
+       }
+       
+       return ans;
+   }
+  }
+===================================================
+3. Any Base Multiplication.java
+---------------------------------
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) {
+    Scanner scn = new Scanner(System.in);
+    int b = scn.nextInt();
+    int n1 = scn.nextInt();
+    int n2 = scn.nextInt();
+
+    int d = getProduct(b, n1, n2);
+    System.out.println(d);
+ }
+
+ public static int getProduct(int b, int n1, int n2){
+     int ans = 0;
+     int power = 1;
+     
+     while(n2 != 0){
+         int l2 = n2 % 10;
+         n2 /= 10;
+         
+         int pwsd = gpwsd(b, n1, l2);
+        //  ans = ans +  (pwsd * power);
+        ans = getSum(b, ans, pwsd * power);
+         power *= 10;
+     }
+     return ans;
+ }
+ 
+ public static int gpwsd(int b, int n1, int d2){
+     int ans = 0;
+     int power = 1;
+     int carry = 0;
+     
+     while(n1 != 0 || carry != 0){
+         int l1 = n1 % 10;
+         n1 /= 10;
+         
+         int product = l1 * d2 + carry;
+         int q = product / b;
+         int r = product % b;
+         
+         ans += (r * power);
+         carry = q;
+         power *= 10;
+     }
+     
+     return ans;
+ }
+ 
+  public static int getSum(int b, int n1, int n2){
+       int ans = 0;
+       int carry = 0;
+       int power = 1;
+       
+       while(n1 > 0 || n2 > 0 || carry > 0){
+           int l1 = n1 % 10;
+           int l2 = n2 % 10;
+           n1 /= 10;
+           n2 /= 10;
+           
+           int sum = l1 + l2 + carry;
+           int q = sum / b;
+           int r = sum % b;
+           
+           ans += (r * power);
+           carry = q;
+           power *= 10;
+       }
+       
+       return ans;
+   }
+
+}
+
+===================================================
+4. Any Base Subtraction.java 
+--------------------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+      Scanner scn = new Scanner(System.in);
+      int b = scn.nextInt();
+      int n1 = scn.nextInt();
+      int n2 = scn.nextInt();
+  
+      int d = getDifference(b, n1, n2);
+      System.out.println(d);
+   }
+  
+   public static int getDifference(int b, int n1, int n2){
+       int ans = 0;
+       int power = 1;
+       int borrow = 0;
+       
+       while(n2 != 0){
+           int l1 = n1 % 10;
+           int l2 = n2 % 10;
+           n1 /= 10;
+           n2 /= 10;
+           
+           int diff = (l2 - borrow) - l1;
+           if(diff < 0){
+               diff += b;
+               borrow = 1;
+           }else{
+               borrow = 0;
+           }
+           
+           ans += (diff * power);
+           power *= 10;
+       }
+       
+       return ans;
+   }
+  
+  }
+
+
+===================================================
+5.Any Base to Any Base.java
+----------------------------
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) {
+    Scanner scn = new Scanner(System.in);
+    int n = scn.nextInt();
+    int b1 = scn.nextInt();
+    int b2 = scn.nextInt();
+
+    int d = getValue(n, b1, b2);
+    System.out.println(d);
+ }
+
+ public static int getValue(int n, int b1, int b2){
+     int d1 = anyBaseToDecimal(n, b1);
+     int d2 = decimalToAnyBase(d1, b2);
+     return d2;
+ }
+
+ public static int anyBaseToDecimal(int n, int b){
+    int rv = 0;
+
+   int p = 1;
+   while(n > 0){
+       int d = n % 10;
+       n = n / 10;
+       rv += p * d;
+       p = p * b;
+   }
+
+    return rv;
+}
+
+ public static int decimalToAnyBase(int n, int b){
+    int rv = 0;
+
+   int p = 1;
+   while(n > 0){
+       int d = n % b;
+       n = n / b;
+       rv += p * d;
+       p = p * 10;
+   }
+
+    return rv;
+}
+}
+
+===================================================
+6. 
+Any Base to Decimal.java 
+--------------------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+      Scanner scn = new Scanner(System.in);
+      int n = scn.nextInt();
+      int b = scn.nextInt();
+      int d = getValueIndecimal(n, b);
+      System.out.println(d);
+   }
+  
+   public static int getValueIndecimal(int n, int b){
+      int ans = 0;
+      int power = 1; //b^0
+      
+      while(n != 0){
+          int ld = n % 10;
+          n = n / 10;
+          
+          ans += (ld * power);
+          power *= b;
+      }
+      return ans;
+   }
+  }
+===================================================
+7.Bar Chart.java
+--------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+    
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for(int i=0; i<=n-1; i++)
+    {
+        arr[i] = scn.nextInt();
+    }
+    
+    int cols = arr.length;
+    int max = Integer.MIN_VALUE;
+    for(int i=0; i<n; i++)
+    {
+        if(arr[i] > max) max = arr[i]; 
+    }
+    
+    int rows = max;
+    for(int i=rows; i>0; i--)
+    {
+        for(int j=0; j<cols; j++)
+        {
+            if(i <= arr[j]) // condition
+                { System.out.print("*	"); }
+            else System.out.print("	");
+        }
+        System.out.println();
+    }
+ }
+
+}
+
+===================================================
+8.Binary Search.java
+-----------------------
+    public int search(int[] arr, int target) {
+        int left = 0, right = arr.length - 1;
+        while(left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            
+            if(arr[mid] == target)
+            {
+                // Successfull search
+                return mid;
+            }
+            else if(arr[mid] < target)
+            {
+                left = mid + 1;
+            }
+            else // arr[mid] > target
+            {
+                right = mid - 1;
+            }
+        }
+        // Unsucessfull search
+        return -1;
+    }
+===================================================
+9.Decimal to Any Base.java 
+----------------------------
+import java.util.*;
+  
+  public class Main{
+  
+  public static void main(String[] args) {
+      Scanner scn = new Scanner(System.in);
+      int n = scn.nextInt();
+      int b = scn.nextInt();
+      int dn = getValueInBase(n, b);
+      System.out.println(dn);
+   }
+  
+   public static int getValueInBase(int n, int b){
+       int ans = 0;
+       int power = 1; //10^0
+       
+       while(n != 0){
+           int r = n % b;
+           n = n / b;
+           
+           ans += (r * power);
+           power *= 10;
+       }
+       
+       return ans;
+   }
+  }
+
+===================================================
+10.Difference of 2 Arrays.java
+---------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+    
+    int n1 = scn.nextInt();
+    int[] arr1 = new int[n1];
+    for(int i=0; i<n1; i++)
+        arr1[i] = scn.nextInt();
+    
+    int n2 = scn.nextInt();
+    int[] arr2 = new int[n2];
+    for(int i=0; i<n2; i++)
+        arr2[i] = scn.nextInt();
+    
+    int n3 = n2;
+    int[] arr3 = new int[n3];
+    
+    int i1 = n1 - 1, i2 = n2 - 1, i3 = n3 - 1;
+    int borrow = 0;
+    while(i3 >= 0)
+    {
+        int dig1 = (i1 >= 0) ? arr1[i1] : 0;
+        int dig2 = (i2 >= 0) ? arr2[i2] : 0;
+        int diff = (dig2 - borrow) - dig1;
+        if(diff < 0)
+        {
+            diff = diff + 10;
+            borrow = 1;
+        }
+        else borrow = 0;
+        
+        arr3[i3] = diff;
+        i1--; i2--; i3--;
+    }
+    
+    int i = 0;
+    while(arr3[i] == 0) // leading 0s
+    {
+        i++;
+    }
+    
+    for(; i < n3; i++)
+        System.out.println(arr3[i]);
+ }
+
+}
+===================================================
+
+11.Digit Frequency.java
+-----------------------
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        int d = scn.nextInt();
+        int f = getDigitFrequency(n, d);
+        System.out.println(f);
+    }
+     
+    public static int getDigitFrequency(int n, int d) {
+        // write code here
+        int freq = 0;
+        while(n > 0)
+        {
+            int dig = n % 10;
+            n = n/10;
+            if(dig == d) freq++;
+        }
+        return freq;
+    }
+}
+===================================================
+12.Exit Point of Matrix.java
+---------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void main(String[] args) throws Exception     {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+
+    // Declaration & Initialization
+    int n = scn.nextInt();
+    int m = scn.nextInt();
+    int[][] arr = new int[n][m];
+
+    // INPUT
+    for (int rows = 0; rows <= n - 1; rows++)
+    {
+      for (int cols = 0; cols <= m - 1; cols++) {
+        arr[rows][cols] = scn.nextInt();
+      }
+    }
+
+    int direction = 0, row = 0, col = 0;
+    while (row >= 0 && row < n && col >= 0 && col < m)
+    {
+      // Direction updation
+      if (arr[row][col] == 1)
+      {
+        direction = (direction + 1) % 4;
+      }
+
+      // Move One Step
+      if (direction == 0) // East
+      {
+        col++;
+      }
+      else if (direction == 1) // South
+      {
+        row++;
+      }
+      else if (direction == 2) // West
+      {
+        col--;
+      }
+      else // North
+      {
+        row--;
+      }
+    }
+
+    // Report Exit Point
+    if (direction == 0)
+    {
+      System.out.println(row);
+      System.out.println(col - 1);
+    }
+    else if (direction == 1)
+    {
+      System.out.println(row - 1);
+      System.out.println(col);
+    }
+    else if (direction == 2)
+    {
+      System.out.println(row);
+      System.out.println(col + 1);
+    }
+    else
+    {
+      System.out.println(row + 1);
+      System.out.println(col);
+    }
+
+
+  }
+
+}
+===================================================
+13.Inverse Array.java
+-------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  public static void display(int[] a){
+    StringBuilder sb = new StringBuilder();
+
+    for(int val: a){
+      sb.append(val + "
+");
+    }
+    System.out.println(sb);
+  }
+
+  public static int[] inverse(int[] a){
+    // write your code here
+    int[] ans = new int[a.length];
+    
+    for(int idx=0; idx<a.length; idx++)
+    {
+        int val = a[idx];
+        ans[val] = idx;
+    }
+    return ans;
+  }
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for(int i = 0; i < n; i++){
+       a[i] = Integer.parseInt(br.readLine());
+    }
+
+    int[] inv = inverse(a);
+    display(inv);
+ }
+
+}
+
+===================================================
+14.Linear Search.java
+------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    Scanner scn = new Scanner(System.in);
+    
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for(int i=0; i<=n-1; i++)
+    {
+        arr[i] = scn.nextInt();
+    }
+    
+    int d = scn.nextInt();
+    
+    int ans = -1;
+    for(int i=0; i<n; i++)
+    {
+        if(arr[i] == d)
+        {
+            ans = i;
+            break;
+        }
+    }
+    System.out.print(ans);
+    
+ }
+
+}
+===================================================
+15. Matrix Multiplication.java
+---------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+    
+    // Declaration & Initialization
+    int n1 = scn.nextInt();
+    int m1 = scn.nextInt();
+    int[][] arr1 = new int[n1][m1];
+    
+    // INPUT: 1st
+    for(int rows = 0; rows <= n1-1; rows++)
+    {
+        for(int cols = 0; cols <= m1-1; cols++)
+        {
+            arr1[rows][cols] = scn.nextInt();
+        }
+    }
+    
+    int n2 = scn.nextInt();
+    int m2 = scn.nextInt();
+    int[][] arr2 = new int[n2][m2];
+    
+    // INPUT: 2nd
+    for(int rows = 0; rows <= n2-1; rows++)
+    {
+        for(int cols = 0; cols <= m2-1; cols++)
+        {
+            arr2[rows][cols] = scn.nextInt();
+        }
+    }
+
+    if(m1 == n2)
+    {
+        int[][] res = new int[n1][m2];
+        for(int row=0; row<n1; row++)
+        {
+            for(int col=0; col<m2; col++)
+            {
+                // C[row][col]
+                // First matrix -> row, Second matrix -> col
+                int ans = 0;
+                for(int k = 0; k < m1; k++) // or for(int k=0; k<n2; k++)
+                {
+                    ans = ans + 
+                     arr1[row][k] * arr2[k][col]; 
+                }
+                res[row][col] = ans;
+                System.out.print(ans + " ");
+            }
+            System.out.println();
+        }
+        
+    }
+    else
+    {
+        // Matrix Multiplication not possible
+        System.out.println("Invalid input");
+    }
+ }
+
+}
+===================================================
+16.Print All Subarrays.java
+------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for(int i = 0; i < n; i++){
+       a[i] = Integer.parseInt(br.readLine());
+    }
+    
+    for(int stpt = 0; stpt < n; stpt++)
+    {
+        for(int enpt = stpt; enpt < n; enpt++)
+        {
+            // Starting Pt, Ending Pt
+            for(int i=stpt; i<=enpt; i++) // Print Subarray
+                System.out.print(a[i] + "	");
+            System.out.println();
+        }
+    }
+ }
+
+}
+===================================================
+17. Print All Subsets - Iteration.java
+----------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static int decimalToBinary(int dec)
+{
+    int bin = 0, power = 1;
+    while(dec > 0)
+    {
+        int dig = dec % 2;
+        dec = dec / 2;
+        bin = bin + dig * power;
+        power = power * 10;
+    }
+    return bin;
+}
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for(int i = 0; i < n; i++){
+       a[i] = Integer.parseInt(br.readLine());
+    }
+    
+    int totalSubsets = (int)Math.pow(2, n);
+    for(int dec=0; dec<totalSubsets; dec++)
+    {
+        int binaryNo = decimalToBinary(dec);
+        
+        // System.out.println(binaryNo);
+        // Subset
+        int div = (int)Math.pow(10, n-1);
+        for(int i=0; i<n; i++)
+        {
+            int quot = binaryNo / div;
+            if(quot % 10 == 0)
+                System.out.print("-	");
+            else System.out.print(a[i] + "	");
+            div = div / 10;
+        }
+        System.out.println();
+    }
+ }
+
+}
+===================================================
+18.Reverse Array.java 
+----------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  public static void display(int[] a){
+    StringBuilder sb = new StringBuilder();
+
+    for(int val: a){
+      sb.append(val + " ");
+    }
+    System.out.println(sb);
+  }
+
+  public static void reverse(int[] arr){
+    // write your code here
+    int left = 0, right = arr.length - 1;
+    while(left < right)
+    {
+        int temp = arr[left];
+        arr[left] = arr[right];
+        arr[right] = temp;
+        
+        left++; right--;
+    }
+  }
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for(int i = 0; i < n; i++){
+       a[i] = Integer.parseInt(br.readLine());
+    }
+
+    reverse(a);
+    display(a);
+ }
+
+}
+===================================================
+19.Ring Rotate.java
+---------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        // write your code here
+        Scanner scn = new Scanner(System.in);
+    
+        // Declaration & Initialization
+        int n = scn.nextInt();
+        int m = scn.nextInt();
+        int[][] arr = new int[n][m];
+    
+        // INPUT
+        for (int rows = 0; rows <= n - 1; rows++)
+        {
+          for (int cols = 0; cols <= m - 1; cols++)
+          {
+            arr[rows][cols] = scn.nextInt();
+          }
+        }
+        
+        int s = scn.nextInt();
+        int r = scn.nextInt();
+        
+        int[] oneD = getShell(arr, s);
+        rotate(oneD, r);
+        fillShell(arr, oneD, s);
+        display(arr);
+    }
+    
+    public static int[] getShell(int[][] arr, int s)
+    {
+        int n = arr.length, m = arr[0].length;
+        int frow = s - 1, fcol = s - 1;
+        int lrow = n - s, lcol = m - s;
+        int size = 2 * (lcol - fcol) + 
+                    2 * (lrow - frow);
+        
+        int[] oneD = new int[size];
+        
+        int counter = 0;
+        while(counter < size)
+        {
+            // left wall
+            for(int i = frow; i <= lrow; i++)
+            {
+                int j = fcol;
+                oneD[counter] = arr[i][j];
+                counter++;
+                if(counter >= size) return oneD;
+            }
+            
+            // Bottom - Left Element -> Duplicate
+            fcol++;
+            
+            // bottom wall
+            for(int j=fcol; j<=lcol; j++)
+            {
+                int i = lrow;
+                oneD[counter] = arr[i][j];
+                counter++;
+                if(counter >= size) return oneD;
+            }
+            
+            // Bottom - right Element -> Duplicate
+            lrow--;
+            
+            // right wall
+            for(int i = lrow; i>=frow; i--)
+            {
+                int j = lcol;
+                oneD[counter] = arr[i][j];
+                counter++;
+                if(counter >= size) return oneD;                
+            }
+            
+            // Top - right Element -> Duplicate
+            lcol--;
+            
+            // top wall
+            for(int j=lcol; j>=fcol; j--)
+            {
+                int i = frow;
+                oneD[counter] = arr[i][j];
+                counter++;
+                if(counter >= size) return oneD;                
+            }
+        }
+        
+        return oneD;
+    }
+    
+      public static void swap(int[] arr, int left, int right)
+  {
+      int temp = arr[left];
+      arr[left] = arr[right];
+      arr[right] = temp;
+  }
+  
+  public static void reverse(int[] arr, 
+         int left, int right){
+    while(left < right)
+    {
+        swap(arr, left, right);
+        left++; right--;
+    }
+  }
+  
+  public static void rotate(int[] a, int k){
+    // write your code here
+    int n = a.length;
+    k = ((k % n + n) % n);
+    reverse(a, 0, n-k-1); // First n-k elements
+    reverse(a, n-k, n-1); // Last k elements
+    reverse(a, 0, n-1); // Whole array
+  }
+  
+  public static void fillShell(int[][] arr, int[] oneD, int s)
+  {
+      int n = arr.length, m = arr[0].length;
+        int frow = s - 1, fcol = s - 1;
+        int lrow = n - s, lcol = m - s;
+        int size = 2 * (lcol - fcol) + 
+                    2 * (lrow - frow);
+        
+        int counter = 0;
+        while(counter < size)
+        {
+            // left wall
+            for(int i = frow; i <= lrow; i++)
+            {
+                int j = fcol;
+                arr[i][j] = oneD[counter];
+                counter++;
+                if(counter >= size) return;
+            }
+            
+            // Bottom - Left Element -> Duplicate
+            fcol++;
+            
+            // bottom wall
+            for(int j=fcol; j<=lcol; j++)
+            {
+                int i = lrow;
+                arr[i][j] = oneD[counter];
+                counter++;
+                if(counter >= size) return;
+            }
+            
+            // Bottom - right Element -> Duplicate
+            lrow--;
+            
+            // right wall
+            for(int i = lrow; i>=frow; i--)
+            {
+                int j = lcol;
+                arr[i][j] = oneD[counter];
+                counter++;
+                if(counter >= size) return;                
+            }
+            
+            // Top - right Element -> Duplicate
+            lcol--;
+            
+            // top wall
+            for(int j=lcol; j>=fcol; j--)
+            {
+                int i = frow;
+                arr[i][j] = oneD[counter];
+                counter++;
+                if(counter >= size) return;                
+            }
+        }
+  }
+
+    public static void display(int[][] arr){
+        for(int i = 0; i < arr.length; i++){
+            for(int j = 0; j < arr[0].length; j++){
+                System.out.print(arr[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+}
+===================================================
+20.Rotate Array.java
+----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+  public static void display(int[] a){
+    StringBuilder sb = new StringBuilder();
+
+    for(int val: a){
+      sb.append(val + " ");
+    }
+    System.out.println(sb);
+  }
+  
+  public static void swap(int[] arr, int left, int right)
+  {
+      int temp = arr[left];
+      arr[left] = arr[right];
+      arr[right] = temp;
+  }
+  
+  public static void reverse(int[] arr, 
+         int left, int right){
+    while(left < right)
+    {
+        swap(arr, left, right);
+        left++; right--;
+    }
+  }
+  
+  public static void rotate(int[] a, int k){
+    // write your code here
+    int n = a.length;
+    k = ((k % n + n) % n);
+    reverse(a, 0, n-k-1); // First n-k elements
+    reverse(a, n-k, n-1); // Last k elements
+    reverse(a, 0, n-1); // Whole array
+  }
+
+public static void main(String[] args) throws Exception {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    int n = Integer.parseInt(br.readLine());
+    int[] a = new int[n];
+    for(int i = 0; i < n; i++){
+       a[i] = Integer.parseInt(br.readLine());
+    }
+    int k = Integer.parseInt(br.readLine());
+
+    rotate(a, k);
+    display(a);
+ }
+
+}
+===================================================
+
+21.Rotate by 90 Degree.java 
+----------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+  public static void main(String[] args) throws Exception     {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+
+    // Declaration & Initialization
+    int n = scn.nextInt();
+    int[][] arr = new int[n][n];
+
+    // INPUT
+    for (int rows = 0; rows <= n - 1; rows++)
+    {
+      for (int cols = 0; cols <= n - 1; cols++)
+      {
+        arr[rows][cols] = scn.nextInt();
+      }
+    }
+    
+    // Transpose
+    for(int rows = 0; rows < n; rows++)
+    {
+        for(int cols = rows + 1; cols < n; cols++)
+        {
+            // Swap (cols, rows) & (rows, cols)
+            int temp = arr[rows][cols];
+            arr[rows][cols] = arr[cols][rows];
+            arr[cols][rows] = temp;
+        }
+    }
+    
+    // Row by Row Reverse
+    for(int rows = 0; rows < n; rows++)
+    { reverse(arr, rows); }
+    
+    display(arr);
+  }
+  
+  public static void reverse(int[][] arr, int row)
+  {
+      int left = 0, right = arr[row].length - 1;
+      while(left < right)
+      {
+          // (row, left) & (row, right) Swap
+          int temp = arr[row][left];
+          arr[row][left] = arr[row][right];
+          arr[row][right] = temp;
+          
+          left++; right--;
+      }
+  }
+
+  public static void display(int[][] arr) {
+    for (int i = 0; i < arr.length; i++) {
+      for (int j = 0; j < arr[0].length; j++) {
+        System.out.print(arr[i][j] + " ");
+      }
+      System.out.println();
+    }
+  }
+
+}
+
+
+===================================================
+22.Saddle Price.java
+----------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        // write your code here
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        int[][] arr = new int[n][n];
+        
+        for(int i=0; i<n; i++)
+        {
+            for(int j=0; j<n; j++)
+            {
+                arr[i][j] = scn.nextInt();
+            }
+        }
+        
+        boolean isSaddlePtAchieved = false;
+        for(int i=0; i<n; i++)
+        {
+            // Minimum of row i
+            int Min = Integer.MAX_VALUE, col = 0;
+            for(int j=0; j<n; j++)
+            {
+                if(arr[i][j] < MIn)
+                {
+                    Min = arr[i][j];
+                    col = j;
+                }
+            }
+            
+            // Maximum of col j
+            int Max = Integer.MIN_VALUE;
+            for(int k=0; k<n; k++)
+            {
+                if(arr[k][col] > Max)
+                    Max = arr[k][col];
+            }
+            
+            // Maximum Element == Minimum Element;
+            if(Min == Max)
+            {
+                System.out.println(Min);
+                isSaddlePtAchieved = true;
+                break;
+            }
+        }
+        
+        if(isSaddlePtAchieved == false)
+            System.out.println("Invalid input");
+    }
+
+}
+===================================================
+23.Span of Array.java 
+--------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+    
+    int n = scn.nextInt();
+    int[] arr = new int[n];
+    for(int i=0; i<=n-1; i++)
+    {
+        arr[i] = scn.nextInt();
+    }
+    
+    int min = Integer.MAX_VALUE;
+    int max = Integer.MIN_VALUE;
+    
+    for(int i=0; i<n; i++)
+    {
+        int curr_val = arr[i];
+        if(curr_val < min) 
+            min = curr_val;
+        if(curr_val > max)
+            max = curr_val;
+    }
+    
+    int span = max - min;
+    System.out.print(span);
+ }
+
+}
+===================================================
+24.Spiral Display.java 
+--------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+public static void main(String[] args) throws Exception {
+        // write your code here
+        Scanner scn = new Scanner(System.in);
+        
+        // Declaration & Initialization
+        int n = scn.nextInt();
+        int m = scn.nextInt();
+        int[][] arr = new int[n][m];
+        
+        // INPUT
+        for(int rows = 0; rows <= n-1; rows++)
+        {
+            for(int cols = 0; cols <= m-1; cols++) {
+                arr[rows][cols] = scn.nextInt();
+            }
+        }
+        
+        int frow = 0, lrow = n-1, fcol = 0, lcol = m-1;
+        int counter = 0;
+        
+        while(counter < n*m)
+        {
+            // left wall
+            for(int i = frow; i <= lrow; i++)
+            {
+                int j = fcol;
+                System.out.println(arr[i][j]);
+                counter++;
+                if(counter == n*m) return;
+            }
+            
+            // Bottom - Left Element -> Duplicate
+            fcol++;
+            
+            // bottom wall
+            for(int j=fcol; j<=lcol; j++)
+            {
+                int i = lrow;
+                System.out.println(arr[i][j]);
+                counter++;
+                if(counter >= n*m) return;
+            }
+            
+            // Bottom - right Element -> Duplicate
+            lrow--;
+            
+            // right wall
+            for(int i = lrow; i>=frow; i--)
+            {
+                int j = lcol;
+                System.out.println(arr[i][j]);
+                counter++;
+                if(counter >= n*m) return;                
+            }
+            
+            // Top - right Element -> Duplicate
+            lcol--;
+            
+            // top wall
+            for(int j=lcol; j>=fcol; j--)
+            {
+                int i = frow;
+                System.out.println(arr[i][j]);
+                counter++;
+                if(counter >= n*m) return;                
+            }
+            
+            // Updation Condition? - for next shell
+            frow++;
+        }
+        
+        return;
+    }
+
+}
+===================================================
+25.State of Wakanda - I.java 
+---------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+    
+    // Declaration & Initialization
+    int n = scn.nextInt();
+    int m = scn.nextInt();
+    int[][] arr = new int[n][m];
+    
+    // INPUT
+    for(int rows = 0; rows <= n-1; rows++)
+    {
+        for(int cols = 0; cols <= m-1; cols++) {
+            arr[rows][cols] = scn.nextInt();
+        }
+    }
+    
+    // Wave Traversal
+    for(int col = 0; col < m; col++)
+    {
+        if(col % 2 == 0) // even col
+        {
+            // Top to Bottom
+            for(int row = 0; row < n; row++)
+            {
+                System.out.println(arr[row][col]);      
+            }
+        }
+        else // odd col
+        {
+            // Bottom to Top
+            for(int row = n-1; row >=0; row--)
+            {
+                System.out.println(arr[row][col]);
+            }
+        }
+    }
+ }
+
+}
+===================================================
+26.State of Wakanda - II.java
+--------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        // write your code here
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        int[][] arr = new int[n][n];
+        
+        for(int i=0; i<n; i++)
+        {
+            for(int j=0; j<n; j++)
+            {
+                arr[i][j] = scn.nextInt();
+            }
+        }
+        
+        for(int gap = 0; gap < n; gap++)
+        {
+            // gap = col - row
+            for(int row = 0, col = gap; col < n; row++, col++)
+            { System.out.println(arr[row][col]); }
+        }
+    }
+
+}
+===================================================
+27.Sum of 2 Arrays.java 
+--------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main{
+
+public static void main(String[] args) throws Exception {
+    // write your code here
+    Scanner scn = new Scanner(System.in);
+    int n1 = scn.nextInt();
+    int[] arr1 = new int[n1];
+    for(int i=0; i<n1; i++)
+        arr1[i] = scn.nextInt();
+    
+    int n2 = scn.nextInt();
+    int[] arr2 = new int[n2];
+    for(int i=0; i<n2; i++)
+        arr2[i] = scn.nextInt();
+    
+    int n3 = Math.max(n1, n2) + 1;
+    int[] arr3 = new int[n3];
+    
+    int i1 = n1 - 1, i2 = n2 - 1, i3 = n3 - 1;
+    int carry = 0;
+    
+    while(i3 >= 0)// condition
+    {
+        // int sum = (n1 % 10) + (n2 % 10) + carry;
+        int dig1 = (i1 >= 0) ? arr1[i1] : 0;
+        int dig2 = (i2 >= 0) ? arr2[i2] : 0;
+        int sum = dig1 + dig2 + carry;
+        int quot = sum / 10;
+        int rem = sum % 10;
+        
+        arr3[i3] = rem;
+        carry = quot;
+        i1--; i2--; i3--;
+    }
+    
+    for(int i=0; i<arr3.length; i++)
+    {
+        if(i == 0 && arr3[i] == 0)
+            continue;
+        else
+            System.out.println(arr3[i]);
+    }
+ }
+
+}
+===================================================
+28.
+===================================================
+29.
+===================================================
+30.
+===================================================
+===================================================
+===================================================
+===================================================
+===================================================
+===================================================
+===================================================

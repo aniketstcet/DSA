@@ -1,0 +1,647 @@
+10. Binary Search Tree
+---------------------
+
+Follow of chapters :
+
+ Binary Search Tree - Introduction
+ Binary Search Tree - Constructor
+ Size, Sum, Max, Min, Find In Bst Easy
+ Add Node To Bst Easy
+ Remove Node From Bst Medium
+ Replace With Sum Of Larger Easy
+ Lca Of Bst Easy
+ Print In Range Easy
+ Target Sum Pair In Bst Easy
+ Target Sum Pair - Bst - Alternate Approaches
+ Add Node To BST
+ Remove Node From BST
+ Replace With Sum Of Larger
+ Lca Of Bst
+ Print In Range
+ Target Sum Pair In BST
+ Target Sum Pair in BST-Alternate Approaches
+ Size, Sum, Max, Min, Find In Bst
+ Binary Search Tree-Introduction
+ Binary Search Tree- Constructor
+
+==================================================
+1.Add Node in BST.java
+------------------------------------
+public static Node add(Node node, int data) {
+      if(node == null){
+          Node newNode = new Node(data, null, null);
+          return newNode;
+      }
+      
+      if(node.data == data) return node;
+      
+      else if(node.data < data) 
+        node.right = add(node.right, data);
+      else  
+        node.left = add(node.left, data);
+      
+      return node;
+  }
+===================================================
+2.BST to Greater Sum Tree.java 
+------------------------------------
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+
+// Replace Nodes with Sum of Larger Nodes
+class Solution {
+    static int sum = 0;
+    public TreeNode bstToGst(TreeNode root) {
+        sum = 0;
+        return bstToGstHelper(root);
+    }
+    
+    public TreeNode bstToGstHelper(TreeNode root){
+        if(root == null) return null;
+        
+        root.right = bstToGstHelper(root.right);
+        
+        sum += root.val;
+        root.val = sum;
+        
+        root.left = bstToGstHelper(root.left);
+        
+        return root;
+    }
+}
+===================================================
+3.Construct BST.java
+-------------------------------
+// leetcode 108. Convert Sorted Array to Binary Search Tree
+class Solution {
+    public TreeNode construct(int[] nums, int l, int r){
+        if(l > r) return null;
+        
+        int mid = (l + r) / 2;
+        
+        TreeNode root = new TreeNode(nums[mid]);
+        
+        root.left = construct(nums, l, mid - 1);
+        root.right = construct(nums, mid + 1, r);
+        return root;
+    }
+    
+    public TreeNode sortedArrayToBST(int[] nums) {
+        TreeNode root = construct(nums, 0, nums.length - 1);
+        return root;
+    }
+}
+
+===================================================
+4.Inorder Traversal.java
+----------------------------------
+public static void inorder(Node root){
+    if(root == null) return;
+    
+    inorder(root.left);
+    System.out.println(root.data);
+    inorder(root.right);
+  }
+  
+  public static void revInorder(Node root){
+    if(root == null) return;
+    
+    revInorder(root.right);
+    System.out.println(root.data);
+    revInorder(root.left);
+  }
+===================================================
+5.Is Tree Balanced.java
+------------------------------------
+public static class balPair{
+    int height = 0;
+    boolean isBal = true;
+  }
+  
+  public static balPair isBalanced(Node root){
+      if(root == null) return new balPair();
+      
+      balPair left = isBalanced(root.left);
+      balPair right = isBalanced(root.right);
+      
+      balPair curr = new balPair();
+      
+      if(left.isBal && right.isBal && Math.abs(left.height - right.height) <= 1){
+          curr.isBal = true;
+      } else {
+          curr.isBal = false;
+      }
+      
+      curr.height = Math.max(left.height, right.height) + 1;
+      return curr;
+  }
+===================================================
+6.Is Tree a BST.java 
+------------------------------------
+ public static class isBSTPair{
+      int max = Integer.MIN_VALUE;
+      int min = Integer.MAX_VALUE;
+      boolean isBST = true;
+  }
+  
+  // postorder solution - o(n)
+  public static isBSTPair isBST(Node root){
+      if(root == null) return new isBSTPair();
+      
+      isBSTPair left = isBST(root.left);
+      isBSTPair right = isBST(root.right);
+      
+      isBSTPair curr = new isBSTPair();
+      if(left.max < root.data && root.data < right.min
+         && left.isBST && right.isBST){
+          curr.isBST = true;
+      } else {
+          curr.isBST = false;
+      }
+      
+      curr.min = Math.min(root.data, Math.min(left.min, right.min));
+      curr.max = Math.max(root.data, Math.max(left.max, right.max));
+      return curr;
+  }
+  
+  // poor O(n^2) time solution
+  public static boolean isBST(Node root){
+      if(root == null) return true;
+      
+      boolean lres = isBST(root.left);
+      boolean rres = isBST(root.right);
+      
+      int leftMax = max(root.left);
+      int rightMin = min(root.right);
+      
+      if(leftMax < root.data && root.data < rightMin
+         && left.isBST && right.isBST){
+             return true;
+      } 
+      
+      return false;
+  }
+  
+  // preorder solution - o(n)
+  public static boolean isBST(Node root, int min, int max){
+      if(root == null) return true;
+      
+      if(root.data > min && root.data < max){
+          boolean lres = isBST(root.left, min, root.data);
+          boolean rres = isBST(root.right, root.data, max);
+          return lres && rres;
+      }
+      
+      return false;
+  }
+===================================================
+
+7.LCA - BST.java
+------------------------------------
+// O(h) time, O(h) recursion space
+public static int lca(Node node, int d1, int d2) {
+        if(node.data == d1 || node.data == d2){
+            return node.data;
+            
+        } else if(d1 < node.data && d2 < node.data){
+            return lca(node.left, d1, d2);
+            
+        } else if(d1 > node.data && d2 > node.data){
+            return lca(node.right, d1, d2);
+            
+        } else {
+            // d1 < node.data < d2 or d2 < node.data < d1
+            return node.data;
+        }
+}
+
+
+
+
+
+
+
+===================================================
+8.Largest BST Subtree.java
+------------------------------------
+public static class isBSTPair{
+      int max = Integer.MIN_VALUE;
+      int min = Integer.MAX_VALUE;
+      boolean isBST = true;
+      int count = 0;
+  }
+  
+  static int maxCount = 0;
+  static Node largestBST = null;
+  
+  public static isBSTPair largestBST(Node root){
+      if(root == null) return new isBSTPair();
+      
+      isBSTPair left = largestBST(root.left);
+      isBSTPair right = largestBST(root.right);
+      
+      isBSTPair curr = new isBSTPair();
+      curr.count = left.count + right.count + 1;
+      
+      if(left.max < root.data && root.data < right.min
+          && left.isBST && right.isBST){
+          curr.isBST = true;
+          
+          if(curr.count > maxCount){
+            maxCount = curr.count;
+            largestBST = root;
+          }
+          
+      } else {
+          curr.isBST = false;
+      }
+      
+      curr.min = Math.min(root.data, Math.min(left.min, right.min));
+      curr.max = Math.max(root.data, Math.max(left.max, right.max));
+      return curr;
+  }
+
+
+// approach 2: return type
+public static class isBSTPair{
+      int max = Integer.MIN_VALUE;
+      int min = Integer.MAX_VALUE;
+      boolean isBST = true;
+      int count = 0;
+      int maxCount = 0;
+      Node largestBST = null;
+  }
+  
+public static isBSTPair largestBST(Node root){
+      if(root == null) return new isBSTPair();
+      
+      isBSTPair left = largestBST(root.left);
+      isBSTPair right = largestBST(root.right);
+      
+      isBSTPair curr = new isBSTPair();
+      curr.count = left.count + right.count + 1;
+      
+      curr.maxCount = (left.maxCount > right.maxCount) ? left.maxCount : right.maxCount;
+      curr.largestBST = (left.maxCount > right.maxCount) ? left.largestBST : right.largestBST;
+      
+      if(left.max < root.data && root.data < right.min
+          && left.isBST && right.isBST){
+          curr.isBST = true;
+          
+          if(curr.count > curr.maxCount){
+            curr.maxCount = curr.count;
+            curr.largestBST = root;
+          }
+          
+      } else {
+          curr.isBST = false;
+      }
+      
+      curr.min = Math.min(root.data, Math.min(left.min, right.min));
+      curr.max = Math.max(root.data, Math.max(left.max, right.max));
+      return curr;
+  }
+===================================================
+
+9.Print in Range.java
+------------------------------------
+public static void pir1(Node node, int d1, int d2) {
+        if(node == null) return;
+        
+        if(!(node.data < d1))
+            pir1(node.left, d1, d2);
+        
+        if(node.data >= d1 && node.data <= d2)
+            System.out.println(node.data);
+        
+        if(!(node.data > d2))
+            pir1(node.right, d1, d2);
+  }
+
+  public static void pir2(Node node, int d1, int d2){
+      if(node == null) return;
+      
+      if(node.data < d1){
+          
+          pir2(node.right, d1, d2);
+          
+      } else if(node.data > d2){
+          
+          pir2(node.left, d1, d2);
+          
+      } else {
+          
+          pir2(node.left, d1, d2);
+          System.out.println(node.data);
+          pir2(node.right, d1, d2);
+          
+      }
+  }
+===================================================
+10.Remove Node in BST.java
+------------------------------------
+public static Node remove(Node node, int data) {
+    if(node == null){
+        // if node does not exist
+        return null;
+    }
+    
+    if(node.data == data){
+        
+        if(node.left == null && node.right == null){
+            // leaf node
+            return null;
+            
+        } else if(node.left == null){
+            // only right child
+            return node.right;
+            
+        } else if(node.right == null){
+            // only left child
+            return node.left;
+            
+        } else {
+            // 2 child
+            int inorderPredecessor = max(node.left);
+            node.data = inorderPredecessor;
+            node.left = remove(node.left, inorderPredecessor);
+        }
+        
+    } else if(node.data < data)
+        node.right = remove(node.right, data);
+    else node.left = remove(node.left, data);
+    
+    return node;
+  }
+===================================================
+
+11.Size, Sum, Min, Max, Find.java
+------------------------------------
+public static int size(Node node) {
+      if(node == null) return 0;
+      
+      int lsize = size(node.left);
+      int rsize = size(node.right);
+      return lsize + rsize + 1;
+  }
+
+  public static int sum(Node node) {
+      if(node == null) return 0;
+      
+      int lsum = sum(node.left);
+      int rsum = sum(node.right);
+      return lsum + rsum + node.data;      
+  }
+
+  public static int max(Node node) {
+        if(node.right == null) 
+            return node.data;
+        return max(node.right);
+  }
+
+  public static int min(Node node) {
+       if(node.left == null) 
+            return node.data;
+       return min(node.left);
+  }
+
+  public static boolean find(Node node, int data){
+      if(node == null) return false;
+      if(node.data == data) return true;
+      if(data < node.data)
+        return find(node.left, data);
+      return find(node.right, data);
+  }  
+===================================================
+12.Target Sum Pair - BST.java
+------------------------------------
+public static void approach2Helper(Node root, ArrayList<Integer> arr){
+    if(root == null) return;
+    
+    approach2Helper(root.left, arr);
+    arr.add(root.data);
+    approach2Helper(root.right, arr);
+  }
+  public static void approach2(Node root, int target){
+    ArrayList<Integer> arr = new ArrayList<>(); // o(n) space 
+    approach2Helper(root, arr); // insert elements in sorted order in arraylist - O(n)
+    
+    // Two Pointer on arraylist - o(n)
+    int left = 0, right = arr.size() - 1;
+    
+    while(left < right){
+        int sum = arr.get(left) + arr.get(right);
+        if(sum == target){
+            System.out.println(arr.get(left) + " " + arr.get(right));
+            left++; right--;
+        } else if(sum < target){
+            left++;
+        } else {
+            right--;
+        }
+    }
+  }
+  
+  public static boolean find(Node curr, int target){
+    if(curr == null) return false;
+    if(curr.data == target) return true;
+    
+    if(curr.data < target) return find(curr.right, target);
+    return find(curr.left, target);
+  }
+  public static void approach1Helper(Node curr, int target, Node root){
+      if(curr == null) return;
+      
+      approach1Helper(curr.left, target, root);
+      
+      if(curr.data >= target/2) return;
+      
+      int complement = target - curr.data;
+      if(find(root, complement) == true){
+          System.out.println(curr.data + " " + complement);
+      }
+      
+      approach1Helper(curr.right, target, root);
+  }
+  public static void approach1(Node root, int target){
+     approach1Helper(root, target, root);
+  }
+  
+// O(n) time, O(h) stack space
+  public static void approach3(Node root, int target){
+      Stack<Pair> inorder = new Stack<>();
+      inorder.push(new Pair(root, -1));
+      
+      Stack<Pair> reverseInorder = new Stack<>();
+      reverseInorder.push(new Pair(root, -1));
+      
+      int left = iterativeInorder(inorder);
+      int right = iterativeReverseInorder(reverseInorder);
+      
+      while(left < right){
+
+          if(left + right == target){
+            System.out.println(left + " " + right);
+            left = iterativeInorder(inorder);
+            right = iterativeReverseInorder(reverseInorder);
+            
+          } else if(left + right < target){
+            left = iterativeInorder(inorder);  
+          } else {
+            right = iterativeReverseInorder(reverseInorder);
+          }
+      }
+  }
+  
+  public static int iterativeInorder(Stack<Pair> stk) {
+    while(!stk.isEmpty()){
+        Pair par = stk.peek();
+        
+        if(par.state == -1){
+            // preorder
+                
+            if(par.node.left != null){
+                stk.push(new Pair(par.node.left, -1));
+            }
+            par.state++;
+            
+        } else if(par.state == 0){
+            // inorder
+            int val = par.node.data;
+            
+            if(par.node.right != null){
+                stk.push(new Pair(par.node.right, -1));
+            }
+            par.state++;
+            
+            return val;
+            
+        } else if(par.state == 1){
+            // postorder
+            stk.pop();
+        }
+    }
+    
+    return -1;
+  }
+  
+  public static int iterativeReverseInorder(Stack<Pair> stk) {
+    
+    while(!stk.isEmpty()){
+        Pair par = stk.peek();
+        
+        if(par.state == -1){
+            // reverse preorder
+            if(par.node.right != null){
+                stk.push(new Pair(par.node.right, -1));
+            }
+            par.state++;
+            
+        } else if(par.state == 0){
+            // reverse inorder
+            int val = par.node.data;
+            
+            if(par.node.left != null){
+                stk.push(new Pair(par.node.left, -1));
+            }
+            par.state++;
+            
+            return val;
+            
+        } else if(par.state == 1){
+            // reverse postorder
+            stk.pop();
+        }
+    }
+    
+    return -1;
+  }
+===================================================
+
+13.
+------------------------------------
+
+===================================================
+14.
+------------------------------------
+
+===================================================
+15.
+------------------------------------
+
+===================================================
+16.
+------------------------------------
+
+===================================================
+17.
+------------------------------------
+
+===================================================
+18.
+------------------------------------
+
+===================================================
+19.
+------------------------------------
+
+===================================================
+20.
+------------------------------------
+
+===================================================
+
+21.
+------------------------------------
+
+
+===================================================
+22.
+------------------------------------
+
+===================================================
+23.
+------------------------------------
+
+===================================================
+24.
+------------------------------------
+
+===================================================
+25.
+------------------------------------
+
+===================================================
+26.
+------------------------------------
+
+===================================================
+27.
+------------------------------------
+
+===================================================
+28.
+------------------------------------
+
+===================================================
+29.
+------------------------------------
+
+===================================================
+30.
+------------------------------------
+
+===================================================

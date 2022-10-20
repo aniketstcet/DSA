@@ -1,0 +1,731 @@
+
+08. Generic Tree
+------------------
+
+==================================================
+1.Ceil & Floor.java
+------------------------------------
+  static int ceil = Integer.MAX_VALUE;
+  static int floor = Integer.MIN_VALUE;
+
+  public static void ceilAndFloor(Node node, int data) {
+      if(node.data < data)
+          floor = Math.max(floor, node.data);
+      else if(node.data > data)
+          ceil = Math.min(ceil, node.data);
+        
+      for(Node child: node.children)
+          ceilAndFloor(child, data);
+  }
+
+public static int kthLargest(Node node, int k){
+    int ans = Integer.MAX_VALUE;  
+      
+    for(int i=1; i<=k; i++){
+        floor = Integer.MIN_VALUE;
+        ceilAndFloor(node, ans);
+        ans = floor;
+    }
+    
+    return ans;
+  }
+===================================================
+2. Diameter of Tree.java
+------------------------------------
+static int maxDiameter = 0;
+  public static int diameter(Node root){
+      
+      int max1 = -1, max2 = -1;
+      for(Node child: root.children){
+          int hc = diameter(child);
+          
+          if(hc >= max1){
+              max2 = max1;
+              max1 = hc;
+          } else if(hc >= max2){
+              max2 = hc;
+          } 
+      }
+      
+      int dia = max1 + max2 + 2;
+      maxDiameter = Math.max(dia, maxDiameter);
+      
+      return max1 + 1;
+  }
+===================================================
+3.Find in Generic Tree.java
+-------------------------------
+public static boolean find(Node node, int data) {
+    if(node.data == data) return true;
+    
+    for(Node child: node.children){
+        boolean ans = find(child, data);
+        
+        if(ans == true) return true;
+    }
+    
+    return false;
+  }
+
+===================================================
+4.Generic Tree.java
+----------------------------------
+private static class Node{
+      int data;
+      ArrayList<Node> children;
+      
+      Node(int data){
+          this.data = data;
+          this.children = new ArrayList<>();
+      }
+      
+      Node(){
+          this.data = 0;
+          this.children = new ArrayList<>();
+      }
+  }
+
+public static Node construct(int[] arr) {
+    Node root = null;
+    Stack<Node> stk = new Stack<>();
+    
+    for(int i=0; i<arr.length; i++){
+        
+        if(arr[i] != -1){
+            
+            Node child = new Node(arr[i]);
+            
+            if(stk.isEmpty()){
+                // root node
+                root = child;
+            } else {
+                Node parent = stk.peek();
+                parent.children.add(child);
+            }
+            
+            
+            stk.push(child);
+            
+        } else {
+            // delimeter
+            stk.pop();
+        }
+    }
+    
+    return root;
+  }
+
+public static void display(Node root) {
+      if(root == null) return;
+      
+      // Meeting Expectation
+      print(root);
+      
+      // faith
+      for(Node child: root.children){
+            display(child);
+      }
+  }
+===================================================
+5.Iterative Preorder & Postorder.java
+------------------------------------
+public static void IterativePreandPostOrder(Node root) {
+        Stack<Pair> stk = new Stack<>();
+        
+        Pair rootPair = new Pair(root, -1);
+        stk.push(rootPair);
+        
+        ArrayList<Integer> preorder = new ArrayList<>();
+        ArrayList<Integer> postorder = new ArrayList<>();
+        
+        while(stk.size() > 0){
+            
+            Pair parent = stk.peek(); 
+            
+            if(parent.state == -1){
+                // preorder
+                preorder.add(parent.node.data);
+                
+                // edge pre 
+                parent.state++;
+                
+            } else if(parent.state == parent.node.children.size()){
+                // postorder
+                postorder.add(parent.node.data);
+                stk.pop();
+                
+            } else {
+                // edge
+                Pair child = new Pair(parent.node.children.get(parent.state), -1);
+                
+                stk.push(child);
+                // next edge
+                parent.state++;
+            }
+        }
+        
+        for(Integer i: preorder){
+            System.out.print(i + " ");
+        }
+        
+        System.out.println();
+        for(Integer i: postorder){
+            System.out.print(i + " ");
+        }
+  }
+===================================================
+6.Level Order Linewise.java
+------------------------------------
+public static void levelorder1(Node root){
+    Queue<Node> mainQ = new ArrayDeque<>();
+    mainQ.add(root);
+      
+    
+    while(mainQ.size() > 0){
+        Queue<Node> childQ = new ArrayDeque<>();
+        
+        while(mainQ.size() > 0){
+            // Do work of one level
+            
+            Node curr = mainQ.remove();
+            System.out.print(curr.data + " ");
+            
+            for(Node child: curr.children){
+                childQ.add(child);
+            }
+        }
+        
+        System.out.println();
+        mainQ = childQ;
+    }
+  }
+  
+  public static void levelorder2(Node root){
+      Queue<Node> q = new ArrayDeque<>();
+      Node dummy = new Node();
+      dummy.data = -1;
+      
+      q.add(root);
+      q.add(dummy);
+      
+      while(q.size() > 0){
+          
+          Node curr = q.remove();
+          
+          if(curr.data == -1){
+              // dummy node -> delimeter
+              
+              System.out.println();
+              
+              if(q.size() > 0){
+                q.add(dummy);
+              }
+              
+          } else {
+              
+              System.out.print(curr.data + " ");
+              for(Node child: curr.children){
+                    q.add(child);   
+              }
+          }
+      }
+  }
+  
+  public static void levelorder3(Node root){
+    Queue<Node> q = new ArrayDeque<>();
+    q.add(root);
+    
+    while(q.size() > 0){
+        // Pop 1 Node
+        
+        int counter = q.size();
+        for(int i=0; i<counter; i++){
+            Node curr = q.remove();
+            System.out.print(curr.data + " ");
+        
+            // Push Children in Queue
+            for(Node child: curr.children){
+                q.add(child);
+            }
+        }
+        
+        System.out.println();        
+    }
+  }
+
+// Zig Zag
+public static void levelOrderLinewiseZZ(Node node){
+    // write your code here
+    Stack<Node> mainStk = new Stack<>();
+    
+    int counter = 0;
+    mainStk.push(node);
+    
+    while(!mainStk.isEmpty()){
+        Stack<Node> childStk = new Stack<>();
+        while(!mainStk.isEmpty()){
+            Node par = mainStk.pop();
+            System.out.print(par.data + " ");
+            
+            if(counter % 2 == 0){
+                
+                for(int i=0; i<par.children.size(); i++){
+                    childStk.push(par.children.get(i));
+                }
+                
+            } else {
+                
+                for(int i=par.children.size()-1; i>=0; i--){
+                    childStk.push(par.children.get(i));
+                }
+            }
+        }
+        System.out.println();
+        counter++;
+        mainStk = childStk;
+    }
+    
+  }
+===================================================
+
+7.Linearize.java
+------------------------------------
+
+public static Node getLastNode(Node curr){
+    while(curr.children.size() > 0){
+        curr = curr.children.get(0);
+    }    
+    return curr;
+  }
+  
+  public static Node linearizeOpt(Node root) {
+      if(root.children.size() == 0){
+          return root;
+      }
+      
+      Node lastTreetail = linearizeOpt(root.children.get(root.children.size() - 1));
+      
+      while(root.children.size() > 1) {
+          Node lastTreehead = root.children.remove(root.children.size() - 1);
+          Node secondLastTreetail = linearizeOpt(root.children.get(root.children.size() - 1));
+          secondLastTreetail.children.add(lastTreehead);
+      }
+      
+      return lastTreetail;
+  }
+  
+  public static void linearize(Node root){
+      // faith
+      for(Node child: root.children){
+          linearize(child);
+      }
+      
+      // meeeting expectation
+      while(root.children.size() > 1){
+          
+          Node lastTreeroot = root.children.remove(root.children.size() - 1);
+          Node secondlastTreeroot = root.children.get(root.children.size() - 1);
+          
+          Node secondlastTreetail = getLastNode(secondlastTreeroot);
+          secondlastTreetail.children.add(lastTreeroot);
+      }
+  }
+===================================================
+8.Maximum Subtree Sum.java 
+------------------------------------
+  static int maxSum = Integer.MIN_VALUE;
+  static Node maxSumNode = null;
+  
+  public static int subtreeSum(Node root){
+      int sum = root.data;
+      for(Node child: root.children){
+          sum += subtreeSum(child);
+      }
+      
+      if(sum > maxSum){
+          maxSum = sum;
+          maxSumNode = root;
+      }
+      
+      return sum;
+  }
+  
+  public static class Pair{
+      int maxSum;
+      Node maxSumNode;
+      int sum;
+      
+      Pair(int sum){
+          this.sum = sum;
+      }
+  }
+  
+  public static Pair subtreeSum2(Node root){
+      Pair ans = new Pair(root.data);
+      for(Node child: root.children){
+          Pair temp = subtreeSum2(child);
+          ans.sum += temp.sum;
+          
+          if(temp.maxSum > ans.maxSum){
+              ans.maxSum = temp.maxSum;
+              ans.maxSumNode = temp.maxSumNode;
+          }
+      }
+      
+      if(ans.sum > ans.maxSum){
+            ans.maxSum = ans.sum;
+            ans.maxSumNode = root;
+      }
+      
+      return ans;
+  }
+===================================================
+
+9.Mirror Generic Tree.java
+------------------------------------
+public static void mirror(Node node){
+    // write your code here
+    Collections.reverse(node.children);
+    
+    for(Node child: node.children){
+        mirror(child);
+    }
+  }
+===================================================
+10.Multisolver.java
+------------------------------------
+static int size = 0;
+  static int min = Integer.MAX_VALUE;
+  static int max = Integer.MIN_VALUE;
+  static int height = 0;
+  
+  public static void multisolver(Node root, int level){
+      if(root == null) return;
+      
+      // Preorder
+      size++;
+      if(root.data < min) min = root.data;
+      if(root.data > max) max = root.data;
+      if(level > height) height = level;
+      
+      for(Node child: root.children){
+          multisolver(child, level + 1);
+      }
+  }
+
+  public static class Multisolver{
+    int size = 0;
+    int min = Integer.MAX_VALUE;
+    int max = Integer.MIN_VALUE;
+    int height = 0;
+    
+    Multisolver(int size, int min, int max){
+        this.size = size;
+        this.min = min;
+        this.max = max;
+    }
+  }
+  
+  public static Multisolver multisolver2(Node root){
+      
+      Multisolver ans = new Multisolver(1, root.data, root.data);
+      
+      for(Node child: root.children){
+          
+          Multisolver temp = multisolver2(child);
+          
+          ans.size += temp.size;
+          ans.max = Math.max(ans.max, temp.max);
+          ans.min = Math.min(ans.min, temp.min);
+          ans.height = Math.max(ans.height, temp.height + 1);
+      }
+      
+      return ans;
+  }
+  
+  public static void multisolver3(Node root, int level, int[] ans){
+      ans[0]++;
+      if(root.data < ans[1]) ans[1] = root.data;
+      if(root.data > ans[2]) ans[2] = root.data;
+      if(level > ans[3]) ans[3] = level;
+      
+      for(Node child: root.children){
+          multisolver3(child, level + 1, ans);
+      }
+  }
+===================================================
+
+11.Node to Root Path.java
+------------------------------------
+public static ArrayList<Integer> nodeToRootPath(Node node, int data) {
+    if (node.data == data) {
+      ArrayList<Integer> path = new ArrayList<>();
+      path.add(node.data);
+      return path;
+    }
+
+    for (Node child : node.children) {
+      ArrayList<Integer> ptc = nodeToRootPath(child, data);
+      if (ptc.size() > 0) {
+        ptc.add(node.data);
+        return ptc;
+      }
+    }
+
+    return new ArrayList<>();
+  }
+
+  // Time Complexity - O(N), Auxiliary Space - O(N)
+  public static int lca(Node node, int d1, int d2) {
+    ArrayList<Integer> a1 = nodeToRootPath(node, d1);
+    ArrayList<Integer> a2 = nodeToRootPath(node, d2);
+    
+    int LCA = -1;
+    int i = a1.size() - 1, j = a2.size() - 1;
+    
+    while(i >= 0 && j>= 0){
+        
+        if(a1.get(i) != a2.get(j)){
+            break;
+        }
+        
+        LCA = a1.get(i);
+        i--; j--;
+    }
+    
+    return LCA;
+  }
+
+// Time & Space - O(N)
+public static int distanceBetweenNodes(Node node, int d1, int d2){
+    ArrayList<Integer> p1 = nodeToRootPath(node, d1);
+    ArrayList<Integer> p2 = nodeToRootPath(node, d2);
+
+    int i = p1.size() - 1;
+    int j = p2.size() - 1;
+
+    while(i >= 0 && j >= 0 && p1.get(i) == p2.get(j)){
+      i--;
+      j--;
+    }
+    
+    return (i + 1) + (j + 1);
+  }
+===================================================
+12.Remove Leaves.java 
+------------------------------------
+public static void removeLeavesHelper(Node root) {
+      // Meeting Expectation
+      for(int i=root.children.size() - 1; i>=0; i--){
+          
+          Node child = root.children.get(i);
+          
+          if(child.children.size() == 0) // if child node is leaf node 
+              root.children.remove(i);
+      }
+      
+      // Faith
+      for(Node child: root.children){
+          removeLeavesHelper(child);
+      }
+  }
+  
+  public static void removeLeaves(Node root) {
+      if(root.children.size() == 0){
+          root = null;
+          return;
+      }
+      removeLeavesHelper(root);
+  }
+===================================================
+
+13.Similar, Mirror & Symmetric.java
+------------------------------------
+public static boolean areSimilar(Node n1, Node n2) {
+    if(n1.children.size() != n2.children.size()) return false;
+    
+    for(int i=0; i<n1.children.size(); i++){
+        Node c1 = n1.children.get(i);
+        Node c2 = n2.children.get(i);
+        
+        boolean ans = areSimilar(c1, c2);
+        if(ans == false) return false;
+    }
+    
+    return true;
+  }
+
+public static boolean areMirror(Node n1, Node n2) {
+    // write your code here
+    if(n1.children.size() != n2.children.size()) return false;
+    
+    for(int i=0; i<n1.children.size(); i++){
+        Node c1 = n1.children.get(i);
+        Node c2 = n2.children.get(n2.children.size() - 1 - i);
+        
+        boolean ans = areMirror(c1, c2);
+        if(ans == false) return false;
+    }
+    
+    return true;
+  }
+
+public static boolean IsSymmetric(Node node) {
+    // write your code here
+    return isMirror(node, node);
+  }
+===================================================
+14.Size, Max, Height.java
+------------------------------------
+public static int size(Node root) {
+  if (root == null) return 0;
+
+  int count = 1;
+  for (Node child : root.children) {
+    count += size(child);
+  }
+
+  return count;
+}
+
+public static int max(Node root) {
+  int maximum = root.data;
+  for (Node child : root.children) {
+    maximum = Math.max(maximum, max(child));
+  }
+
+  return maximum;
+}
+
+public static int heightByNodes(Node root) {
+  // in terms of nodes
+  int height = 0;
+
+  for (Node child : root.children) {
+    height = Math.max(height, heightByNodes(child));
+  }
+
+  return height + 1;
+}
+
+public static int heightByEdges(Node root) {
+  // in terms of edges
+
+  int ans = 0;
+
+  for (Node child : root.children) {
+    ans = Math.max(ans, heightByEdges(child) + 1);
+  }
+
+  return ans;
+}
+
+
+public static int height(Node root) {
+  // in terms of edges
+
+  // return heightByEdges(root);
+
+  if (root == null) return 0;
+
+  int ans = heightByNodes(root);
+  return ans - 1;
+
+}
+===================================================
+15.Traversals.java
+------------------------------------
+public static void traversals(Node root) {
+    System.out.println("Node Pre " + root.data);
+    
+    for(Node child: root.children){
+        System.out.println("Edge Pre " + root.data + "--" + child.data);
+        traversals(child);
+        System.out.println("Edge Post " + root.data + "--" + child.data);
+    }
+    
+    System.out.println("Node Post " + root.data);
+  }
+
+public static void levelOrder(Node root){
+        Queue<Node> q = new ArrayDeque<>();
+        
+        q.add(root);
+        
+        while(q.size() > 0){
+            // Pop 1 Node
+            Node curr = q.remove();
+            System.out.print(curr.data + " ");
+        
+            // Push Children in Queue
+            for(Node child: curr.children){
+                q.add(child);
+            }
+        }
+        
+        System.out.print(".");
+}
+
+===================================================
+16.
+------------------------------------
+
+===================================================
+17.
+------------------------------------
+
+===================================================
+18.
+------------------------------------
+
+===================================================
+19.
+------------------------------------
+
+===================================================
+20.
+------------------------------------
+
+===================================================
+
+21.
+------------------------------------
+
+
+===================================================
+22.
+------------------------------------
+
+===================================================
+23.
+------------------------------------
+
+===================================================
+24.
+------------------------------------
+
+===================================================
+25.
+------------------------------------
+
+===================================================
+26.
+------------------------------------
+
+===================================================
+27.
+------------------------------------
+
+===================================================
+28.
+------------------------------------
+
+===================================================
+29.
+------------------------------------
+
+===================================================
+30.
+------------------------------------
+
+===================================================

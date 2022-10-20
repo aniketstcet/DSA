@@ -1,0 +1,1296 @@
+https://github.com/archit-aggarwal/Pepcoding-DSA
+Linked list
+==================================================
+1. Linked List.java 
+------------------------------------
+import java.lang.*;
+import java.io.*;
+import java.util.*;
+
+public static class Node {
+    int data;
+    Node next;
+
+    Node(int data) {
+        this.data = data;
+        this.next = null;
+    }
+
+    Node(int data, Node next) {
+        this.data = data;
+        this.next = next;
+    }
+}
+
+public static class LinkedList {
+    Node head;
+    Node tail;
+    int size;
+
+    // Add Node in last -> O(1)
+    void addLast(int val) {
+        Node newNode = new Node(val);
+
+        if (size == 0) {
+            head = tail = newNode;
+        } else {
+            tail.next = newNode;
+            tail = tail.next;
+        }
+
+        size++;
+    }
+
+    // Add Node in Front -> O(1)
+    public void addFirst(int val) {
+        Node newNode = new Node(val);
+
+        if (size == 0) {
+            head = tail = newNode;
+        } else {
+            newNode.next = head;
+            head = newNode;
+        }
+        size++;
+    }
+
+    // Add At Given Index -> O(N) Worst Case
+    public void addAt(int idx, int val) {
+        if (idx < 0 || idx > size) {
+            System.out.println("Invalid arguments");
+            return;
+        }
+
+        Node newNode = new Node();
+        newNode.data = val;
+
+        if (idx == 0) {
+            // addfirst
+            newNode.next = head;
+            head = newNode;
+        }
+
+        else if (idx == size) {
+            // addlast
+            tail.next = newNode;
+            tail = newNode;
+        }
+
+        else {
+            // get element at idx - 1
+            Node prev = getNodeAt(idx - 1);
+            newNode.next = prev.next;
+            prev.next = newNode;
+        }
+        size++;
+    }
+
+    // Traverse Linked List -> O(N)
+    public void display() {
+        Node temp = head;
+
+        while (temp.next != null) {
+            System.out.print(temp.data + " ");
+            temp = temp.next;
+        }
+
+        System.out.println();
+    }
+
+    // Get First Element -> O(1)
+    public int getFirst() {
+        if (size == 0) {
+            System.out.println("List is empty");
+            return -1;
+        }
+        return head.data;
+    }
+
+    // Get Last Element -> O(1) { Provided Tail Pointer }
+    public int getLast() {
+        if (size == 0) {
+            System.out.println("List is empty");
+            return -1;
+        }
+        return tail.data;
+    }
+
+    // Get Element at given index -> O(N) Worst Case
+    public int getAt(int idx) {
+        if (size == 0) {
+            System.out.println("List is empty");
+            return -1;
+        }
+
+        if (idx < 0 || idx >= size) {
+            System.out.println("Invalid arguments");
+            return -1;
+        }
+
+        if (idx == 0) {
+            // getfirst
+            return getFirst();
+        }
+        if (idx == size - 1) {
+            // getlast
+            return getLast();
+        }
+
+        Node temp = head;
+        for (int jump = 0; jump < idx; jump++) {
+            temp = temp.next;
+        }
+        return temp.data;
+    }
+
+    // Get Node at given Index -> O(N)
+    public Node getNodeAt(int idx) {
+        Node temp = head;
+        for (int i = 0; i < idx; i++) {
+            temp = temp.next;
+        }
+        return temp;
+    }
+
+    // Remove First Element -> O(1)
+    public void removeFirst() {
+        if (size == 0) {
+            System.out.println("List is empty");
+            return;
+        }
+
+        if (size == 1) {
+            head = tail = null;
+            size = 0;
+            return;
+        }
+
+        head = head.next;
+        size--;
+    }
+
+    // Remove Last Element -> O(N) {Singly Linked List}
+    public void removeLast() {
+        if (head == null) {
+            System.out.println("List is empty");
+            return;
+        }
+
+        if (size == 1) {
+            head = tail = null;
+            size = 0;
+            return;
+        }
+
+        Node secondLast = head;
+        // second last node
+        while (secondLast.next != tail) {
+            secondLast = secondLast.next;
+        }
+
+        size--;
+        tail = secondLast;
+        tail.next = null;
+    }
+
+    // Remove Element at Given Index -> O(N) Worst Case
+    public void removeAt(int idx) {
+        if (size == 0) {
+            System.out.println("List is empty");
+            return;
+        }
+
+        if (idx < 0 || idx >= size) {
+            System.out.println("Invalid arguments");
+            return;
+        }
+
+        if (idx == 0) {
+            // removeFirst
+            removeFirst();
+        } else if (idx == size - 1) {
+            // removeLast
+            removeLast();
+        } else {
+            Node prev = getNodeAt(idx - 1);
+            prev.next = prev.next.next;
+            size--;
+        }
+    }
+    
+    // Display Linked List in Reverse using Recursion:
+    // O(N) Time, O(N) Recursion Call Stack Space
+    public void displayReverse(Node curr){
+      // base case
+      if(curr == null) return;
+      
+      // faith
+      displayReverse(curr.next);
+      
+      // meeting expectation
+      System.out.print(curr.data + " ");
+    }
+}
+===================================================
+2.Fold of Linked List.java
+------------------------------------
+import java.util.*;
+
+class Main {
+    public static class ListNode {
+        int val = 0;
+        ListNode next = null;
+
+        ListNode(int val) {
+            this.val = val;
+        }
+    }
+
+    public static ListNode reverse(ListNode head){
+        
+        ListNode prev = null, curr = head, ahead = head.next;
+        
+        while(curr != null){
+            
+            curr.next = prev;
+            
+            prev = curr;
+            curr = ahead;
+            
+            if(ahead != null)
+                ahead = ahead.next;
+        }
+        
+        return prev;
+    }
+    
+    public static ListNode getMid(ListNode head) {
+        
+        ListNode slow = head, fast = head;
+        while(fast.next != null && fast.next.next != null){
+            
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow;
+    }
+    
+    public static void fold(ListNode head) {
+        ListNode mid = getMid(head);
+        ListNode l1 = head;
+        ListNode l2 = reverse(mid.next);
+        mid.next = null;
+        
+        
+        ListNode curr1 = l1;
+        ListNode curr2 = l2;
+        
+        while(curr2 != null) {
+            ListNode curr1next = curr1.next;
+            ListNode curr2next = curr2.next;
+            
+            curr1.next = curr2;
+            curr2.next = curr1next;
+            
+            curr1 = curr1next;
+            curr2 = curr2next;
+        }
+    }
+
+    static void printList(ListNode node) {
+        while (node != null) {
+            System.out.print(node.val + " ");
+            node = node.next;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (n-- > 0) {
+            prev.next = new ListNode(scn.nextInt());
+            prev = prev.next;
+        }
+
+        ListNode head = dummy.next;
+        fold(head);
+        printList(head);
+    }
+}
+===================================================
+3. Intersection of 2 Lists.java
+-------------------------------
+public static int findIntersection(LinkedList one, LinkedList two) {
+        
+        Node p1 = one.head;
+        Node p2 = two.head;
+        
+        if(one.size > two.size){
+            
+            for(int i=1; i<=one.size - two.size; i++){
+                p1 = p1.next;
+            }
+            
+        } else if(two.size > one.size){
+            for(int i=1; i<=two.size - one.size; i++){
+                p2 = p2.next;
+            }
+        }
+        
+        while(p1 != p2){
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        
+        return p1.data;
+    }
+
+===================================================
+4.K Reverse LL.java
+----------------------------------
+public void kReverse(int k) {
+      LinkedList old = new LinkedList();
+      
+      while (this.size() > 0) {
+        LinkedList curr = new LinkedList();
+        
+        if (this.size() >= k) {
+
+          for (int i = 0; i < k; i++) {
+              int data = this.head.data;
+              curr.addFirst(data);
+              this.removeFirst();
+          }
+          
+        } else {
+            
+          while (this.size() > 0) {
+              int data = this.head.data;
+              curr.addLast(data);
+              this.removeFirst();
+          }
+          
+        }
+        
+        if(old.head == null){
+            old.head = curr.head;
+            old.tail = curr.tail;
+            old.size = curr.size;
+        } else {
+            old.tail.next = curr.head;
+            old.tail = curr.tail;
+            old.size += curr.size;
+        }
+        
+      }
+      
+      this.head = old.head;
+      this.tail = old.tail;
+      this.size = old.size;
+    }
+===================================================
+5.Kth Node from Last.java 
+------------------------------------
+public int kthFromLast(int k){
+      Node slow = head;
+      Node fast = head;
+      
+      // fast & slow ke beech me gap le ao k ka
+      for(int i=1; i<=k; i++){
+          fast = fast.next;
+      }
+      
+      // algorithm chalao jab tak fast tail na ban jae
+      while(fast != tail){
+          slow = slow.next;
+          fast = fast.next;
+      }
+      
+      return slow.data;
+    }
+===================================================
+6.Linked List to Queue Adapter.java
+------------------------------------
+public static class LLToQueueAdapter {
+    LinkedList<Integer> list;
+
+    public LLToQueueAdapter() {
+      list = new LinkedList<>();
+    }
+
+    int size() {
+        return list.size();
+    }
+
+    void add(int val) {
+        list.addLast(val);
+    }
+
+    int remove() {
+        if(list.size() == 0){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        int val = list.removeFirst();
+        return val;
+    }
+
+    int peek() {
+        if(list.size() == 0){
+            System.out.println("Queue underflow");
+            return -1;
+        }
+        
+        int val = list.getFirst();
+        return val;
+    }
+  }
+===================================================
+
+7.Linked List to Stack Adapter.java 
+------------------------------------
+
+public static class LLToStackAdapter {
+    LinkedList<Integer> list;
+
+    public LLToStackAdapter() {
+      list = new LinkedList<>();
+    }
+
+    int size() {
+        return list.size();
+    }
+
+    void push(int val) {
+        list.addFirst(val);
+    }
+
+    int pop() {
+        if(list.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        int val = list.removeFirst();
+        return val;
+    }
+
+    int top() {
+        if(list.size() == 0){
+            System.out.println("Stack underflow");
+            return -1;
+        }
+        
+        int val = list.getFirst();
+        return val;        
+    }
+  }
+===================================================
+8.Merge 2 Sorted Lists.java
+------------------------------------
+import java.util.*;
+
+class Main {
+    public static Scanner scn = new Scanner(System.in);
+
+    public static class ListNode {
+        int val = 0;
+        ListNode next = null;
+
+        ListNode(int val) {
+            this.val = val;
+        }
+    }
+
+    public static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+
+        ListNode dummy = new ListNode(-1);
+        ListNode tail = dummy;
+        
+        while(l1 != null && l2 != null){
+            
+            if(l1.val < l2.val){
+                
+                tail.next = l1;
+                tail = l1;
+                l1 = l1.next;
+                
+            } else {
+                
+                tail.next = l2;
+                tail = l2;
+                l2 = l2.next;                
+                
+            }
+            
+        }
+        
+        if(l1 != null) tail.next = l1;
+        else tail.next = l2;
+        
+        return dummy.next;
+    }
+
+    public static void printList(ListNode node) {
+        while (node != null) {
+            System.out.print(node.val + " ");
+            node = node.next;
+        }
+    }
+
+    public static ListNode createList(int n) {
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (n-- > 0) {
+            prev.next = new ListNode(scn.nextInt());
+            prev = prev.next;
+        }
+
+        return dummy.next;
+    }
+
+    public static void main(String[] args) {
+        int n = scn.nextInt();
+        ListNode h1 = createList(n);
+        int m = scn.nextInt();
+        ListNode h2 = createList(m);
+
+
+        ListNode head = mergeTwoLists(h1, h2);
+        printList(head);
+    }
+}
+===================================================
+
+9.Merge Sort LL.java 
+------------------------------------
+public static LinkedList mergeTwoSortedLists(LinkedList l1, LinkedList l2) {
+            LinkedList l3 = new LinkedList();
+            
+            Node p1 = l1.head, p2 = l2.head;
+            
+            while(p1 != null && p2 != null){
+                if(p1.data < p2.data){
+                    
+                    int val = p1.data;
+                    l3.addLast(val);
+                    p1 = p1.next;
+                    
+                } else {
+
+                    int val = p2.data;
+                    l3.addLast(val);
+                    p2 = p2.next;
+                    
+                }
+            }
+            
+            while(p1 != null){
+                int val = p1.data;
+                l3.addLast(val);
+                p1 = p1.next;                
+            }
+            
+            while(p2 != null){
+                int val = p2.data;
+                l3.addLast(val);
+                p2 = p2.next;                
+            }
+            
+            return l3;
+        }
+
+public static LinkedList mergeSort(Node head, Node tail)
+    {
+        if(head == null){
+            // 0 node
+            LinkedList base = new LinkedList();
+            return  base;    
+        }
+        
+        if(head == tail){
+            // 1 node
+            LinkedList base = new LinkedList();
+            base.addLast(head.data);
+            return base;
+        }
+        
+        Node mid = midNode(head, tail);
+        
+        // faith
+        LinkedList l1 = mergeSort(head, mid);
+        LinkedList l2 = mergeSort(mid.next, tail);
+        
+        // meeting expectation
+        LinkedList l3 = mergeTwoSortedLists(l1, l2);
+        return l3;
+    }
+===================================================
+10.Middle of Linked List.java 
+------------------------------------
+  // O(N) Time, O(1) Extra Space  
+  public int mid(){
+        Node slow = head;
+        Node fast = head;
+        
+        // when fast becomes last node or second last node, then stop
+        while(fast != tail && fast.next != tail){ //  while(fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow.data;
+    }
+===================================================
+
+11.Palindrome LL - Iteration.java
+------------------------------------
+import java.util.*;
+
+class Main {
+    public static class ListNode {
+        int val = 0;
+        ListNode next = null;
+
+        ListNode(int val) {
+            this.val = val;
+        }
+    }
+    
+    public static ListNode reverse(ListNode head){
+        
+        ListNode prev = null, curr = head, ahead = head.next;
+        
+        while(curr != null){
+            
+            curr.next = prev;
+            
+            prev = curr;
+            curr = ahead;
+            
+            if(ahead != null)
+                ahead = ahead.next;
+        }
+        
+        return prev;
+    }
+    
+    public static ListNode getMid(ListNode head) {
+        
+        ListNode slow = head, fast = head;
+        while(fast.next != null && fast.next.next != null){
+            
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        return slow;
+    }
+    
+    public static boolean isPalindrome(ListNode head) {
+        ListNode first = head;
+        ListNode mid = getMid(head);
+        ListNode second = reverse(mid.next);
+        mid.next = null;
+        
+        while(second != null){
+            if(first.val != second.val)
+                return false;
+            
+            first = first.next;
+            second = second.next;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (n-- > 0) {
+            prev.next = new ListNode(scn.nextInt());
+            prev = prev.next;
+        }
+
+        System.out.println(isPalindrome(dummy.next));
+    }
+}
+===================================================
+12.Palindrome LL - Recursion.java
+------------------------------------
+import java.util.*;
+ 
+ public class Main {
+ 
+     static Node left;
+ 
+     // -----------------------------------------------------
+     // This is a functional problem. You have to complete this function.
+     // This function takes as input the head of the linked list.
+     // It should return true if list is palindrome, else return false.
+    
+     public static boolean isPalindromeHelper(Node right){
+         if(right == null){
+             return true;
+         }
+         
+         boolean ans = isPalindromeHelper(right.next);
+         if(ans == false) return false;
+         if(left.data != right.data) return false;
+         
+         left = left.next;
+         return true;
+     }
+     public static boolean isPalindrome(Node head) {
+         left = head;
+         return isPalindromeHelper(head);
+     }
+ 
+     // -----------------------------------------------------
+ 
+     static Node head1;
+ 
+     public static void main(String[] args) {
+         Scanner sc = new Scanner(System.in);
+         int n1 = sc.nextInt();
+         int a1 = sc.nextInt();
+ 
+         Node tail;
+         head1 = tail = insert(null, a1);
+ 
+         for (int i = 1; i < n1; i++) {
+             int a = sc.nextInt();
+             tail = insert(tail, a);
+         }
+ 
+         if (isPalindrome(head1)) {
+             System.out.println("1");
+         } else {
+             System.out.println("0");
+         }
+ 
+     }
+ 
+     // Class declaration for a Node of the Linked List
+     static class Node {
+         int data;
+         Node next;
+ 
+         public Node(int data) {
+             this.data = data;
+             this.next = null;
+         }
+ 
+     }
+ 
+     /*
+      * Input Parameters: tail: head of the linked list in which a new node is to
+      * be inserted. data: the data value of the node which is to be inserted.
+      * 
+      * Return Value: tail of the linked list/the node that is inserted
+      */
+     public static Node insert(Node tail, int data) {
+ 
+         if (tail == null) {
+             return new Node(data);
+         }
+ 
+         Node nn = new Node(data);
+         tail.next = nn;
+         return nn;
+     }
+ 
+     /*
+      * Input Parameters: head: head of the linked list in which is to be
+      * displayed.
+      * 
+      * Return Value: null
+      */
+     public static void display(Node head) {
+         for (Node node = head; node != null; node = node.next) {
+             System.out.print(node.data + " ");
+         }
+     }
+ 
+ }
+===================================================
+
+13.Remove All Duplicates.java
+------------------------------------
+import java.util.*;
+
+class Main {
+    public static Scanner scn = new Scanner(System.in);
+
+    public static class ListNode {
+        int val = 0;
+        ListNode next = null;
+
+        ListNode(int val) {
+            this.val = val;
+        }
+    }
+
+    public static ListNode removeDuplicates(ListNode head) {
+        ListNode dummy = new ListNode(-1);
+        ListNode tail = dummy;
+        ListNode curr = head;
+        
+        while(curr != null){
+            
+            if(curr.next == null || 
+                curr.next.val != curr.val){
+                // unique node
+                
+                tail.next = curr;
+                tail = curr;
+                curr = curr.next;
+            } else {
+                
+                // delete duplicate nodes
+                int temp = curr.val;
+                while(!(curr == null || curr.val != temp)){
+                    curr = curr.next;
+                }
+                
+            }
+            
+        }
+        
+        head = dummy.next;
+        tail.next = null;
+        return dummy.next;
+        
+    }
+  
+    public static void printList(ListNode node) {
+        while (node != null) {
+            System.out.print(node.val + " ");
+            node = node.next;
+        }
+    }
+
+    public static ListNode makeList(int n) {
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (n-- > 0) {
+            prev.next = new ListNode(scn.nextInt());
+            prev = prev.next;
+        }
+
+        return dummy.next;
+    }
+
+    public static void main(String[] args) {
+        ListNode head = makeList(scn.nextInt());
+
+        head = removeDuplicates(head);
+        printList(ans);
+    }
+
+}
+===================================================
+14.Remove Duplicates.java
+------------------------------------
+public void removeDuplicates(){
+      if(head == null) return;
+      
+      Node curr = head;
+      while(curr.next != null){
+          
+          Node ahead = curr.next;
+          
+          if(curr.data != ahead.data) {
+              
+              // move pointer
+              curr = curr.next;
+              
+          } else {
+              
+              // delete next node
+              curr.next = curr.next.next;
+              size--;
+          }
+      }
+      
+      tail = curr;
+    }
+===================================================
+15.Reverse Linked List.java 
+------------------------------------
+public Node getNodeAt(int idx) {
+        // O(N) in worst case
+        Node temp = head;
+        for (int i = 0; i < idx; i++) {
+          temp = temp.next;
+        }
+        return temp;
+    }
+   
+// Data Iterative
+public void reverseDI() {
+  // O(N ^ 2) Time
+  int left = 0, right = size - 1;
+
+  while(left < right){
+
+    Node leftNode = getNodeAt(left);
+    Node rightNode = getNodeAt(right);
+
+    int temp = leftNode.data;
+    leftNode.data = rightNode.data;
+    rightNode.data = temp;
+
+    left++; right--;
+  }
+}
+
+// Pointer Iterative: O(N): (Must Learn)
+public void reversePI()
+    {
+        if(head == null || head.next == null){
+            // 0 nodes or 1 node
+            return;
+        }
+        
+        Node prev = null;
+        Node curr = head;
+        Node currNext = curr.next;
+        
+        while(curr != null){
+            
+            // Pointer Updation
+            curr.next = prev;
+            
+            // Process Next Node
+            prev = curr;
+            curr = currNext;
+            
+            if(currNext != null)
+                currNext = currNext.next;
+        }
+        
+        // Update head, tail
+        tail = head;
+        head = prev;
+    }
+
+
+// Data Recursive: O(N):
+// 2 Methods: Using Data Member left & Using Return Type
+
+    Node left;
+    public void reverseDRHelper1(Node right, int counter){
+        if(right == null)  return;
+        
+        reverseDRHelper1(right.next, counter + 1);
+        
+        if(counter >= size/2){
+            int temp = left.data;
+            left.data = right.data;
+            right.data = temp;
+        }
+        
+        left = left.next;
+    }
+    
+    public Node reverseDRHelper2(Node left, Node right, int counter){
+        if(right == null)  return left;
+        
+        left = reverseDRHelper2(left, right.next, counter + 1);
+        
+        if(counter >= size/2){
+            int temp = left.data;
+            left.data = right.data;
+            right.data = temp;
+        }
+        
+        left = left.next;
+        return left;
+    }
+    
+    public void reverseDR() {
+  //       left = head;
+  //       reverseDRHelper1(head, 0);
+    
+        reverseDRHelper2(head, head, 0);
+        
+    }
+
+
+// Pointer Recursive: O(N)
+private void reversePRHelper(Node curr){
+      if(curr == tail){
+          // base case: last  node
+          return;
+      }
+      
+      reversePRHelper(curr.next);
+      
+      // Process Next Node in postorder
+      curr.next.next = curr;
+    }
+
+    public void reversePR(){
+      reversePRHelper(head);
+      
+      // Update Last Node's next as null
+      head.next = null;
+      
+      // swap Head & Tail
+      Node temp = head;
+      head = tail;
+      tail = temp;
+    }
+===================================================
+16.Segregate Odd & Even Nodes.java
+------------------------------------
+import java.util.*;
+
+// Method 1: By Using Linked List (Add Last)
+public void oddEven(){
+        LinkedList odd = new LinkedList();
+        LinkedList even = new LinkedList();
+        
+        while(head != null){
+        
+            if(head.data % 2 == 1){
+                odd.addLast(head.data);
+            } else {
+                even.addLast(head.data);
+            }
+            
+            removeFirst();
+        }
+        
+        if(even.head == null){
+            
+            head = odd.head;
+            tail = odd.tail;
+            tail.next = null;
+            
+        } else if(odd.head == null) {
+            
+            head = even.head;
+            tail = even.tail;
+            tail.next = null;
+        }
+        else {
+            
+            odd.tail.next = even.head;
+            even.tail.next = null;
+            head = odd.head;
+            tail = even.tail;    
+        }
+        
+        size = odd.size + even.size;
+    }
+
+// Method 2: By Changing Pointers
+class Main {
+    public static class ListNode {
+        int val = 0;
+        ListNode next = null;
+
+        ListNode(int val) {
+            this.val = val;
+        }
+    }
+
+    public static ListNode segregateEvenOdd(ListNode head) {
+        if(head == null || head.next == null){
+            return head;
+        }
+        
+        ListNode oddDummy = new ListNode(-1);
+        ListNode evenDummy = new ListNode(-1);
+        
+        ListNode oddHead = oddDummy, oddTail = oddDummy;
+        ListNode evenHead = evenDummy, evenTail = evenDummy;
+        
+        ListNode curr = head;
+        while(curr != null){
+            
+            if(curr.val % 2 == 1){
+                oddTail.next = curr;
+                oddTail = curr;
+            } else {
+                evenTail.next = curr;
+                evenTail = curr;
+            }
+            curr = curr.next;
+        }
+        
+        if(oddHead.next == null){
+            // 0 odd nodes
+            return evenHead.next;
+            
+        } else if(evenHead.next == null){
+            // 0 even nodes
+            return oddHead.next;
+            
+        } else {
+            
+            evenTail.next = oddHead.next;
+            oddTail.next = null;
+            return evenHead.next;
+        }
+        
+    }
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (n-- > 0) {
+            prev.next = new ListNode(scn.nextInt());
+            prev = prev.next;
+        }
+
+        ListNode head = segregateEvenOdd(dummy.next);
+        while (head != null) {
+            System.out.print(head.val + " ");
+            head = head.next;
+        }
+    }
+}
+===================================================
+17.Unfold of Linked List.java 
+------------------------------------
+import java.util.*;
+
+class Main {
+    public static class ListNode {
+        int val = 0;
+        ListNode next = null;
+
+        ListNode(int val) {
+            this.val = val;
+        }
+    }
+
+    public static ListNode reverse(ListNode head){
+        
+        ListNode prev = null, curr = head, ahead = head.next;
+        
+        while(curr != null){
+            
+            curr.next = prev;
+            
+            prev = curr;
+            curr = ahead;
+            
+            if(ahead != null)
+                ahead = ahead.next;
+        }
+        
+        return prev;
+    }
+    
+    public static void unfold(ListNode head) {
+        if(head == null || head.next == null
+            || head.next.next == null){
+            return;
+        }
+        
+        ListNode l1 = head, t1 = head;
+        ListNode l2 = head.next, t2 = head.next;
+        
+        while(t1.next != null && t2.next != null){
+            
+            t1.next = t1.next.next;
+            
+            if(t2.next != null)
+                t2.next = t2.next.next;
+                
+            t1 = t1.next;
+            t2 = t2.next;
+        }
+        
+        l2 = reverse(l2);
+        t1.next = l2;
+    }
+
+    static void printList(ListNode node) {
+        while (node != null) {
+            System.out.print(node.val + " ");
+            node = node.next;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        ListNode dummy = new ListNode(-1);
+        ListNode prev = dummy;
+        while (n-- > 0) {
+            prev.next = new ListNode(scn.nextInt());
+            prev = prev.next;
+        }
+
+        ListNode head = dummy.next;
+        unfold(head);
+        printList(head);
+    }
+}
+===================================================
+18.
+------------------------------------
+
+===================================================
+19.
+------------------------------------
+
+===================================================
+20.
+------------------------------------
+
+===================================================
+
+21.
+------------------------------------
+
+
+===================================================
+22.
+------------------------------------
+
+===================================================
+23.
+------------------------------------
+
+===================================================
+24.
+------------------------------------
+
+===================================================
+25.
+------------------------------------
+
+===================================================
+26.
+------------------------------------
+
+===================================================
+27.
+------------------------------------
+
+===================================================
+28.
+------------------------------------
+
+===================================================
+29.
+------------------------------------
+
+===================================================
+30.
+------------------------------------
+
+===================================================

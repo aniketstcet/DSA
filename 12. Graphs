@@ -1,0 +1,5239 @@
+12. Graphs
+=============
+Level 1
+------------
+==================================================
+1.Breadth First Traversal.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+
+      Edge(int src, int nbr) {
+         this.src = src;
+         this.nbr = nbr;
+      }
+   }
+
+   static class Pair{
+       int node;
+       String pathSofar;
+       
+       Pair(int node, String pathSofar){
+           this.node = node;
+           this.pathSofar = pathSofar;
+       }
+   }
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2));
+         graph[v2].add(new Edge(v2, v1));
+      }
+      
+      int src = Integer.parseInt(br.readLine());
+      // write your code here  
+      
+      Queue<Pair> q = new LinkedList<>();
+      boolean[] vis = new boolean[vtces];
+      
+      q.add(new Pair(src, "" + src));
+      
+      while(q.size() > 0){
+          // remove
+          Pair curr = q.remove();
+          
+          if(vis[curr.node] == true) continue;
+          
+          // mark*
+          vis[curr.node] = true;
+          
+          // work
+          System.out.println(curr.node + "@" + curr.pathSofar);
+          
+          // add*
+          for(Edge e: graph[curr.node]){
+              if(vis[e.nbr] == false){
+                  q.add(new Pair(e.nbr, curr.pathSofar + e.nbr));
+              }
+          }
+      }
+   }
+}
+===================================================
+2.Dijkstra's Algorithm.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+    
+   static class Pair implements Comparable<Pair>{
+       int node;
+       String pathSofar;
+       int weightSofar;
+       
+       Pair(int node, String pathSofar, int weightSofar){
+           this.node = node;
+           this.pathSofar = pathSofar;
+           this.weightSofar = weightSofar;
+       }
+       
+       public int compareTo(Pair other){
+           return this.weightSofar - other.weightSofar;
+       }
+   }    
+   
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+      // write your code here
+      
+      PriorityQueue<Pair> q = new PriorityQueue<>();
+      boolean[] vis = new boolean[vtces];
+      
+      q.add(new Pair(src, "" + src, 0));
+      
+      while(q.size() > 0){
+          // remove
+          Pair curr = q.remove();
+          
+          if(vis[curr.node] == true) continue;
+          
+          // mark*
+          vis[curr.node] = true;
+          
+          // work
+          System.out.println(curr.node + " via " + curr.pathSofar + " @ " + curr.weightSofar);
+          
+          // add*
+          for(Edge e: graph[curr.node]){
+              if(vis[e.nbr] == false){
+                  q.add(new Pair(e.nbr, curr.pathSofar + e.nbr, curr.weightSofar + e.wt));
+              }
+          }
+      }
+      
+   }
+}
+===================================================
+3.Get Connected Components.java
+-------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+    
+  // DFS on 1 component will take O(n + e) Time where n = vertices in that component, and e = edges in that component.
+  // Hence, getting all connected components will take O(N + E) time where N = total vertices, E = total edges
+  
+   public static void dfs(ArrayList<Edge>[] graph, int src, ArrayList<Integer> comp, boolean[] vis){
+        vis[src] = true;
+        comp.add(src);
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == false){
+                dfs(graph, e.nbr, comp, vis);
+            }
+        }
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      ArrayList<ArrayList<Integer>> comps = new ArrayList<>();
+      boolean[] vis = new boolean[vtces];
+      
+      for(int i=0; i<vtces; i++){
+          if(vis[i] == false){
+              ArrayList<Integer> comp = new ArrayList<>();
+              dfs(graph, i, comp, vis);
+              comps.add(comp);
+          }
+      }
+      
+      System.out.println(comps);
+   }
+}
+
+===================================================
+4.Hamiltonian Path & Circuit.java
+----------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+   
+   public static boolean isEdgePresent(ArrayList<Edge>[] graph, int src, int dest){
+        for(Edge e: graph[src]){
+            if(e.nbr == dest){
+                return true;
+            }
+        }
+        return false;
+   }
+   
+   public static void dfs(ArrayList<Edge>[] graph, int node, int visCount, boolean[] vis, String pathSofar){
+        
+        if(visCount == graph.length - 1)
+        { 
+            // hamiltonian path or cycle
+            if(isEdgePresent(graph, pathSofar.charAt(0) - '0', node)){
+                // cycle check -> is there a edge between src and 0
+                System.out.println(pathSofar + "*"); 
+            } else {
+                System.out.println(pathSofar + ".");
+            }
+            return;
+        }    
+        
+        visCount++;
+        vis[node] = true;
+        
+        for(Edge e: graph[node]){
+            if(vis[e.nbr] == false){ 
+                dfs(graph, e.nbr, visCount, vis, pathSofar + e.nbr);
+            }
+        }
+        
+        vis[node] = false;
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+      boolean[] vis = new boolean[vtces];
+      
+      dfs(graph, src, 0, vis, "" + src);
+   }
+
+
+}
+===================================================
+5.Hash Path.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+      Edge(int src, int nbr){
+        // for unweighted graph
+        this.src = src;
+        this.nbr = nbr;
+      }
+      Edge(int src, int nbr, int wt){
+         // for weighted graph
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+   
+   public static void display(ArrayList<Edge>[] graph){
+        int vts = graph.length;
+        
+        for(int i=0; i<vts; i++){
+            
+            System.out.print(i + ": ");
+            
+            // Adjacency List of Vertex i
+            for(Edge e: graph[i]){
+                System.out.print("{ " + e.src + ", " + e.nbr + " @ " + e.wt + "}, ");    
+            }
+            
+            System.out.println();
+        }
+   }
+   
+   // Check if Source to Destination Path exists or not - O(N + E) where N = total vertices, E = total edges
+  
+   public static boolean dfs(ArrayList<Edge>[] graph, int src, int dest, boolean[] vis){
+        if(src == dest){
+            return true;
+        }    
+        
+        vis[src] = true;
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == false){ // already visited
+                boolean res = dfs(graph, e.nbr, dest, vis);
+                if(res == true) return true;
+            }
+        }
+        
+        return false;
+   }
+   
+   public static void main(String[] args) throws Exception {
+       Scanner scn = new Scanner(System.in);
+       int vts = scn.nextInt();
+       
+       ArrayList<Edge>[] graph = new ArrayList[vts];
+       for(int i=0; i<vts; i++){
+           graph[i] = new ArrayList<>();
+       }
+       
+       int edges = scn.nextInt();
+       
+       for(int i=0; i<edges; i++){
+           int v1 = scn.nextInt();
+           int v2 = scn.nextInt();
+           int wt = scn.nextInt();
+           
+           graph[v1].add(new Edge(v1, v2, wt));
+           graph[v2].add(new Edge(v2, v1, wt));
+       }
+       
+       int src = scn.nextInt();
+       int dest = scn.nextInt();
+        
+       boolean[] vis = new boolean[vts];
+       System.out.println(dfs(graph, src, dest, vis));
+    }
+
+}
+===================================================
+6.Is Graph - Cyclic - II.java
+------------------------------------
+// Undirected Graph - BFS - Variation 2
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+
+      Edge(int src, int nbr) {
+         this.src = src;
+         this.nbr = nbr;
+      }
+   }
+
+   static class Pair{
+       int node;
+       String pathSofar;
+       int parent;
+       
+       Pair(int node, String pathSofar, int parent){
+           this.node = node;
+           this.pathSofar = pathSofar;
+           this.parent = parent;
+       }
+   }
+   
+   public static boolean BFS(ArrayList<Edge>[] graph, boolean[] vis, int src){
+      Queue<Pair> q = new LinkedList<>();
+      q.add(new Pair(src, "" + src, -1));
+      vis[src] = true;
+      
+      while(q.size() > 0){
+          // remove
+          Pair curr = q.remove();
+          
+          // add*
+          for(Edge e: graph[curr.node]){
+              if(vis[e.nbr] == false){
+                  vis[e.nbr] = true;
+                  q.add(new Pair(e.nbr, curr.pathSofar + e.nbr, curr.node));
+              } else {
+                  if(curr.parent != -1 && e.nbr != curr.parent){
+                      return true;
+                  }
+              }
+          }
+      }
+      
+      return false;
+   }
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2));
+         graph[v2].add(new Edge(v2, v1));
+      }
+      
+      boolean[] vis = new boolean[vtces];
+      for(int i=0; i<vtces; i++){
+          if(vis[i] == false){
+              // new Component
+              boolean isCycle = BFS(graph, vis, i);
+              if(isCycle == true) {
+                  System.out.println(true);
+                  return;
+              }
+          }
+      }
+      System.out.println(false);
+   }
+}
+===================================================
+
+7.Is Graph - Cyclic.java
+------------------------------------
+// Undirected Graph - BFS - Variation 1
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+
+      Edge(int src, int nbr) {
+         this.src = src;
+         this.nbr = nbr;
+      }
+   }
+
+   static class Pair{
+       int node;
+       String pathSofar;
+       
+       Pair(int node, String pathSofar){
+           this.node = node;
+           this.pathSofar = pathSofar;
+       }
+   }
+   
+   public static boolean BFS(ArrayList<Edge>[] graph, boolean[] vis, int src){
+      Queue<Pair> q = new LinkedList<>();
+      q.add(new Pair(src, "" + src));
+      
+      while(q.size() > 0){
+          // remove
+          Pair curr = q.remove();
+          
+          if(vis[curr.node] == true) return true;
+          
+          // mark*
+          vis[curr.node] = true;
+          
+          // add*
+          for(Edge e: graph[curr.node]){
+              if(vis[e.nbr] == false){
+                  q.add(new Pair(e.nbr, curr.pathSofar + e.nbr));
+              }
+          }
+      }
+      
+      return false;
+   }
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2));
+         graph[v2].add(new Edge(v2, v1));
+      }
+      
+      boolean[] vis = new boolean[vtces];
+      for(int i=0; i<vtces; i++){
+          if(vis[i] == false){
+              // new Component
+              boolean isCycle = BFS(graph, vis, i);
+              if(isCycle == true) {
+                  System.out.println(true);
+                  return;
+              }
+          }
+      }
+      System.out.println(false);
+   }
+}
+
+===================================================
+8.Is Graph Bipartite.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+
+   public static boolean DFS(ArrayList<Edge>[] graph, int src, int level, boolean[] vis, HashSet<Integer> odd, HashSet<Integer> even){
+       vis[src] = true;
+       if(level % 2 == 0){
+           even.add(src);
+       } else {
+           odd.add(src);
+       }
+       
+       
+       for(Edge e: graph[src]){
+           
+           if(vis[e.nbr] == false){
+               
+               boolean res = DFS(graph, e.nbr, level + 1, vis, odd, even);
+               if(res == false) return false;
+               
+           } else {
+               
+               // Src par khade hoke nbr ka decision le rahe hai -> level + 1
+               if(odd.contains(e.nbr) == true && (level + 1) % 2 == 0){
+                   // previously odd set & currently even set
+                   return false;
+               }
+               
+               if(even.contains(e.nbr) == true && (level + 1) % 2 == 1){
+                   return false;
+               }
+           }
+           
+       }
+       
+       return true;
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      // write your code here
+      HashSet<Integer> odd = new HashSet<>();
+      HashSet<Integer> even = new HashSet<>();
+      boolean[] vis = new boolean[vtces];
+      
+      
+      for(int i=0; i<vtces; i++){
+          
+          if(vis[i] == false){
+              
+              boolean isBipartite = DFS(graph, i, 0, vis, odd, even);
+              
+              if(isBipartite == false){
+                  System.out.println(false);
+                  return;
+              }
+          }
+          
+      }
+      System.out.println(true);
+   }
+}
+===================================================
+
+9.Is Graph Connected.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+   
+   public static void dfs(ArrayList<Edge>[] graph, 
+            int src, ArrayList<Integer> comp, boolean[] vis){
+        vis[src] = true;
+        comp.add(src);
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == false){ // already visited
+                dfs(graph, e.nbr, comp, vis);
+            }
+        }
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      // write your code here
+      ArrayList<ArrayList<Integer>> comps = new ArrayList<>();
+      boolean[] vis = new boolean[vtces];
+      
+      for(int i=0; i<vtces; i++){
+          if(vis[i] == false){
+              ArrayList<Integer> comp = new ArrayList<>();
+              dfs(graph, i, comp, vis);
+              comps.add(comp);
+          }
+      }
+      
+      // number of components
+      if(comps.size() == 1) System.out.println("true"); // connected
+      else System.out.println("false"); // disconnected
+   }
+}
+===================================================
+10. Iterative DFS.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+
+      Edge(int src, int nbr) {
+         this.src = src;
+         this.nbr = nbr;
+      }
+   }
+
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2));
+         graph[v2].add(new Edge(v2, v1));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+
+      Stack<Pair> stack = new Stack<>();
+      stack.push(new Pair(src, src + ""));
+      boolean[] visited = new boolean[vtces];
+      while(stack.size() > 0){
+         Pair rem = stack.pop();
+
+         if(visited[rem.v] == true){
+            continue;
+         }
+         visited[rem.v] = true;
+         System.out.println(rem.v + "@" + rem.psf);
+         
+         for (Edge e : graph[rem.v]) {
+            if (visited[e.nbr] == false) {
+               stack.push(new Pair(e.nbr, rem.psf + e.nbr));
+            }
+         }
+      }
+   }
+
+   static class Pair {
+      int v;
+      String psf;
+
+      Pair(int v, String psf){
+         this.v = v;
+         this.psf = psf;
+      }
+   }
+}
+===================================================
+
+11.Multisolver.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+
+   static String smallestPath = "";
+   static int smallestPathWt = Integer.MAX_VALUE;
+   
+   static String largestPath = "";
+   static int largestPathWt = Integer.MIN_VALUE;
+   
+   static String floorPath = "";
+   static int floorWt = Integer.MIN_VALUE;
+   
+   static String ceilPath = "";
+   static int ceilWt = Integer.MAX_VALUE;
+   
+   static class Pair implements Comparable<Pair>{
+       String pathSofar;
+       int weightSofar;
+       
+       Pair(String psf, int wsf){
+           pathSofar = psf;
+           weightSofar = wsf;
+       }
+       
+       public int compareTo(Pair other){
+           return this.weightSofar - other.weightSofar;
+       }
+   }
+   
+   static int val = 0;
+   static int k = 0;
+   static PriorityQueue<Pair> q = new PriorityQueue<>();
+   
+   public static void dfs(ArrayList<Edge>[] graph, int src, int dest, 
+            boolean[] vis, String pathSofar, int weightSofar){
+        if(src == dest){
+            // Smallest path
+            if(weightSofar < smallestPathWt){
+                smallestPath = pathSofar;
+                smallestPathWt = weightSofar;
+            }
+            
+            // largest path
+            if(weightSofar > largestPathWt){
+                largestPath = pathSofar;
+                largestPathWt = weightSofar;
+            }
+            
+            // floor 
+            if(weightSofar < val && weightSofar > floorWt){
+                floorPath = pathSofar;
+                floorWt = weightSofar;
+            }
+            
+            // ceil
+            if(weightSofar > val && weightSofar < ceilWt){
+                ceilPath = pathSofar;
+                ceilWt = weightSofar;
+            }
+            
+            // kth largest
+            if(q.size() < k){
+                q.add(new Pair(pathSofar, weightSofar));
+            } else if(weightSofar > q.peek().weightSofar){
+                q.remove();
+                q.add(new Pair(pathSofar, weightSofar));
+            }
+                
+            return;
+        }    
+        
+        vis[src] = true;
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == false){
+                dfs(graph, e.nbr, dest, vis, pathSofar + e.nbr, weightSofar + e.wt);
+            }
+        }
+        
+        vis[src] = false;
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+      int dest = Integer.parseInt(br.readLine());
+      val = Integer.parseInt(br.readLine());
+      k = Integer.parseInt(br.readLine());
+      
+      boolean vis[] = new boolean[vtces];
+      
+      // write all your codes here
+      dfs(graph, src, dest, vis, "" + src, 0);
+      
+      System.out.println("Smallest Path = " + smallestPath + "@" + smallestPathWt);
+      System.out.println("Largest Path = " + largestPath + "@" + largestPathWt);
+      System.out.println("Just Larger Path than " + val + " = " + ceilPath + "@" + ceilWt);
+      System.out.println("Just Smaller Path than " + val + " = " + floorPath + "@" + floorWt);
+      System.out.println(k + "th largest path = " + q.peek().pathSofar + "@" + q.peek().weightSofar);
+   }
+
+
+}
+===================================================
+12.No of Islands.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   public static void dfs(int[][] arr, int srcRow, int srcCol){
+        if(srcRow < 0 || srcRow >= arr.length || srcCol < 0 
+            || srcCol >= arr[0].length || arr[srcRow][srcCol] != 0){
+            // invalid cell or already visited island cell or water cell
+            return;
+        }  
+        
+        arr[srcRow][srcCol] = -1;
+        
+        dfs(arr, srcRow + 1, srcCol);
+        dfs(arr, srcRow - 1, srcCol);
+        dfs(arr, srcRow, srcCol + 1);
+        dfs(arr, srcRow, srcCol - 1);
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int m = Integer.parseInt(br.readLine());
+      int n = Integer.parseInt(br.readLine());
+      int[][] arr = new int[m][n];
+
+      for (int i = 0; i < arr.length; i++) {
+         String parts = br.readLine();
+         for (int j = 0; j < arr[0].length; j++) {
+            arr[i][j] = Integer.parseInt(parts.split(" ")[j]);
+         }
+      }
+        
+      int islands = 0;
+      for(int i=0; i<m; i++){
+          for(int j=0; j<n; j++){
+              
+              if(arr[i][j] != -1 && arr[i][j] != 1) // neither visited nor water cell{
+              {
+                  // unvisited island cell
+                  dfs(arr, i, j);
+                  islands++;
+              }      
+              
+          }
+      }
+      System.out.println(islands);
+   }
+
+}
+===================================================
+
+13.Perfect Friends.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+   
+   public static void dfs(ArrayList<Edge>[] graph, int[] count, int src, boolean[] vis){
+        vis[src] = true;
+        count[0]++;
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == false){ 
+                dfs(graph, count, e.nbr, vis);
+            }
+        }
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2, -1));
+         graph[v2].add(new Edge(v2, v1, -1));
+      }
+
+      ArrayList<Integer> comps = new ArrayList<>();
+      boolean[] vis = new boolean[vtces];
+      
+      for(int i=0; i<vtces; i++){
+          if(vis[i] == false){
+              int[] count = new int[1];
+              dfs(graph, count, i,vis);
+              comps.add(count[0]);
+          }
+      }
+      
+    //   int countWays = 0;
+    //   for(int c1 = 0; c1 < comps.size(); c1++){
+    //       for(int c2 = c1 + 1; c2 < comps.size(); c2++){
+    //           countWays = countWays + comps.get(c1) * comps.get(c2);
+    //       }
+    //   }
+    
+      int countWays = 0;
+      int remVtces = vtces;
+      
+      for(int size: comps){
+          remVtces -= size;
+          countWays += remVtces * size;
+      }
+      System.out.println(countWays);
+   }
+}
+===================================================
+14.Prim's Algorithm.java
+------------------------------------
+// Prim's Algorithm - Minimum Wire Required 
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+    
+   static class Pair implements Comparable<Pair>{
+       int node;
+       int parent;
+       int weight;
+       
+       Pair(int node, int parent, int weight){
+           this.node = node;
+           this.parent = parent;
+           this.weight = weight;
+       }
+       
+       public int compareTo(Pair other){
+           return this.weight - other.weight;
+       }
+   }    
+   
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      
+      PriorityQueue<Pair> q = new PriorityQueue<>();
+      boolean[] vis = new boolean[vtces];
+      
+      q.add(new Pair(0, -1, 0));
+      
+      while(q.size() > 0){
+          // remove
+          Pair curr = q.remove();
+          
+          if(vis[curr.node] == true) continue;
+          
+          // mark*
+          vis[curr.node] = true;
+          
+          // work
+          if(curr.parent != -1){
+            System.out.println("[" + curr.node + "-" + curr.parent + "@" + curr.weight + "]");
+          }
+          
+          // add*
+          for(Edge e: graph[curr.node]){
+              if(vis[e.nbr] == false){
+                  q.add(new Pair(e.nbr, curr.node, e.wt));
+              }
+          }
+      }
+      
+   }
+}
+===================================================
+15.Print All Paths.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt) {
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+   
+   // Print All Paths from Source to Destination -> Backtracking -> O(N^N) or O(N!) -> Exponential
+   public static void dfs(ArrayList<Edge>[] graph, int src, int dest, boolean[] vis, String pathSofar){
+        if(src == dest){
+            System.out.println(pathSofar);
+            return;
+        }    
+        
+        vis[src] = true;
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == false){ // already visited
+                dfs(graph, e.nbr, dest, vis, pathSofar + e.nbr);
+            }
+        }
+        
+        vis[src] = false; // unmarking node to visit it again using other paths
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+      int dest = Integer.parseInt(br.readLine());
+        
+      boolean vis[] = new boolean[vtces];
+      
+      // write all your codes here
+      dfs(graph, src, dest, vis, "" + src);
+   }
+
+
+}
+===================================================
+16.Spread of Infection - DFS.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+
+      Edge(int src, int nbr) {
+         this.src = src;
+         this.nbr = nbr;
+      }
+   }
+    
+   static class Pair{
+       int node;
+       int time;
+       
+       Pair(int node, int time){
+           this.node = node;
+           this.time = time;
+       }
+   }
+   
+   static int totalTime;
+   public static void DFS(ArrayList<Edge>[] graph, int src, int time, int[] vis, HashSet<Integer> infected){
+        if(time > totalTime) return;
+        
+        vis[src] = time;
+        infected.add(src);
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == -1){
+                DFS(graph, e.nbr, time + 1, vis, infected);
+            } else {
+                // Time Complexity will be poor (Exponential in worst case)
+                if(time + 1 < vis[e.nbr]){
+                    DFS(graph, e.nbr, time + 1, vis, infected);
+                }
+            }
+        }
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2));
+         graph[v2].add(new Edge(v2, v1));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+      int t = Integer.parseInt(br.readLine());
+      
+      totalTime = t;
+      int[] vis = new int[vtces];
+      Arrays.fill(vis, -1);
+      HashSet<Integer> infected = new HashSet<>();
+      DFS(graph, src, 1, vis, infected);
+      System.out.println(infected.size());
+      
+    //   Queue<Pair> q = new LinkedList<>();
+    //   boolean[] vis = new boolean[vtces];
+      
+    //   q.add(new Pair(src, 1));
+    //   int count = 0;
+      
+    //   while(q.size() > 0){
+    //       // remove
+    //       Pair curr = q.remove();
+           
+          
+    //       if(vis[curr.node] == true) continue;
+    //       vis[curr.node] = true;
+          
+    //       // work
+    //       if(curr.time > t) break;
+          
+    //       count++;    
+          
+    //       // add*
+    //       for(Edge e: graph[curr.node]){
+    //           if(vis[e.nbr] == false){
+    //               q.add(new Pair(e.nbr, curr.time + 1));
+    //           }
+    //       }
+    //   }
+      
+    //   System.out.println(count);
+   }
+
+}
+===================================================
+17.Spread of Infection.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+
+      Edge(int src, int nbr) {
+         this.src = src;
+         this.nbr = nbr;
+      }
+   }
+    
+   static class Pair{
+       int node;
+       int time;
+       
+       Pair(int node, int time){
+           this.node = node;
+           this.time = time;
+       }
+   }
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2));
+         graph[v2].add(new Edge(v2, v1));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+      int t = Integer.parseInt(br.readLine());
+      
+      Queue<Pair> q = new LinkedList<>();
+      boolean[] vis = new boolean[vtces];
+      
+      q.add(new Pair(src, 1));
+      int count = 0;
+      
+      while(q.size() > 0){
+          // remove
+          Pair curr = q.remove();
+           
+          if(vis[curr.node] == true) continue;
+          vis[curr.node] = true;
+          
+          // work
+          
+          if(curr.time > t) break;
+          count++;    
+          
+          // add*
+          for(Edge e: graph[curr.node]){
+              if(vis[e.nbr] == false){
+                  q.add(new Pair(e.nbr, curr.time + 1));
+              }
+          }
+      }
+      
+      System.out.println(count);
+   }
+
+}
+===================================================
+18.Topological Sort.java 
+------------------------------------
+// Topological Sort - Order of Compilation
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+
+      Edge(int src, int nbr) {
+         this.src = src;
+         this.nbr = nbr;
+      }
+   }
+    
+   public static void DFS(ArrayList<Edge>[] graph, int src, 
+                boolean[] vis, Stack<Integer> topoSort){
+        vis[src] = true;
+        
+        for(Edge e: graph[src]){
+            if(vis[e.nbr] == false){
+                DFS(graph, e.nbr, vis, topoSort);
+            }
+        }
+        
+        topoSort.push(src);
+   }
+   
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for (int i = 0; i < vtces; i++) {
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for (int i = 0; i < edges; i++) {
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         graph[v1].add(new Edge(v1, v2));
+      }
+        
+      boolean[] vis = new boolean[vtces];
+      Stack<Integer> topoSort = new Stack<>();
+      
+      for(int i=0; i<vtces; i++){
+          if(vis[i] == false){
+              DFS(graph, i, vis, topoSort);
+          }
+      }
+      
+      while(topoSort.size() > 0){
+          System.out.println(topoSort.pop());
+      }
+   }
+
+}
+====================================================================================================================================================
+*
+*
+*
+*
+*
+*
+*
+====================================================================================================================================================
+19.01. Graph - Adjacency List.java
+------------------------------------
+import java.util.*;
+
+class Pair {
+    int nbr, weight;
+
+    // Unweighted
+    Pair(int nbr) {
+        this(nbr, 1);
+    }
+
+    // Weighted
+    Pair(int nbr, int weight) {
+        this.nbr = nbr;
+        this.weight = weight;
+    }
+}
+
+class Graph {
+    ArrayList<Pair>[] adj;
+
+    Graph(int n) 
+	{
+        adj = new ArrayList[n];
+        for(int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+    }
+
+    // Unweighted Graph
+    public void addEdge(int src, int dest, boolean isDirected) {
+        adj[src].add(new Pair(dest));
+        if (isDirected == false)
+            adj[dest].add(new Pair(src));
+    }
+
+    // Weighted Graph
+    public void addEdge(int src, int dest, int weight, boolean isDirected) {
+        adj[src].add(new Pair(dest, weight));
+        if (isDirected == false)
+            adj[dest].add(new Pair(src, weight));
+    }
+
+    public void printAdjList() {
+        for (int i = 0; i < adj.length; i++) {
+            // Loop on Neighbours present in adj[i]
+            for (int j = 0; j < adj[i].size(); j++) {
+                System.out.println(i + " -> "
+                        + adj[i].get(j).nbr + " " + adj[i].get(j).weight);
+            }
+        }
+    }
+}
+
+class Main {
+    public static void main(String[] args) {
+        Scanner scn = new Scanner(System.in);
+
+        int vtces = scn.nextInt();
+        Graph g = new Graph(vtces);
+
+        int edges = scn.nextInt();
+        for (int i = 0; i < edges; i++) {
+            int src = scn.nextInt();
+            int dest = scn.nextInt();
+            int weight = scn.nextInt();
+            g.addEdge(src, dest, weight, false);
+        }
+
+        g.printAdjList();
+    }
+}
+
+--------------------------------
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+   static class Edge {
+      int src;
+      int nbr;
+      int wt;
+
+      Edge(int src, int nbr, int wt){
+         this.src = src;
+         this.nbr = nbr;
+         this.wt = wt;
+      }
+   }
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      int vtces = Integer.parseInt(br.readLine());
+      ArrayList<Edge>[] graph = new ArrayList[vtces];
+      for(int i = 0; i < vtces; i++){
+         graph[i] = new ArrayList<>();
+      }
+
+      int edges = Integer.parseInt(br.readLine());
+      for(int i = 0; i < edges; i++){
+         String[] parts = br.readLine().split(" ");
+         int v1 = Integer.parseInt(parts[0]);
+         int v2 = Integer.parseInt(parts[1]);
+         int wt = Integer.parseInt(parts[2]);
+         graph[v1].add(new Edge(v1, v2, wt));
+         graph[v2].add(new Edge(v2, v1, wt));
+      }
+
+      int src = Integer.parseInt(br.readLine());
+      int dest = Integer.parseInt(br.readLine());
+
+      // write your code here
+    }
+
+}
+
+IP : 
+node -7
+edge - 8
+0 1 10
+1 2 10
+2 3 10
+0 3 10
+3 4 10
+4 5 10
+5 6 10
+4 6 10
+src- 0
+dest- 6
+
+===================================================
+20. 02. DFS - Has Path.java
+------------------------------------
+import java.util.*;
+// Leetcode 1971: https://leetcode.com/problems/find-if-path-exists-in-graph/
+
+// Undirected + Unweighted
+class Graph {
+    public ArrayList<Integer>[] adj;
+
+    Graph(int n) {
+        adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+    }
+
+    public void addEdge(int src, int dest) {
+        adj[src].add(dest);
+        adj[dest].add(src);
+    }
+
+    public boolean DFS(int src, int dest, boolean[] vis) {
+        if (src == dest)
+            return true;
+        if (vis[src] == true)
+            return false;
+        vis[src] = true;
+
+        // Looping on Adjacency List at Index = Src
+        for (int nbr : adj[src]) {
+            if (DFS(nbr, dest, vis) == true)
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean DFS(int src, int dest) {
+        boolean[] vis = new boolean[adj.length];
+        return DFS(src, dest, vis);
+    }
+}
+
+class Solution {
+    // Time - O(N + E) Where N = Number of Vertices, E = Number of Edges
+    // Space - O(N + E) Input Space (Adjacency List)
+    // - O(N) Extra Space (Visited Array), O(N) Recursion Call Stack Space
+    public boolean validPath(int n, int[][] edges, int source, int destination) {
+        Graph g = new Graph(n);
+        for (int i = 0; i < edges.length; i++) {
+            g.addEdge(edges[i][0], edges[i][1]);
+        }
+
+        return g.DFS(source, destination);
+    }
+}
+===================================================
+
+21. 03. DFS - All Paths.java
+------------------------------------
+import java.util.*;
+// Leetcode 797: https://leetcode.com/problems/all-paths-from-source-to-target/
+
+class Solution {
+    public void DFS(int src, int dest, boolean[] vis, int[][] graph,
+            List<Integer> path, List<List<Integer>> paths) {
+        if (vis[src] == true)
+            return;
+
+        vis[src] = true;
+        path.add(src);
+
+        if (src == dest) {
+            paths.add(new ArrayList<>(path)); // DEEP COPY
+        }
+
+        for (int nbr : graph[src]) {
+            DFS(nbr, dest, vis, graph, path, paths);
+        }
+
+        // BACKTRACK
+        vis[src] = false;
+        path.remove(path.size() - 1);
+    }
+
+    // Time Complexity - O(Exponential)
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        List<Integer> path = new ArrayList<>();
+        List<List<Integer>> paths = new ArrayList<>();
+        boolean[] vis = new boolean[graph.length];
+
+        DFS(0, graph.length - 1, vis, graph, path, paths);
+        return paths;
+    }
+}
+
+===================================================
+22. 04. Flood Fill.java
+------------------------------------
+// Leetcode 733: https://leetcode.com/problems/flood-fill/
+
+class Solution {
+    // Time - O(N^2) in Worst Case, Space - O(N) Recursion Call Stack Space
+    public void DFS(int[][] image, int sr, int sc, int newColor, int startColor) {
+        if (sr < 0 || sc < 0 || sr >= image.length || sc >= image[0].length)
+            return;
+
+        if (image[sr][sc] != startColor)
+            return;
+
+        image[sr][sc] = newColor;
+        DFS(image, sr + 1, sc, newColor, startColor);
+        DFS(image, sr - 1, sc, newColor, startColor);
+        DFS(image, sr, sc + 1, newColor, startColor);
+        DFS(image, sr, sc - 1, newColor, startColor);
+    }
+
+    public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        if (image[sr][sc] == newColor)
+            return image;
+        DFS(image, sr, sc, newColor, image[sr][sc]);
+        return image;
+    }
+}
+===================================================
+23.05. Connected Components - I.java 
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// NADOS: https://nados.io/question/get-connected-components-of-a-graph?zen=true
+
+class Main {
+    static class Edge {
+        int src;
+        int nbr;
+        int wt;
+
+        Edge(int src, int nbr, int wt) {
+            this.src = src;
+            this.nbr = nbr;
+            this.wt = wt;
+        }
+    }
+
+    public static void DFS(int src, ArrayList<Edge>[] graph,
+            boolean[] vis, List<Integer> component) {
+        if (vis[src] == true)
+            return;
+
+        vis[src] = true;
+        component.add(src);
+
+        for (Edge e : graph[src]) {
+            DFS(e.nbr, graph, vis, component);
+        }
+    }
+
+    // Time - O(N + E) Same as DFS, Space - O(N) Visited Array - Extra Space
+    // O(N) Components Arraylist - Output Space, O(N) Recursion Call Stack Space
+    public static void connectedComponents(ArrayList<Edge>[] graph) {
+        int n = graph.length;
+        boolean[] vis = new boolean[n];
+
+        List<List<Integer>> components = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (vis[i] == false) {
+                List<Integer> component = new ArrayList<>();
+                DFS(i, graph, vis, component);
+                components.add(component);
+            }
+        }
+
+        System.out.println(components);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        int vtces = Integer.parseInt(br.readLine());
+        ArrayList<Edge>[] graph = new ArrayList[vtces];
+        for (int i = 0; i < vtces; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        int edges = Integer.parseInt(br.readLine());
+        for (int i = 0; i < edges; i++) {
+            String[] parts = br.readLine().split(" ");
+            int v1 = Integer.parseInt(parts[0]);
+            int v2 = Integer.parseInt(parts[1]);
+            int wt = Integer.parseInt(parts[2]);
+            graph[v1].add(new Edge(v1, v2, wt));
+            graph[v2].add(new Edge(v2, v1, wt));
+        }
+
+        connectedComponents(graph);
+    }
+}
+===================================================
+24. 06. Connected Components - II.java
+------------------------------------
+import java.util.*;
+
+// leetcode 547: https://leetcode.com/problems/number-of-provinces/
+
+// Time - O(N^2) Conversion from Adjacency Matrix to Adjacency List
+// + O(N + E) for DFS - Get Connected Components
+
+// Space - O(N + E) for Adjacency List + O(N) for Recursion Call Stack 
+
+class Graph {
+    public ArrayList<Integer>[] adj;
+
+    Graph(int n) {
+        adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+    }
+
+    public void addEdge(int src, int dest) {
+        adj[src].add(dest);
+        adj[dest].add(src);
+    }
+
+    public void DFS(int src, boolean[] vis) {
+        if (vis[src] == true)
+            return;
+
+        vis[src] = true;
+
+        for (Integer nbr : adj[src]) {
+            DFS(nbr, vis);
+        }
+    }
+}
+
+class Solution {
+    public int findCircleNum(int[][] isConnected) {
+        int n = isConnected.length;
+        Graph g = new Graph(n);
+
+        // Convert Adjacency Matrix to Adjacency List
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j && isConnected[i][j] == 1) {
+                    g.addEdge(i, j);
+                }
+            }
+        }
+
+        boolean[] vis = new boolean[n];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (vis[i] == false) {
+                g.DFS(i, vis);
+                count++;
+            }
+        }
+
+        return count;
+    }
+}
+===================================================
+25. 07. Unreachable Nodes Pairs.java
+------------------------------------
+import java.util.*;
+
+// Leetcode 2316: https://leetcode.com/problems/count-unreachable-pairs-of-nodes-in-an-undirected-graph/
+
+class Graph {
+    public ArrayList<Integer>[] adj;
+
+    Graph(int n) {
+        adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+    }
+
+    public void addEdge(int src, int dest) {
+        adj[src].add(dest);
+        adj[dest].add(src);
+    }
+
+    public void DFS(int src, boolean[] vis, List<Integer> component) {
+        if (vis[src] == true)
+            return;
+
+        vis[src] = true;
+        component.add(src);
+
+        for (Integer nbr : adj[src]) {
+            DFS(nbr, vis, component);
+        }
+    }
+}
+
+class Solution {
+    // Time - O(N + E) DFS,
+    // Space - O(N) Visited Array, Component Array, Recurion Call Stack
+    public long countPairs(int n, int[][] edges) {
+        Graph g = new Graph(n);
+        for (int[] edge : edges) {
+            g.addEdge(edge[0], edge[1]);
+        }
+
+        boolean[] vis = new boolean[n];
+
+        long pairs = 0;
+        for (int i = 0; i < n; i++) {
+            if (vis[i] == false) {
+                List<Integer> component = new ArrayList<>();
+                g.DFS(i, vis, component);
+                pairs = pairs + ((component.size()) * ((n * 1l) - component.size()));
+            }
+        }
+
+        return pairs / 2l;
+    }
+}
+===================================================
+26.08. Number of Islands - I.java
+------------------------------------
+// Leetcode 200: https://leetcode.com/problems/number-of-islands/
+
+// Time - O(N ^ 2) DFS in Matrix, Space - O(N ^ 2) Recursion Call Stack
+class Solution {
+    int[][] directions = { { +1, 0 }, { -1, 0 }, { 0, +1 }, { 0, -1 } };
+    // down, up, right, left
+
+    public void DFS(int r, int c, char[][] grid) {
+        // Out of Matrix, Water Cell, Visited Land
+        if (r < 0 || c < 0 || r >= grid.length || c >= grid[0].length
+                || grid[r][c] == '0' || grid[r][c] == 'N')
+            return;
+
+        grid[r][c] = 'N'; // Visited Land
+        for (int[] direction : directions) {
+            DFS(r + direction[0], c + direction[1], grid);
+        }
+    }
+
+    public int numIslands(char[][] grid) {
+        int islands = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                // Unvisited Land
+                if (grid[i][j] == '1') {
+                    DFS(i, j, grid);
+                    islands++;
+                }
+            }
+        }
+        return islands;
+    }
+}
+===================================================
+27. 09. Number of Islands - II.java
+------------------------------------
+// 1020: https://leetcode.com/problems/number-of-enclaves/
+
+class Solution {
+    // Time: DFS: O(N + E)
+    public int numEnclaves(int[][] A) {
+        int result = 0;
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[i].length; j++) {
+                if (i == 0 || j == 0 || i == A.length - 1 || j == A[i].length - 1)
+                    dfs(A, i, j);
+            }
+        }
+
+        for (int i = 0; i < A.length; i++) {
+            for (int j = 0; j < A[i].length; j++) {
+                if (A[i][j] == 1)
+                    result++;
+            }
+        }
+
+        return result;
+    }
+
+    public void dfs(int a[][], int i, int j) {
+        if (i >= 0 && i <= a.length - 1 && j >= 0 && j <= a[i].length - 1 && a[i][j] == 1) {
+            a[i][j] = 0;
+            dfs(a, i + 1, j);
+            dfs(a, i - 1, j);
+            dfs(a, i, j + 1);
+            dfs(a, i, j - 1);
+        }
+    }
+}
+======================= ============================
+28. 10. Hamiltonian Path and Cycle.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// NADOS: https://nados.io/question/hamiltonian-path-and-cycle?zen=true
+
+class Main {
+
+    public static boolean isEdge(int src, int dest, ArrayList<Integer>[] graph) {
+        for (Integer nbr : graph[src]) {
+            if (nbr == dest)
+                return true;
+        }
+        return false;
+    }
+
+    // Time - O(Exponential) All Paths from Source to Destination
+    public static void DFS(int src, boolean[] vis, ArrayList<Integer>[] graph, int visCount, String path) {
+        if (vis[src] == true)
+            return;
+
+        vis[src] = true;
+        visCount++;
+
+        // All Nodes are Visited
+        if (visCount == graph.length) {
+            System.out.print(path);
+
+            int a = path.charAt(0) - '0';
+            if (isEdge(a, src, graph) == true) {
+                System.out.println('*'); // Hamiltonian Cycle
+            } else {
+                System.out.println('.'); // Hamiltonian Path
+            }
+
+        }
+
+        for (Integer nbr : graph[src]) {
+            DFS(nbr, vis, graph, visCount, path + nbr);
+        }
+
+        vis[src] = false;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        int vtces = Integer.parseInt(br.readLine());
+        ArrayList<Integer>[] graph = new ArrayList[vtces];
+        for (int i = 0; i < vtces; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        int edges = Integer.parseInt(br.readLine());
+        for (int i = 0; i < edges; i++) {
+            String[] parts = br.readLine().split(" ");
+            int v1 = Integer.parseInt(parts[0]);
+            int v2 = Integer.parseInt(parts[1]);
+            graph[v1].add(v2);
+            graph[v2].add(v1);
+        }
+
+        int src = Integer.parseInt(br.readLine());
+
+        boolean[] vis = new boolean[vtces];
+        DFS(src, vis, graph, 0, "" + src);
+    }
+
+}
+===================================================
+11. Minimum Ops for Connected Comp.java
+------------------------------------
+import java.util.*;
+
+// 1319: https://leetcode.com/problems/number-of-operations-to-make-network-connected/
+
+// Time - O(N + E) DFS
+class Solution {
+    @SuppressWarnings("unchecked")
+    public int makeConnected(int n, int[][] connections) {
+        if (connections.length < n - 1)
+            return -1; // To connect all nodes need at least n-1 edges
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++)
+            graph[i] = new ArrayList<>();
+        for (int[] c : connections) {
+            graph[c[0]].add(c[1]);
+            graph[c[1]].add(c[0]);
+        }
+
+        int components = 0;
+        boolean[] visited = new boolean[n];
+        for (int v = 0; v < n; v++)
+            components += dfs(v, graph, visited);
+        return components - 1; // Need (components-1) cables to connect components together
+    }
+
+    int dfs(int u, List<Integer>[] graph, boolean[] visited) {
+        if (visited[u])
+            return 0;
+        visited[u] = true;
+        for (int v : graph[u])
+            dfs(v, graph, visited);
+        return 1;
+    }
+}
+===================================================
+12. Time Needed to Inform Employees.java 
+------------------------------------
+import java.util.*;
+
+// 1376: https://leetcode.com/problems/time-needed-to-inform-all-employees/
+
+class Pair {
+    int nbr;
+    int wt;
+
+    Pair(int nbr, int wt) {
+        this.nbr = nbr;
+        this.wt = wt;
+    }
+}
+
+class Graph {
+    ArrayList<Pair>[] adj;
+
+    @SuppressWarnings("unchecked")
+    Graph(int n) {
+        adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+    }
+
+    public void addEdge(int src, int nbr, int wt) {
+        // Directed And Weighted
+        adj[src].add(new Pair(nbr, wt));
+    }
+}
+
+// Time - O(N + E) DFS
+class Solution {
+    public int DFS(int src, int time, Graph g) {
+        int maxTime = time;
+        for (Pair p : g.adj[src]) {
+            maxTime = Math.max(maxTime, DFS(p.nbr, time + p.wt, g));
+        }
+        return maxTime;
+    }
+
+    public int numOfMinutes(int n, int headID, int[] manager, int[] informTime) {
+        Graph g = new Graph(n);
+
+        int time = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (manager[i] == -1) {
+                time = informTime[i];
+            } else {
+                // manager[i] -> parent, i -> Child
+                g.addEdge(manager[i], i, informTime[i]);
+            }
+
+        }
+
+        return DFS(headID, time, g);
+    }
+}
+===================================================
+13. Pacific Atlantic Water Flow.java
+------------------------------------
+import java.util.*;
+
+// 417: https://leetcode.com/problems/pacific-atlantic-water-flow/
+
+class Solution {
+    int[][] dir = { { +1, 0 }, { -1, 0 }, { 0, +1 }, { 0, -1 } };
+
+    // Time - O(N * M) where N = rows, M = columns: DFS
+    public void DFS(int r, int c, int[][] heights, boolean[][] vis) {
+        if (vis[r][c] == true)
+            return;
+
+        vis[r][c] = true;
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dir[d][0];
+            int nc = c + dir[d][1];
+
+            if (nr < 0 || nc < 0 || nr >= heights.length || nc >= heights[r].length)
+                continue;
+
+            if (heights[nr][nc] >= heights[r][c]) {
+                DFS(nr, nc, heights, vis);
+            }
+        }
+    }
+
+    public List<List<Integer>> pacificAtlantic(int[][] heights) {
+        int n = heights.length, m = heights[0].length;
+
+        boolean[][] pacific = new boolean[n][m];
+        for (int i = 0; i < m; i++)
+            DFS(0, i, heights, pacific); // TOP WALL
+        for (int i = 0; i < n; i++)
+            DFS(i, 0, heights, pacific); // LEFT WALL
+
+        boolean[][] atlantic = new boolean[n][m];
+        for (int i = 0; i < m; i++)
+            DFS(n - 1, i, heights, atlantic); // BOTTOM WALL
+        for (int i = 0; i < n; i++)
+            DFS(i, m - 1, heights, atlantic); // RIGHT WALL
+
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (pacific[i][j] == true && atlantic[i][j] == true) {
+                    List<Integer> point = new ArrayList<>();
+                    point.add(i);
+                    point.add(j);
+                    res.add(point);
+                }
+            }
+        }
+        return res;
+    }
+}
+===================================================
+14. Minimize Malware Spread.java
+------------------------------------
+import java.util.*;
+
+// 924: https://leetcode.com/problems/minimize-malware-spread/
+
+class Solution {
+    int size, infected;
+
+    public void DFS(int src, boolean[] vis, int[][] graph, int[] initial) {
+        if (vis[src] == true)
+            return;
+
+        vis[src] = true;
+        size++;
+        if (Arrays.binarySearch(initial, src) >= 0)
+            infected++;
+
+        for (int nbr = 0; nbr < graph.length; nbr++) {
+            if (graph[src][nbr] == 1)
+                DFS(nbr, vis, graph, initial);
+        }
+    }
+
+    // DFS Time = O(N + E) + O(N Log N) for Sorting of Edges
+    public int minMalwareSpread(int[][] graph, int[] initial) {
+        Arrays.sort(initial);
+
+        boolean[] vis = new boolean[graph.length];
+        int maxSize = 0, ans = initial[0];
+
+        for (int src : initial) {
+            size = infected = 0;
+            DFS(src, vis, graph, initial);
+
+            if (size > maxSize && infected == 1) {
+                ans = src;
+                maxSize = size;
+            }
+        }
+
+        return ans;
+    }
+}
+===================================================
+15. BFS - Has Path.java 
+------------------------------------
+import java.util.*;
+
+// 1971: https://leetcode.com/problems/find-if-path-exists-in-graph/
+
+// Undirected + Unweighted
+class Graph {
+    public ArrayList<Integer>[] adj;
+
+    @SuppressWarnings("unchecked")
+    Graph(int n) {
+        adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+    }
+
+    public void addEdge(int src, int dest) {
+        adj[src].add(dest);
+        adj[dest].add(src);
+    }
+
+    public boolean DFS(int src, int dest, boolean[] vis) {
+        if (src == dest)
+            return true;
+        if (vis[src] == true)
+            return false;
+        vis[src] = true;
+
+        // Looping on Adjacency List at Index = Src
+        for (int nbr : adj[src]) {
+            if (DFS(nbr, dest, vis) == true)
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean DFS(int src, int dest) {
+        boolean[] vis = new boolean[adj.length];
+        return DFS(src, dest, vis);
+    }
+
+    // Time : O(N + E) Same as DFS
+    public boolean BFS(int src, int dest) {
+        Queue<Integer> q = new ArrayDeque<>();
+        boolean[] vis = new boolean[adj.length];
+        q.add(src);
+
+        while (q.size() > 0) {
+            int front = q.remove();
+            if (vis[front] == true)
+                continue;
+            if (front == dest)
+                return true;
+            vis[front] = true;
+
+            for (Integer nbr : adj[front]) {
+                if (vis[nbr] == false) {
+                    q.add(nbr);
+                }
+            }
+        }
+
+        return false;
+    }
+}
+
+class Solution {
+    public boolean validPath(int n, int[][] edges, int source, int destination) {
+        Graph g = new Graph(n);
+        for (int i = 0; i < edges.length; i++) {
+            g.addEdge(edges[i][0], edges[i][1]);
+        }
+
+        return g.BFS(source, destination);
+    }
+}
+===================================================
+16. Topological Sort - BFS Kahn.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/topological-sort/1
+// Time - O(N + E) BFS
+
+class Solution {
+    // Function to return list containing vertices in Topological order.
+    static int[] topoSort(int n, ArrayList<ArrayList<Integer>> adj) {
+        int[] incoming = new int[n];
+        for (int src = 0; src < adj.size(); src++) {
+            for (Integer nbr : adj.get(src)) {
+                incoming[nbr]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        // Multisource Breadth First Traversal
+        for (int i = 0; i < n; i++) {
+            if (incoming[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        int[] order = new int[n];
+        int idx = 0;
+
+        while (q.size() > 0) {
+            int src = q.remove();
+            order[idx++] = src;
+
+            for (Integer nbr : adj.get(src)) {
+                incoming[nbr]--;
+                if (incoming[nbr] == 0) {
+                    q.add(nbr);
+                }
+            }
+        }
+
+        return order;
+    }
+}
+===================================================
+17. Topological Sort - DFS Postorder.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/topological-sort/1
+// Time - O(N + E) DFS
+class Solution {
+    static int[] topo;
+    static int idx;
+
+    static void DFS(int src, ArrayList<ArrayList<Integer>> adj, boolean[] vis) {
+        if (vis[src] == true)
+            return;
+        vis[src] = true;
+
+        for (Integer nbr : adj.get(src)) {
+            DFS(nbr, adj, vis);
+        }
+
+        topo[idx--] = src;
+    }
+
+    // Function to return list containing vertices in Topological order.
+    static int[] topoSort(int n, ArrayList<ArrayList<Integer>> adj) {
+        idx = n - 1;
+        topo = new int[n];
+        boolean[] vis = new boolean[n];
+
+        // Multisource DFS
+        for (int i = 0; i < n; i++)
+            DFS(i, adj, vis);
+
+        return topo;
+    }
+}
+===================================================
+18. Mother Vertex.java 
+------------------------------------
+import java.util.*;
+// GfG: https://practice.geeksforgeeks.org/problems/mother-vertex/1
+
+// Time - O(N + E) Topological Sort + DFS
+class Solution {
+    int[] topo;
+    int idx;
+
+    void DFS(int src, ArrayList<ArrayList<Integer>> adj, boolean[] visited) {
+        if (visited[src] == true)
+            return;
+        visited[src] = true;
+
+        for (Integer nbr : adj.get(src))
+            DFS(nbr, adj, visited);
+
+        topo[idx--] = src;
+    }
+
+    public int findMotherVertex(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] vis = new boolean[V];
+        topo = new int[V];
+        idx = V - 1;
+        for (int i = 0; i < V; i++)
+            DFS(i, adj, vis);
+
+        Arrays.fill(vis, false);
+        idx = V - 1;
+
+        DFS(topo[0], adj, vis);
+        for (int i = 0; i < V; i++) {
+            if (vis[i] == false)
+                return -1;
+        }
+
+        return topo[0];
+    }
+}
+===================================================
+19. Course Schedule - I.java
+------------------------------------
+import java.util.*;
+
+// Leetcode 207: https://leetcode.com/problems/course-schedule/
+// Time - O(N + E) Cycle Detection using Kahn's Algorithm
+
+class Solution {
+    public boolean DFS(int src, ArrayList<Integer>[] adj, int[] vis) {
+        if (vis[src] == 0)
+            return true;
+        if (vis[src] == 1)
+            return false;
+
+        vis[src] = 0;
+        for (Integer nbr : adj[src]) {
+            if (DFS(nbr, adj, vis) == true)
+                return true;
+        }
+
+        vis[src] = 1;
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean canFinish(int n, int[][] prerequisites) {
+        ArrayList<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new ArrayList<>();
+        for (int[] edge : prerequisites)
+            adj[edge[0]].add(edge[1]);
+
+        int[] vis = new int[n];
+        Arrays.fill(vis, -1);
+
+        for (int i = 0; i < n; i++) {
+            if (vis[i] == -1 && DFS(i, adj, vis) == true) {
+                return false; // CYCLIC Graph -> Topological Sort is Not Possible
+            }
+        }
+
+        return true; // ACYLIC Graph -> Topological Sort is Possible
+    }
+}
+===================================================
+20. Course Schedule - II.java
+------------------------------------
+import java.util.*;
+
+// Leetcode 210: https://leetcode.com/problems/course-schedule-ii/
+
+// Time - O(N + E) : Cycle Detection + Topological Sort using Kahn's
+
+class Solution {
+    int[] BFS(int n, ArrayList<Integer>[] adj) {
+        int[] incoming = new int[n];
+        for (int src = 0; src < n; src++) {
+            for (Integer nbr : adj[src]) {
+                incoming[nbr]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        // Multisource Breadth First Traversal
+        for (int i = 0; i < n; i++) {
+            if (incoming[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        int[] topo = new int[n];
+        int idx = 0;
+        int visited = 0;
+
+        while (q.size() > 0) {
+            int src = q.remove();
+            topo[idx++] = src;
+            visited++;
+
+            for (Integer nbr : adj[src]) {
+                incoming[nbr]--;
+                if (incoming[nbr] == 0) {
+                    q.add(nbr);
+                }
+            }
+        }
+
+        if (visited == n)
+            return topo; // Directed Acyclic Graph
+        return new int[0];
+        // Cycle Present (incoming > 0):
+        // if topological sort is not possible (all visited are not visited)
+    }
+
+    @SuppressWarnings("unchecked")
+    public int[] findOrder(int n, int[][] prerequisites) {
+        // Topological Sort is Valid -> Return Any of Them
+        // If not is not possible, then empty return array
+
+        ArrayList<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new ArrayList<>();
+
+        for (int[] edge : prerequisites) {
+            adj[edge[1]].add(edge[0]);
+            // edge[1] is a pre-requisite of edge[0]
+        }
+
+        return BFS(n, adj);
+    }
+}
+===================================================
+21. Course Schedule - III.java
+------------------------------------
+import java.util.*;
+
+// CodeStudio (CN): https://www.codingninjas.com/codestudio/problems/parallel-courses_1376444
+
+// Time = O(N + E) Topological Sort using Kahn's
+
+class Solution {
+    static int BFS(int n, ArrayList<Integer>[] adj) {
+        int[] incoming = new int[n];
+        for (int src = 0; src < n; src++) {
+            for (Integer nbr : adj[src]) {
+                incoming[nbr]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        // Multisource Breadth First Traversal
+        for (int i = 0; i < n; i++) {
+            if (incoming[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        int visited = 0;
+        int level = 0;
+
+        while (q.size() > 0) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int src = q.remove();
+                visited++;
+                for (Integer nbr : adj[src]) {
+                    incoming[nbr]--;
+                    if (incoming[nbr] == 0) {
+                        q.add(nbr);
+                    }
+                }
+            }
+            level++;
+        }
+
+        if (visited == n)
+            return level;
+        return -1;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static int parallelCourses(int n, int[][] prerequisites) {
+        ArrayList<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new ArrayList<>();
+
+        for (int[] edge : prerequisites) {
+            adj[edge[1] - 1].add(edge[0] - 1);
+            // edge[1] is a pre-requisite of edge[0]
+        }
+
+        return BFS(n, adj);
+    }
+}
+===================================================
+22. Alien Dictionary.java
+------------------------------------
+import java.util.*;
+// GfG: https://practice.geeksforgeeks.org/problems/alien-dictionary/1
+
+// Time: O(N * L) Graph Formation + O(N + E) Topological Sort
+// N = Number of Strings, L = String Length, E = Number of Edges = N - 1
+
+class Solution {
+    StringBuilder topo = new StringBuilder("");
+
+    public void DFS(char src, ArrayList<Character>[] adj, boolean[] vis) {
+        if (vis[src - 'a'] == true)
+            return;
+        vis[src - 'a'] = true;
+
+        for (Character nbr : adj[src - 'a']) {
+            DFS(nbr, adj, vis);
+        }
+
+        topo.append(src);
+    }
+
+    @SuppressWarnings("unchecked")
+    public String findOrder(String[] dict, int N, int K) {
+        ArrayList<Character>[] adj = new ArrayList[26];
+        for (int i = 0; i < 26; i++)
+            adj[i] = new ArrayList<>();
+
+        for (int i = 0; i < N - 1; i++) {
+            String a = dict[i], b = dict[i + 1];
+            int j = 0;
+            while (j < a.length() && j < b.length()) {
+                if (a.charAt(j) != b.charAt(j)) {
+                    adj[a.charAt(j) - 'a'].add(b.charAt(j));
+                    break;
+                }
+                j++;
+            }
+        }
+
+        boolean[] vis = new boolean[26];
+        for (char ch = 'a'; ch <= 'z'; ch++)
+            DFS(ch, adj, vis);
+        return topo.reverse().toString();
+    }
+}
+===================================================
+23. Cycle Detection Undirected DFS.java 
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1
+// Time = O(N + E) DFS with Parent 
+
+class Solution {
+    public boolean DFS(int src, int par, ArrayList<ArrayList<Integer>> adj, boolean[] vis) {
+        if (vis[src] == true)
+            return true;
+
+        vis[src] = true;
+        for (Integer nbr : adj.get(src)) {
+            if (nbr != par && DFS(nbr, src, adj, vis) == true)
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] vis = new boolean[V];
+        for (int i = 0; i < V; i++) {
+            if (vis[i] == false && DFS(i, -1, adj, vis) == true) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+===================================================
+24. Cycle Detection Undirected BFS.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1
+// Time = O(N + E) BFS with Parent
+
+class Solution {
+    public static class Pair {
+        int src;
+        int par;
+
+        Pair(int src, int par) {
+            this.src = src;
+            this.par = par;
+        }
+    }
+
+    public boolean BFS(int src, ArrayList<ArrayList<Integer>> adj, boolean[] vis) {
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(src, -1));
+
+        while (q.size() > 0) {
+            Pair front = q.remove();
+            src = front.src;
+            int par = front.par;
+
+            if (vis[src] == true)
+                return true; // Cycle Detected
+            vis[src] = true;
+
+            for (Integer nbr : adj.get(src)) {
+                if (nbr != par)
+                    q.add(new Pair(nbr, src));
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] vis = new boolean[V];
+
+        for (int i = 0; i < V; i++) {
+            if (vis[i] == false && BFS(i, adj, vis) == true)
+                return true;
+        }
+
+        return false;
+    }
+}
+===================================================
+25. Cycle Detection Directed DFS.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1
+// Time = O(N + E) DFS with Graph Coloring
+
+class Solution {
+    // -1 -> unvisited
+    // 0 -> Same Path Visited (Preorder)
+    // 1 -> Diff Path Visited (Postorder)
+
+    public boolean DFS(int src, ArrayList<ArrayList<Integer>> adj, int[] vis) {
+        if (vis[src] == 0)
+            return true; // Node is visited twice in same paths
+        if (vis[src] == 1)
+            return false; // Node is visited twice in diff paths
+
+        vis[src] = 0; // Preorder Visit (Same Path)
+        for (Integer nbr : adj.get(src)) {
+            if (DFS(nbr, adj, vis) == true)
+                return true;
+        }
+        vis[src] = 1; // Postorder Visit (Diff Path)
+        return false;
+    }
+
+    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {
+        int[] vis = new int[V];
+        Arrays.fill(vis, -1);
+
+        for (int i = 0; i < V; i++) {
+            if (DFS(i, adj, vis) == true)
+                return true;
+        }
+        return false;
+    }
+}
+===================================================
+26. Cycle Detection Directed BFS.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1
+// Time = O(N + E) BFS Kahn's Algorithm (Topological Sort)
+
+class Solution {
+    public boolean BFS(int n, ArrayList<ArrayList<Integer>> adj) {
+        int[] incoming = new int[n];
+        for (int src = 0; src < adj.size(); src++) {
+            for (Integer nbr : adj.get(src)) {
+                incoming[nbr]++;
+            }
+        }
+
+        Queue<Integer> q = new LinkedList<>();
+        // Multisource Breadth First Traversal
+        for (int i = 0; i < n; i++) {
+            if (incoming[i] == 0) {
+                q.add(i);
+            }
+        }
+
+        int visited = 0;
+
+        while (q.size() > 0) {
+            int src = q.remove();
+            visited++;
+
+            for (Integer nbr : adj.get(src)) {
+                incoming[nbr]--;
+                if (incoming[nbr] == 0) {
+                    q.add(nbr);
+                }
+            }
+        }
+
+        if (visited == n)
+            return false;
+        // If all nodes are part of topo sort, hence graph is directed acyclic.
+
+        return true; // Cycle is found because some nodes were not visited
+    }
+
+    public boolean isCyclic(int n, ArrayList<ArrayList<Integer>> adj) {
+        return BFS(n, adj);
+    }
+}
+===================================================
+27. Graph M Coloring.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/m-coloring-problem-1587115620/1
+// Time - Exponential (Backtracking Solution Similar to N Queen)
+
+class solve {
+    public boolean canColor(int src, boolean graph[][], int color, int[] vis) {
+        // If any neighbour have same color as my color, hence it cannot happen
+        for (int nbr = 0; nbr < graph.length; nbr++) {
+            if (graph[src][nbr] == true && vis[nbr] == color)
+                return false;
+        }
+        return true;
+    }
+
+    public boolean helper(int idx, boolean graph[][], int color, int[] vis) {
+        if (idx == graph.length)
+            return true;
+
+        for (int c = 0; c < color; c++) {
+            if (canColor(idx, graph, c, vis) == true) {
+                vis[idx] = c;
+                if (helper(idx + 1, graph, color, vis) == true)
+                    return true;
+                vis[idx] = -1;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean graphColoring(boolean graph[][], int m, int n) {
+        int[] vis = new int[graph.length];
+        Arrays.fill(vis, -1);
+        return helper(0, graph, m, vis);
+    }
+}
+===================================================
+28. Bipartite Graph.java
+------------------------------------
+import java.util.*;
+
+// Two Coloring Problem or Bipartite Graph
+
+// 785: https://leetcode.com/problems/is-graph-bipartite/
+// 886: https://leetcode.com/problems/possible-bipartition/
+
+// Time = O(N + E) DFS
+
+class Solution {
+    public boolean DFS(int src, int level, int[][] graph, int[] vis) {
+        if (vis[src] != -1) {
+            if (vis[src] != level)
+                return false;
+            return true;
+        }
+
+        vis[src] = level;
+        for (int nbr : graph[src]) {
+            if (DFS(nbr, 1 - level, graph, vis) == false) {
+                // Cycle of Odd Length
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isBipartite(int[][] graph) {
+        int[] vis = new int[graph.length];
+        Arrays.fill(vis, -1);
+
+        for (int i = 0; i < graph.length; i++) {
+            if (vis[i] == -1 && DFS(i, 0, graph, vis) == false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+===================================================
+29. Two Clique Problem.java 
+------------------------------------
+import java.util.*;
+// CodeStudio (Coding Ninjas):
+// https://www.codingninjas.com/codestudio/problems/two-cliques_1214524
+
+// Time = O(N + E) for Transpose Graph + O(N + E) Bipartite Algorithm (DFS)
+
+class Solution {
+    public static boolean DFS(int src, int level, boolean[][] adj, int[] vis) {
+        if (vis[src] != -1) {
+            if (vis[src] != level)
+                return false;
+            return true;
+        }
+
+        vis[src] = level;
+        for (int nbr = 0; nbr < adj.length; nbr++) {
+            if (src != nbr && adj[src][nbr] == false && DFS(nbr, 1 - level, adj, vis) == false)
+                return false;
+        }
+
+        return true;
+    }
+
+    public static boolean twoCliques(int n, ArrayList<ArrayList<Integer>> edgeList) {
+        boolean[][] adj = new boolean[n][n];
+        for (ArrayList<Integer> edge : edgeList) {
+            adj[edge.get(0)][edge.get(1)] = true;
+            adj[edge.get(1)][edge.get(0)] = true;
+        }
+
+        int[] vis = new int[n];
+        Arrays.fill(vis, -1);
+        for (int i = 0; i < n; i++) {
+            if (vis[i] == -1 && DFS(i, 0, adj, vis) == false)
+                return false;
+        }
+
+        return true;
+    }
+}
+===================================================
+30. Shortest Path - Unweighted Graph.java
+------------------------------------
+import java.util.*;
+
+// CodeStudio (Coding Ninjas):
+// https://www.codingninjas.com/codestudio/problems/shortest-path-in-an-unweighted-graph_981297
+
+// Time = O(N + E) BFS
+
+class Solution {
+    public static class Pair {
+        int node;
+        int parent;
+
+        Pair(int node, int parent) {
+            this.node = node;
+            this.parent = parent;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static LinkedList<Integer> shortestPath(int[][] edges, int n, int m, int source, int dest) {
+        // Adjacency List From Edge List
+        ArrayList<Integer>[] adj = new ArrayList[n + 1];
+        for (int i = 0; i <= n; i++)
+            adj[i] = new ArrayList<>();
+        for (int[] edge : edges) {
+            adj[edge[0]].add(edge[1]);
+            adj[edge[1]].add(edge[0]);
+        }
+
+        // Shortest Path in Unweighted Graph -> Single Source Single Destination
+        // Breadth First Traversal
+
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(source, -1));
+        boolean[] vis = new boolean[n + 1];
+        int[] parent = new int[n + 1];
+        Arrays.fill(parent, -1);
+
+        while (q.size() > 0) {
+            Pair front = q.remove();
+
+            if (vis[front.node] != false)
+                continue;
+
+            vis[front.node] = true;
+            parent[front.node] = front.parent;
+
+            for (Integer nbr : adj[front.node]) {
+                q.add(new Pair(nbr, front.node));
+            }
+        }
+
+        LinkedList<Integer> path = new LinkedList<>();
+        while (dest != -1) {
+            path.addFirst(dest);
+            dest = parent[dest];
+        }
+        return path;
+    }
+
+}
+===================================================
+31. Spread of Infection.java
+------------------------------------
+import java.io.*;
+import java.util.*;
+
+// NADOS: https://nados.io/question/spread-of-infection?zen=true
+// Time = O(N + E) BFS
+
+class Main {
+    static class Pair {
+        int src;
+        int dist;
+
+        Pair(int src, int dist) {
+            this.src = src;
+            this.dist = dist;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        int n = Integer.parseInt(br.readLine());
+        ArrayList<Integer>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        int edges = Integer.parseInt(br.readLine());
+        for (int i = 0; i < edges; i++) {
+            String[] parts = br.readLine().split(" ");
+            int v1 = Integer.parseInt(parts[0]);
+            int v2 = Integer.parseInt(parts[1]);
+            graph[v1].add(v2);
+            graph[v2].add(v1);
+        }
+
+        int src = Integer.parseInt(br.readLine());
+        int t = Integer.parseInt(br.readLine());
+
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(src, 0));
+
+        int infected = 0;
+        boolean[] vis = new boolean[n];
+
+        while (q.size() > 0) {
+            Pair front = q.remove();
+
+            if (vis[front.src] == true)
+                continue;
+            vis[front.src] = true;
+
+            if (front.dist < t)
+                infected++;
+            else
+                break;
+
+            for (Integer nbr : graph[front.src]) {
+                q.add(new Pair(nbr, front.dist + 1));
+            }
+        }
+
+        System.out.println(infected);
+    }
+}
+===================================================
+32. Rotten Oranges.java
+------------------------------------
+import java.util.*;
+// 994: https://leetcode.com/problems/rotting-oranges/
+
+class Pair {
+    int row, col, dist;
+
+    Pair(int row, int col, int dist) {
+        this.row = row;
+        this.col = col;
+        this.dist = dist;
+    }
+}
+
+// Time = O(N + E) = O(Rows * Cols) Multisource BFS
+
+class Solution {
+    int[][] calls = { { +1, 0 }, { -1, 0 }, { 0, +1 }, { 0, -1 } };
+
+    public int orangesRotting(int[][] grid) {
+        Queue<Pair> q = new LinkedList<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 2) {
+                    q.add(new Pair(i, j, 0));
+                }
+            }
+        }
+
+        int min = 0;
+        while (q.size() > 0) {
+            Pair front = q.remove();
+
+            if (grid[front.row][front.col] == 3)
+                continue; // Already Visited
+            grid[front.row][front.col] = 3; // Visited Mark
+            min = Math.max(min, front.dist);
+
+            for (int i = 0; i < 4; i++) {
+                int nr = front.row + calls[i][0];
+                int nc = front.col + calls[i][1];
+
+                // Out of Matrix
+                if (nr < 0 || nc < 0 || nr >= grid.length || nc >= grid[0].length)
+                    continue;
+
+                // Empty Cell or Already Rotten
+                if (grid[nr][nc] == 0 || grid[nr][nc] == 3)
+                    continue;
+
+                q.add(new Pair(nr, nc, front.dist + 1));
+            }
+        }
+
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1)
+                    return -1; // Not Possible to rot all oranges
+            }
+        }
+
+        return min;
+    }
+}
+===================================================
+33. Snakes and Ladders.java
+------------------------------------
+import java.util.*;
+// 909: https://leetcode.com/problems/snakes-and-ladders/
+// Time = O(N + E) for BFS 
+
+class Solution {
+    public static class Pair {
+        int src; // Cell in Graph
+        int dist; // Number of Dice Rolls
+
+        Pair(int src, int dist) {
+            this.src = src;
+            this.dist = dist;
+        }
+    }
+
+    public int BFS(ArrayList<Integer>[] adj) {
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(1, 0));
+
+        int[] vis = new int[adj.length + 1];
+        Arrays.fill(vis, -1);
+
+        while (q.size() > 0) {
+            Pair front = q.remove();
+
+            if (vis[front.src] != -1)
+                continue;
+            vis[front.src] = front.dist;
+
+            for (Integer nbr : adj[front.src]) {
+                q.add(new Pair(nbr, front.dist + 1));
+            }
+        }
+
+        return vis[adj.length - 1];
+    }
+
+    @SuppressWarnings("unchecked")
+    public int snakesAndLadders(int[][] matrix) {
+        ArrayList<Integer> board = new ArrayList<>();
+        board.add(0); // 1-based indexing
+
+        int level = 0, cell = 1;
+        for (int i = matrix.length - 1; i >= 0; i--) {
+            if (level % 2 == 0) {
+                // left to right
+                for (int j = 0; j < matrix.length; j++) {
+                    if (matrix[i][j] == -1)
+                        board.add(cell);
+                    else
+                        board.add(matrix[i][j]); // snake or ladder
+                    cell++;
+                }
+            } else {
+                // right to left
+                for (int j = matrix.length - 1; j >= 0; j--) {
+                    if (matrix[i][j] == -1)
+                        board.add(cell);
+                    else
+                        board.add(matrix[i][j]); // snake or ladder
+                    cell++;
+                }
+            }
+            level++;
+        }
+
+        int size = matrix.length * matrix.length;
+        ArrayList<Integer>[] adj = new ArrayList[size + 1];
+        for (cell = 1; cell <= size; cell++) {
+            adj[cell] = new ArrayList<>();
+            for (int d = 1; d <= 6 && cell + d <= size; d++) {
+                if (cell == board.get(cell + d))
+                    continue;
+                adj[cell].add(board.get(cell + d));
+            }
+        }
+
+        return BFS(adj);
+    }
+}
+===================================================
+34. Word Ladder - I.java
+------------------------------------
+import java.util.*;
+
+// Leetcode 127: https://leetcode.com/problems/word-ladder/
+// Time = O(N ^ 2) Graph Formation + O(N + E) BFS
+
+class Solution {
+    public static class Pair {
+        String word;
+        int level;
+
+        Pair(String word, int level) {
+            this.word = word;
+            this.level = level;
+        }
+    }
+
+    public boolean isEdge(String a, String b) {
+        int count = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                count++;
+            }
+        }
+        if (count == 1)
+            return true; // Exactly One Different Character
+        return false; // Self Loop or More than 1 Different Character
+    }
+
+    public int BFS(String src, String dest, HashMap<String, HashSet<String>> graph) {
+        Queue<Pair> q = new ArrayDeque<>();
+        q.add(new Pair(src, 0));
+
+        HashMap<String, Integer> visited = new HashMap<>();
+        while (q.size() > 0) {
+            Pair front = q.remove();
+            src = front.word;
+            int level = front.level;
+
+            if (visited.containsKey(src) == true)
+                continue;
+            visited.put(src, level);
+
+            for (String nbr : graph.get(src)) {
+                q.add(new Pair(nbr, level + 1));
+            }
+        }
+
+        return visited.getOrDefault(dest, -1) + 1;
+    }
+
+    public int ladderLength(String src, String dest, List<String> wordList) {
+        wordList.add(src);
+        HashMap<String, HashSet<String>> graph = new HashMap<>();
+        for (String word : wordList) {
+            graph.put(word, new HashSet<>());
+        }
+
+        for (int i = 0; i < wordList.size(); i++) {
+            for (int j = 0; j < wordList.size(); j++) {
+                String a = wordList.get(i), b = wordList.get(j);
+                if (isEdge(a, b) == true) {
+                    graph.get(a).add(b);
+                    graph.get(b).add(a);
+                }
+            }
+        }
+
+        for (String node : graph.keySet()) {
+            System.out.println(node + " " + graph.get(node));
+        }
+        return BFS(src, dest, graph);
+    }
+}
+===================================================
+35. Word Ladder - II.java 
+------------------------------------
+import java.util.*;
+
+// Leetcode 126: https://leetcode.com/problems/word-ladder-ii/
+// Time: O(Exponential) in Worst Case, O(Polynomial) in Average Case
+
+// Note: This Solution is Giving Time Limit Exceeded (TLE), Although Logic is BFS for Minimum Transformation Length + DFS for Get All Paths from Source to Destination
+
+class Solution {
+    public static class Pair {
+        String word;
+        int level;
+
+        Pair(String word, int level) {
+            this.word = word;
+            this.level = level;
+        }
+    }
+
+    public boolean isEdge(String a, String b) {
+        int count = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                count++;
+            }
+        }
+        if (count == 1)
+            return true; // Exactly One Different Character
+        return false; // Self Loop or More than 1 Different Character
+    }
+
+    HashMap<String, HashSet<String>> graph;
+    HashMap<String, Integer> visited = new HashMap<>();
+
+    public int BFS(String src, String dest) {
+        Queue<Pair> q = new ArrayDeque<>();
+        q.add(new Pair(src, 0));
+
+        while (q.size() > 0) {
+            Pair front = q.remove();
+            src = front.word;
+            int level = front.level;
+
+            if (visited.containsKey(src) == true)
+                continue;
+            visited.put(src, level);
+
+            for (String nbr : graph.get(src)) {
+                q.add(new Pair(nbr, level + 1));
+            }
+        }
+
+        return visited.getOrDefault(dest, -1);
+    }
+
+    List<List<String>> res2d = new ArrayList<>();
+
+    public void DFS(String src, String dest, List<String> path) {
+        path.add(src);
+
+        if (src.equals(dest) == true) {
+            res2d.add(new ArrayList<>(path));
+        } else {
+            for (String nbr : graph.get(src)) {
+                if (visited.get(nbr) == visited.get(src) + 1)
+                    DFS(nbr, dest, path);
+            }
+        }
+
+        path.remove(path.size() - 1);
+    }
+
+    public List<List<String>> findLadders(String src, String dest, List<String> wordList) {
+        wordList.add(src);
+        graph = new HashMap<>();
+        for (String word : wordList) {
+            graph.put(word, new HashSet<>());
+        }
+
+        for (int i = 0; i < wordList.size(); i++) {
+            for (int j = 0; j < wordList.size(); j++) {
+                String a = wordList.get(i), b = wordList.get(j);
+                if (isEdge(a, b) == true) {
+                    graph.get(a).add(b);
+                    graph.get(b).add(a);
+                }
+            }
+        }
+
+        int minLen = BFS(src, dest);
+        if (minLen == -1)
+            return res2d;
+        DFS(src, dest, new ArrayList<String>());
+        return res2d;
+    }
+}
+===================================================
+36. 0-1 BFS.java 
+------------------------------------
+import java.util.*;
+// CodeStudio Coding Ninjas:
+// MINIMUM REVERSE EDGES FOR PATH FROM SOURCE TO DESTINATION IN DIRECTED GRAPH
+// https://www.codingninjas.com/codestudio/problems/reverse-edges_1200162
+
+// Time = O(N + E) BFS
+class Solution {
+
+    public static class Pair {
+        int node; // Source Node
+        int level; // Count of Edge Reversals
+
+        Pair(int node, int level) {
+            this.node = node;
+            this.level = level;
+        }
+    }
+
+    public static int reverseEdges(int n, int start, int end, ArrayList<ArrayList<Integer>> edgeList) {
+        int[][] adj = new int[n][n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                adj[i][j] = -1;
+
+        for (ArrayList<Integer> edge : edgeList) {
+            adj[edge.get(0)][edge.get(1)] = 0;
+            adj[edge.get(1)][edge.get(0)] = 1;
+        }
+
+        Deque<Pair> q = new ArrayDeque<>();
+        q.addLast(new Pair(start, 0));
+        int[] visited = new int[n];
+        Arrays.fill(visited, Integer.MAX_VALUE);
+
+        while (q.size() > 0) {
+            Pair front = q.removeFirst();
+
+            if (front.level >= visited[front.node])
+                continue;
+            visited[front.node] = front.level;
+
+            for (int i = 0; i < n; i++) {
+                if (adj[front.node][i] == 0) {
+                    q.addFirst(new Pair(i, front.level));
+                } else if (adj[front.node][i] == 1) {
+                    q.addLast(new Pair(i, front.level + 1));
+                }
+            }
+        }
+
+        return visited[end];
+    }
+}
+===================================================
+37. 01 Matrix.java
+------------------------------------
+import java.util.*;
+
+// Leetcode 542: https://leetcode.com/problems/01-matrix/
+
+// Time = O(ROWS * COLS) for BFS
+class Solution {
+    public int[][] updateMatrix(int[][] mat) {
+
+        int m = mat.length;
+        int n = mat[0].length;
+        int[][] arr = new int[m][n];
+
+        Queue<List<Integer>> queue = new LinkedList<>();
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (mat[i][j] == 0) {
+                    arr[i][j] = 0;
+                    queue.offer(Arrays.asList(i, j));
+                } else {
+                    arr[i][j] = -1;
+                }
+            }
+        }
+
+        // BFS
+        int[][] dirs = new int[][] { { 0, -1 }, { 0, 1 }, { 1, 0 }, { -1, 0 } };
+
+        while (!queue.isEmpty()) {
+
+            List<Integer> curCell = queue.poll();
+            assert curCell != null;
+            int r = curCell.get(0);
+            int c = curCell.get(1);
+
+            for (int[] dir : dirs) {
+                int nr = r + dir[0], nc = c + dir[1];
+
+                if (isValidAdjacentCell(arr, nr, nc)) {
+
+                    queue.offer(Arrays.asList(nr, nc));
+                    arr[nr][nc] = arr[r][c] + 1;
+
+                }
+            }
+        }
+
+        return arr;
+    }
+
+    public boolean isValidAdjacentCell(int[][] arr, int i, int j) {
+        return (i >= 0 && i < arr.length && j >= 0 && j < arr[0].length && arr[i][j] == -1);
+    }
+}
+===================================================
+38. Min Steps by Knight.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/steps-by-knight5927/1
+// Time = O(Rows * Cols * 4) for BFS
+
+class Solution {
+    static class pair {
+        int x, y, dist;
+
+        public pair(int x, int y, int dist) {
+            this.x = x;
+            this.y = y;
+            this.dist = dist;
+        }
+    }
+
+    static int BFS(int i, int j, int n, int m, int adj[][], int size, boolean vis[][]) {
+        ArrayDeque<pair> q = new ArrayDeque<>();
+        q.add(new pair(i, j, 0));
+        vis[i][j] = true;
+
+        while (!q.isEmpty()) {
+            pair rem = q.remove();
+
+            if (rem.x == n && rem.y == m)
+                return rem.dist;
+
+            for (int it[] : adj) {
+                int x = rem.x + it[0];
+                int y = rem.y + it[1];
+
+                if ((x >= 1 && y >= 1 && x <= size && y <= size) && (vis[x][y] == false)) {
+                    vis[x][y] = true;
+                    q.add(new pair(x, y, rem.dist + 1));
+                }
+            }
+        }
+
+        return Integer.MAX_VALUE;
+    }
+
+    public static int minStepToReachTarget(int src[], int dstn[], int n) {
+        int adj[][] = { { -2, 1 }, { -1, 2 }, { 1, 2 }, { 2, 1 },
+                { 2, -1 }, { 1, -2 }, { -1, -2 }, { -2, -1 } };
+
+        boolean vis[][] = new boolean[n + 1][n + 1];
+        int ans = BFS(src[0], src[1], dstn[0], dstn[1], adj, n, vis);
+        return ans;
+    }
+}
+===================================================
+39. Dijkstra's Algorithm.java
+------------------------------------
+// Leetcode 743: https://leetcode.com/problems/network-delay-time/
+
+import java.util.*;
+
+// Single Source All Destinations Shortest Path Algorithm 
+// in Weighted Graph with No Negative Edges
+
+// Time = O((N + E) * Log N)
+
+class Solution {
+    public static class Pair implements Comparable<Pair> {
+        int node;
+        int weight;
+
+        public Pair(int node, int weight) {
+            this.node = node;
+            this.weight = weight;
+        }
+
+        public int compareTo(Pair other) {
+            return (this.weight - other.weight); // Min Priority Queue -> Negative for this < other
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public int networkDelayTime(int[][] edges, int n, int k) {
+        ArrayList<Pair>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new ArrayList<>();
+
+        for (int[] edge : edges) {
+            // edge[0] -> source, edge[1] -> destination, edge[2] -> cost
+            adj[edge[0] - 1].add(new Pair(edge[1] - 1, edge[2]));
+        }
+
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        q.add(new Pair(k - 1, 0));
+        int[] vis = new int[n];
+        Arrays.fill(vis, Integer.MAX_VALUE); // Unvisited Node -> +Inf
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+            if (vis[top.node] != Integer.MAX_VALUE)
+                continue;
+            vis[top.node] = top.weight;
+
+            for (Pair nbr : adj[top.node]) {
+                q.add(new Pair(nbr.node, top.weight + nbr.weight));
+            }
+        }
+
+        int time = vis[k - 1];
+        for (int i = 0; i < n; i++) {
+            time = Math.max(time, vis[i]);
+        }
+
+        return (time == Integer.MAX_VALUE) ? -1 : time;
+    }
+}
+===================================================
+40. Cheapest Flight K Stops.java
+------------------------------------
+// Leetcode 787: https://leetcode.com/problems/cheapest-flights-within-k-stops/
+
+import java.util.*;
+
+// Dijkstra Variation: Time Limit Exceeded
+// Time = O(Exponential) in Worst , O(Polynomial) in Average Case
+
+class Solution1 {
+    public static class Pair implements Comparable<Pair> {
+        int node;
+        int weight;
+        int stops;
+
+        public Pair(int node, int weight, int stops) {
+            this.node = node;
+            this.weight = weight;
+            this.stops = stops;
+        }
+
+        @Override
+        public int compareTo(Pair other) {
+            return (this.weight - other.weight);
+            // Min Priority Queue -> Negative for this < other
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        ArrayList<Pair>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new ArrayList<>();
+
+        for (int[] edge : flights) {
+            // edge[0] -> source, edge[1] -> destination, edge[2] -> cost
+            adj[edge[0]].add(new Pair(edge[1], edge[2], 0)); // Directed
+        }
+
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        q.add(new Pair(src, 0, 0));
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+
+            // Shortest Path (Edge Weight) => Cheapest && Within k Stops
+            if (top.node == dst && top.stops <= k + 1)
+                return top.weight;
+
+            if (top.stops >= k + 1)
+                continue;
+
+            for (Pair nbr : adj[top.node]) {
+                q.add(new Pair(nbr.node, top.weight + nbr.weight, top.stops + 1));
+            }
+
+        }
+
+        return -1;
+    }
+}
+
+// Bellmon Ford Algorithm: Accepted
+// Time = O(K * E) Where K = Number of Stops, E = Number of Edges
+
+class Solution2 {
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        int[] cost = new int[n];
+        Arrays.fill(cost, Integer.MAX_VALUE);
+        cost[src] = 0;
+
+        for (int i = 0; i <= k; i++) {
+            int[] temp = Arrays.copyOf(cost, n);
+            for (int[] f : flights) {
+                int incoming = f[0];
+                int outgoing = f[1];
+                int price = f[2];
+
+                if (cost[incoming] == Integer.MAX_VALUE)
+                    continue;
+                temp[outgoing] = Math.min(temp[outgoing], cost[incoming] + price);
+            }
+            cost = temp;
+        }
+        return cost[dst] == Integer.MAX_VALUE ? -1 : cost[dst];
+    }
+}
+===================================================
+41. Bus Routes Stops.java
+------------------------------------
+import java.util.*;
+// Leetcode 815: https://leetcode.com/problems/bus-routes/
+
+// Time = O(Buses * Dijkstra) = O(((Stops + Edges) * Log Stops) * Buses)
+
+class Solution {
+    public static class Pair implements Comparable<Pair> {
+        int stop; // NODE
+        int color; // COLOR (EDGE)
+        int changes;
+
+        Pair(int stop, int color, int changes) {
+            this.stop = stop;
+            this.color = color;
+            this.changes = changes;
+        }
+
+        public int compareTo(Pair other) {
+            return this.changes - other.changes;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        if (source == target)
+            return 0;
+
+        int n = 0;
+        for (int[] route : routes)
+            for (int stop : route)
+                n = Math.max(n, stop);
+
+        ArrayList<Pair>[] adj = new ArrayList[n + 1];
+        for (int i = 0; i <= n; i++)
+            adj[i] = new ArrayList<>();
+
+        for (int i = 0; i < routes.length; i++) {
+            for (int j = 0; j < routes[i].length; j++) {
+                int src = routes[i][j];
+                int dest = routes[i][(j + 1) % routes[i].length];
+
+                adj[src].add(new Pair(dest, i, 0));
+                adj[dest].add(new Pair(src, i, 0));
+            }
+        }
+
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        q.add(new Pair(source, routes.length, 0));
+
+        int[][] vis = new int[n + 1][routes.length + 1];
+        for (int i = 0; i <= n; i++)
+            for (int j = 0; j <= routes.length; j++)
+                vis[i][j] = -1;
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+            if (top.stop == target)
+                return top.changes;
+
+            if (vis[top.stop][top.color] != -1)
+                continue;
+            vis[top.stop][top.color] = top.changes;
+
+            for (Pair nbr : adj[top.stop]) {
+                if (top.color == nbr.color) {
+                    q.add(new Pair(nbr.stop, nbr.color, top.changes));
+                } else {
+                    q.add(new Pair(nbr.stop, nbr.color, top.changes + 1));
+                }
+            }
+        }
+
+        return -1;
+    }
+}
+===================================================
+42. Path with Max Probability.java
+------------------------------------
+import java.util.*;
+
+// Leetcode 1514: https://leetcode.com/problems/path-with-maximum-probability/
+// Time = O(N + E * Log N) Dijkstra's Algorithm
+
+class Solution {
+    public static class Pair implements Comparable<Pair> {
+        int node;
+        double weight;
+
+        public Pair(int node, double weight) {
+            this.node = node;
+            this.weight = weight;
+        }
+
+        @Override
+        public int compareTo(Pair other) {
+            if (other.weight > this.weight)
+                return +1;
+            if (other.weight == this.weight)
+                return 0;
+            return -1;
+            // Max Priority Queue
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public double maxProbability(int n, int[][] edges, double[] prob, int start, int end) {
+        ArrayList<Pair>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new ArrayList<>();
+
+        int i = 0;
+        for (int[] edge : edges) {
+            // edge[0] -> source, edge[1] -> destination, edge[2] -> cost
+            adj[edge[0]].add(new Pair(edge[1], prob[i])); // Directed
+            adj[edge[1]].add(new Pair(edge[0], prob[i++])); // Undirected
+        }
+
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        q.add(new Pair(start, 1.0));
+        double[] vis = new double[n];
+        Arrays.fill(vis, -1); // Unvisited Node -> +Inf
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+            if (vis[top.node] != -1)
+                continue;
+            vis[top.node] = top.weight;
+
+            for (Pair nbr : adj[top.node]) {
+                q.add(new Pair(nbr.node, top.weight * nbr.weight));
+            }
+        }
+
+        return (vis[end] == -1) ? 0 : vis[end];
+    }
+}
+===================================================
+43. Path with Min Effort.java 
+------------------------------------
+
+// Leetcode 1631: https://leetcode.com/problems/path-with-minimum-effort/
+import java.util.*;
+
+// Time = O((Rows + Cols) * Log (Rows + Cols)) Dijkstra
+class Solution {
+    public static class Pair {
+        int row, col, val, dist;
+
+        Pair(int row, int col, int val, int dist) {
+            this.row = row;
+            this.col = col;
+            this.val = val;
+            this.dist = dist;
+        }
+    }
+
+    public static class DiffComparator implements Comparator<Pair> {
+        public int compare(Pair a, Pair b) {
+            return a.dist - b.dist;
+            // Path with Minimum Effort -> Min Priority Queue
+        }
+    }
+
+    public int[][] dir = { { +1, 0 }, { -1, 0 }, { 0, +1 }, { 0, -1 } };
+
+    public int minimumEffortPath(int[][] mat) {
+        PriorityQueue<Pair> q = new PriorityQueue<>(new DiffComparator());
+        q.add(new Pair(0, 0, mat[0][0], 0));
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+
+            if (top.row == mat.length - 1 && top.col == mat[0].length - 1) {
+                return top.dist;
+            }
+
+            if (mat[top.row][top.col] == -1)
+                continue; // visited
+
+            for (int d = 0; d < 4; d++) {
+                int nr = top.row + dir[d][0];
+                int nc = top.col + dir[d][1];
+
+                if (nr < 0 || nc < 0 || nr >= mat.length || nc >= mat[0].length)
+                    continue;
+
+                int nd = Math.max(top.dist, Math.abs(mat[top.row][top.col] - mat[nr][nc]));
+                q.add(new Pair(nr, nc, mat[nr][nc], nd));
+            }
+
+            mat[top.row][top.col] = -1;
+        }
+
+        return 0;
+    }
+}
+===================================================
+44. Floyd Warshall Algorithm.java
+------------------------------------
+// GfG:
+// https://practice.geeksforgeeks.org/problems/implementing-floyd-warshall2042/1
+
+// ALL PAIRS SHORTEST PATH ALGORITHM FOR MULTIPLE SOURCES IN WEIGHTED GRAPH
+// Graph May Contain Negative Directed Edges
+
+// Time = O(N ^ 3)
+// Input and Output : Adjacency Matrix
+
+class Solution {
+    public void shortest_distance(int[][] dist) {
+        // Dynamic Programming Approach:
+        int n = dist.length;
+        for (int inter = 0; inter < n; inter++) {
+            for (int src = 0; src < n; src++) {
+                for (int dest = 0; dest < n; dest++) {
+                    int oldDist = dist[src][dest];
+                    if (oldDist == -1)
+                        oldDist = Integer.MAX_VALUE;
+
+                    if (dist[src][inter] != -1 && dist[inter][dest] != -1) {
+                        dist[src][dest] = Math.min(oldDist, dist[src][inter] + dist[inter][dest]);
+                    }
+                }
+            }
+        }
+    }
+}
+===================================================
+45. Bellmon Ford Algorithm.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/distance-from-the-source-bellman-ford-algorithm/1
+
+// Time = O(N * E)
+// Input : Edge List
+// Output : Distance Visited Array 
+// for Single Source All Destinations Shortest Path Algorithm with Negative Weights
+// in Directed Weighted Graph
+
+class Solution {
+    static int[] bellman_ford(int V, ArrayList<ArrayList<Integer>> edges, int source) {
+        int[] dist = new int[V];
+        Arrays.fill(dist, 100000000); // 1e8 is taken as Infinity
+        dist[source] = 0; // No Relaxations: Shortest Path from Source to Source
+
+        // Edge List to Relax All Edges (V - 1) times
+        for (int i = 1; i < V; i++) {
+            for (ArrayList<Integer> edge : edges) {
+                int outgoing = edge.get(0); // Source of Edge
+                int incoming = edge.get(1); // Destination of Edge
+                int weight = edge.get(2);
+
+                if (dist[outgoing] == 100000000)
+                    continue;
+                dist[incoming] = Math.min(dist[incoming], dist[outgoing] + weight);
+            }
+        }
+
+        return dist;
+    }
+}
+
+// Follow Up:
+// Shortest Path in Directed Acyclic Graph (DAG):
+// 1. Edge List in Topological Sorting of Nodes
+// 2. Apply Relaxation of All Edges Only Once
+// Time = O(N + E) Topological Sort + O(E) for Relaxations
+// GfG Article Link:
+// https://www.geeksforgeeks.org/shortest-path-for-directed-acyclic-graphs/
+===================================================
+46. Negative Weight Cycle.java
+------------------------------------
+// https://practice.geeksforgeeks.org/problems/negative-weight-cycle3504/1
+
+import java.util.*;
+
+// Time = O(N * E) Using Bellmon Ford Algorithm
+
+class Solution {
+    public int isNegativeWeightCycle(int V, int[][] edges) {
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[0] = 0; // No Relaxations: Shortest Path from Source to Source
+
+        // Edge List to Relax All Edges (V - 1) times
+        for (int i = 1; i < V; i++) {
+            for (int[] edge : edges) {
+                int outgoing = edge[0]; // Source of Edge
+                int incoming = edge[1]; // Destination of Edge
+                int weight = edge[2];
+
+                if (dist[outgoing] == Integer.MAX_VALUE)
+                    continue;
+                dist[incoming] = Math.min(dist[incoming], dist[outgoing] + weight);
+            }
+        }
+
+        // Nth Relaxation
+        for (int[] edge : edges) {
+            int outgoing = edge[0]; // Source of Edge
+            int incoming = edge[1]; // Destination of Edge
+            int weight = edge[2];
+
+            if (dist[outgoing] == Integer.MAX_VALUE)
+                continue;
+            if (dist[outgoing] + weight < dist[incoming])
+                return 1;
+            // Negative Weight Cycle -> Relaxation is happening in Nth Iteration
+        }
+
+        return 0; // No Negative weight cycle
+    }
+}
+===================================================
+47. Prim Algorithm MST.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/minimum-spanning-tree/1
+// Time: O((N + E) * Log N) 
+
+class Solution {
+    public static class Pair implements Comparable<Pair> {
+        int node;
+        int weight;
+
+        public Pair(int node, int weight) {
+            this.node = node;
+            this.weight = weight;
+        }
+
+        public int compareTo(Pair other) {
+            return (this.weight - other.weight);
+            // Min Priority Queue -> Negative for this < other
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static int spanningTree(int n, ArrayList<ArrayList<ArrayList<Integer>>> g) {
+        ArrayList<Pair>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            adj[i] = new ArrayList<>();
+            for (ArrayList<Integer> pairs : g.get(i)) {
+                adj[i].add(new Pair(pairs.get(0), pairs.get(1)));
+            }
+        }
+
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        q.add(new Pair(0, 0));
+        boolean[] vis = new boolean[n];
+        int cost = 0;
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+            if (vis[top.node] == true)
+                continue; // CYCLE
+
+            vis[top.node] = true;
+            cost = cost + top.weight;
+
+            for (Pair nbr : adj[top.node]) {
+                q.add(new Pair(nbr.node, nbr.weight));
+            }
+        }
+
+        return cost;
+    }
+}
+===================================================
+48. Min Cost to Connect All Points.java
+------------------------------------
+import java.util.*;
+
+// 1584: https://leetcode.com/problems/min-cost-to-connect-all-points/
+// Time = O((N + E)* Log N) where E = O(N^2) (Complete Graph)
+
+class Solution {
+    public static class Pair implements Comparable<Pair> {
+        int idx;
+        int weight;
+
+        public Pair(int idx, int weight) {
+            this.idx = idx;
+            this.weight = weight;
+        }
+
+        public int compareTo(Pair other) {
+            return (this.weight - other.weight);
+            // Min Priority Queue -> Negative for this < other
+        }
+    }
+
+    public int minCostConnectPoints(int[][] points) {
+        int n = points.length;
+
+        boolean[] vis = new boolean[n];
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        q.add(new Pair(0, 0));
+
+        int cost = 0, count = 0;
+        while (q.size() > 0 && count < n) {
+            Pair top = q.remove();
+            if (vis[top.idx] == true)
+                continue; // CYCLE
+
+            vis[top.idx] = true;
+            cost = cost + top.weight;
+            count++;
+
+            for (int i = 0; i < n; i++) {
+                if (top.idx == i)
+                    continue; // Ignore Self Loop
+
+                int dist = Math.abs(points[top.idx][0] - points[i][0])
+                        + Math.abs(points[top.idx][1] - points[i][1]);
+                q.add(new Pair(i, dist));
+            }
+        }
+
+        return cost;
+    }
+}
+===================================================
+49. Optimize Water Distribution.java
+------------------------------------
+import java.util.*;
+
+// CodeStudio (Coding Ninjas): 
+// https://www.codingninjas.com/codestudio/problems/water-supply-in-a-village_1380956
+
+// Time = O((N + E) * Log N)
+
+class Solution {
+    public static class Pair implements Comparable<Pair> {
+        int idx;
+        int weight;
+
+        Pair(int idx, int weight) {
+            this.idx = idx;
+            this.weight = weight;
+        }
+
+        public int compareTo(Pair other) {
+            return this.weight - other.weight;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static int supplyWater(int n, int k, int[] wells, int[][] pipes) {
+        ArrayList<Pair>[] adj = new ArrayList[n + 1];
+        for (int i = 0; i <= n; i++)
+            adj[i] = new ArrayList<>();
+
+        // Original EdgeList (Pipes) into Adjacency List
+        for (int[] pipe : pipes) {
+            adj[pipe[0]].add(new Pair(pipe[1], pipe[2]));
+            adj[pipe[1]].add(new Pair(pipe[0], pipe[2]));
+        }
+
+        // Imaginary Node for Well
+        for (int i = 0; i < n; i++) {
+            adj[0].add(new Pair(i + 1, wells[i]));
+            adj[i + 1].add(new Pair(0, wells[i]));
+        }
+
+        PriorityQueue<Pair> q = new PriorityQueue<>();
+        q.add(new Pair(0, 0));
+        boolean[] visited = new boolean[n + 1];
+        int cost = 0;
+
+        while (q.size() > 0) {
+            Pair top = q.remove();
+
+            if (visited[top.idx] == true)
+                continue;
+            visited[top.idx] = true;
+            cost += top.weight;
+
+            for (Pair nbr : adj[top.idx]) {
+                q.add(new Pair(nbr.idx, nbr.weight));
+            }
+        }
+
+        return cost;
+    }
+}
+===================================================
+50. Kosaraju Algo - SCC.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/strongly-connected-components-kosarajus-algo/1
+
+// Time = O(V + E) 3 Times
+
+class Solution {
+    static int topo[];
+    static int idx;
+
+    void topoSort(int src, boolean[] vis, ArrayList<ArrayList<Integer>> adj) {
+        if (vis[src] == true)
+            return;
+        vis[src] = true;
+        // System.out.print(src + " ");
+
+        for (Integer nbr : adj.get(src))
+            topoSort(nbr, vis, adj);
+
+        topo[idx--] = src;
+    }
+
+    void DFS(int src, boolean[] vis, ArrayList<Integer>[] rev) {
+        if (vis[src] == true)
+            return;
+        vis[src] = true;
+
+        for (Integer nbr : rev[src])
+            DFS(nbr, vis, rev);
+    }
+
+    @SuppressWarnings("unchecked")
+    // Function to find number of strongly connected components in the graph.
+    public int kosaraju(int V, ArrayList<ArrayList<Integer>> adj) {
+        boolean[] vis = new boolean[V];
+        topo = new int[V];
+        idx = V - 1;
+
+        for (int i = 0; i < V; i++)
+            topoSort(i, vis, adj);
+
+        ArrayList<Integer>[] rev = new ArrayList[V];
+        for (int i = 0; i < V; i++)
+            rev[i] = new ArrayList<>();
+
+        for (int src = 0; src < adj.size(); src++)
+            for (Integer nbr : adj.get(src))
+                rev[nbr].add(src);
+
+        Arrays.fill(vis, false);
+        int scc = 0;
+        for (int i = 0; i < V; i++) {
+            if (vis[topo[i]] == false) {
+                scc++;
+                DFS(topo[i], vis, rev);
+                // System.out.println();
+            }
+        }
+        return scc;
+    }
+}
+===================================================
+51. Disjoint Set Union.java
+------------------------------------
+import java.util.*;
+
+// Hackerearth: https://www.hackerearth.com/problem/algorithm/connected-components-in-a-graph/
+
+// Time = O(N + AE) Where N = Number of Vertices, 
+// E = Edges, A = Inverse Ackerman Constant (= 4 for Very Large N)
+
+class TestClass {
+    static class DSU {
+        int[] parent;
+        int[] rank;
+
+        DSU(int n) {
+            parent = new int[n];
+            Arrays.fill(parent, -1);
+            rank = new int[n];
+            Arrays.fill(rank, 1);
+        }
+
+        public void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+            if (pa == pb)
+                return;
+
+            if (rank[pa] > rank[pb]) {
+                parent[pb] = pa;
+                rank[pa] += rank[pb];
+            } else {
+                parent[pa] = pb;
+                rank[pb] += rank[pa];
+            }
+        }
+
+        public int find(int a) {
+            if (parent[a] == -1)
+                return a;
+            return parent[a] = find(parent[a]);
+        }
+    }
+
+    public static void main(String args[]) throws Exception {
+        Scanner scn = new Scanner(System.in);
+        int n = scn.nextInt();
+        DSU sets = new DSU(n + 1);
+
+        int e = scn.nextInt();
+        while (e-- > 0) {
+            int a = scn.nextInt();
+            int b = scn.nextInt();
+            sets.union(a, b);
+        }
+
+        int components = 0;
+        for (int i = 1; i <= n; i++) {
+            if (sets.find(i) == i)
+                components++;
+        }
+
+        System.out.println(components);
+        scn.close();
+    }
+}
+===================================================
+52. Cycle Detection - DSU.java
+------------------------------------
+import java.util.*;
+// GfG:
+// https://practice.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1
+
+// Time = O(N + E) DSU
+
+class Solution {
+    static class DSU {
+        int[] parent;
+        int[] rank;
+
+        DSU(int n) {
+            parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            rank = new int[n];
+            Arrays.fill(rank, 1);
+        }
+
+        public void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+            if (pa == pb)
+                return;
+
+            if (rank[pa] > rank[pb]) {
+                parent[pb] = pa;
+                rank[pa] += rank[pb];
+            } else {
+                parent[pa] = pb;
+                rank[pb] += rank[pa];
+            }
+        }
+
+        public int find(int a) {
+            if (parent[a] == -1)
+                return a;
+            return parent[a] = find(parent[a]);
+        }
+    }
+
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+        DSU sets = new DSU(V + 1);
+
+        for (int a = 0; a < adj.size(); a++) {
+            for (Integer b : adj.get(a)) {
+                if (a > b)
+                    continue;
+                // If there is an edge a-b: It will appear two times in adjacency list
+                // If a -> b is an edge, then dont union again for b -> a
+
+                if (sets.find(a) == sets.find(b))
+                    return true;
+                sets.union(a, b);
+            }
+        }
+
+        return false;
+    }
+
+}
+===================================================
+53. No of Islands - Queries.java
+------------------------------------
+// CodeStudio (Coding Ninjas):
+// https://www.codingninjas.com/codestudio/problems/number-of-islands-ii_1266048
+
+// Time = O(Rows * Cols) DSU (Online Queries)
+import java.util.*;
+
+class Solution {
+    static class DSU {
+        int[] parent;
+        int[] rank;
+
+        DSU(int n) {
+            parent = new int[n];
+            Arrays.fill(parent, -1);
+            rank = new int[n];
+            Arrays.fill(rank, 1);
+        }
+
+        public void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+            if (pa == pb)
+                return;
+
+            if (rank[pa] > rank[pb]) {
+                parent[pb] = pa;
+                rank[pa] += rank[pb];
+            } else {
+                parent[pa] = pb;
+                rank[pb] += rank[pa];
+            }
+        }
+
+        public int find(int a) {
+            if (parent[a] == -1)
+                return a;
+            return parent[a] = find(parent[a]);
+        }
+    }
+
+    static int[][] dir = { { +1, 0 }, { -1, 0 }, { 0, +1 }, { 0, -1 } };
+
+    public static int[] numOfIslandsII(int rows, int cols, int[][] queries) {
+        DSU sets = new DSU(rows * cols + 1);
+
+        int[] ans = new int[queries.length];
+        boolean[] vis = new boolean[rows * cols + 1];
+        int islands = 0;
+
+        for (int i = 0; i < queries.length; i++) {
+            int r = queries[i][0], c = queries[i][1];
+            int idx = r * cols + c;
+
+            // Cell is Already a Land
+            if (vis[idx] == true) {
+                ans[i] = islands;
+                continue;
+            }
+
+            vis[idx] = true; // Cell is Marked as Land
+            islands++;
+            for (int d = 0; d < 4; d++) {
+                int nr = r + dir[d][0];
+                int nc = c + dir[d][1];
+                int nidx = nr * cols + nc;
+
+                if (nr < 0 || nc < 0 || nr >= rows || nc >= cols || vis[nidx] == false)
+                    continue; // Out of Matrix or Neighbour is Water
+                if (sets.find(nidx) == sets.find(idx))
+                    continue; // Cycle (Already Same Island)
+                sets.union(idx, nidx);
+                islands--;
+            }
+            ans[i] = islands;
+        }
+
+        return ans;
+    }
+}
+===================================================
+54. Redundant Connection.java
+------------------------------------
+import java.util.*;
+// Leetcode 684: https://leetcode.com/problems/redundant-connection/
+
+// Time = O(N + E) Cycle Detection
+
+class Solution {
+    static class DSU {
+        int[] parent;
+        int[] rank;
+
+        DSU(int n) {
+            parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            rank = new int[n];
+            Arrays.fill(rank, 1);
+        }
+
+        public void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+            if (pa == pb)
+                return;
+
+            if (rank[pa] > rank[pb]) {
+                parent[pb] = pa;
+                rank[pa] += rank[pb];
+            } else {
+                parent[pa] = pb;
+                rank[pb] += rank[pa];
+            }
+        }
+
+        public int find(int a) {
+            if (parent[a] == -1)
+                return a;
+            return parent[a] = find(parent[a]);
+        }
+    }
+
+    public int[] findRedundantConnection(int[][] edges) {
+        DSU sets = new DSU(1001);
+
+        for (int[] edge : edges) {
+            int a = edge[0], b = edge[1];
+            if (sets.find(a) == sets.find(b)) {
+                return edge; // CYCLE FOUND
+            }
+            sets.union(a, b);
+        }
+
+        return null;
+    }
+}
+===================================================
+55. Satisfiability of Eqns.java
+------------------------------------
+import java.util.*;
+// Leetcode 990:
+// https://leetcode.com/problems/satisfiability-of-equality-equations/
+
+// Time = O(N) Where N = Number of Equations
+
+class Solution {
+    static class DSU {
+        int[] parent;
+        int[] rank;
+
+        DSU(int n) {
+            parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            rank = new int[n];
+            Arrays.fill(rank, 1);
+        }
+
+        public void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+            if (pa == pb)
+                return;
+
+            if (rank[pa] > rank[pb]) {
+                parent[pb] = pa;
+                rank[pa] += rank[pb];
+            } else {
+                parent[pa] = pb;
+                rank[pb] += rank[pa];
+            }
+        }
+
+        public int find(int a) {
+            if (parent[a] == -1)
+                return a;
+            return parent[a] = find(parent[a]);
+        }
+    }
+
+    public boolean equationsPossible(String[] equations) {
+        DSU sets = new DSU(26);
+        for (String eqn : equations) {
+            int left = eqn.charAt(0) - 'a';
+            int right = eqn.charAt(3) - 'a';
+
+            if (eqn.charAt(1) == '=')
+                sets.union(left, right);
+        }
+
+        for (String eqn : equations) {
+            int left = eqn.charAt(0) - 'a';
+            int right = eqn.charAt(3) - 'a';
+
+            if (eqn.charAt(1) == '!' && sets.find(left) == sets.find(right))
+                return false;
+        }
+
+        return true;
+    }
+
+}
+===================================================
+56. Similar String Groups.java
+------------------------------------
+import java.util.*;
+// Leetcode 839: https://leetcode.com/problems/similar-string-groups/
+
+// Time = O(N^2 * L) Where N = Number of Strings, L = Length of String
+
+class Solution {
+    static class DSU {
+        int[] parent;
+        int[] rank;
+
+        DSU(int n) {
+            parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            rank = new int[n];
+            Arrays.fill(rank, 1);
+        }
+
+        public void union(int a, int b) {
+            int pa = find(a);
+            int pb = find(b);
+            if (pa == pb)
+                return;
+
+            if (rank[pa] > rank[pb]) {
+                parent[pb] = pa;
+                rank[pa] += rank[pb];
+            } else {
+                parent[pa] = pb;
+                rank[pb] += rank[pa];
+            }
+        }
+
+        public int find(int a) {
+            if (parent[a] == -1)
+                return a;
+            return parent[a] = find(parent[a]);
+        }
+    }
+
+    public boolean isSimilar(String a, String b) {
+        int count = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i))
+                count++;
+        }
+        if (count <= 2)
+            return true;
+        return false;
+    }
+
+    public int numSimilarGroups(String[] strs) {
+        DSU sets = new DSU(strs.length);
+
+        for (int i = 0; i < strs.length; i++)
+            for (int j = i + 1; j < strs.length; j++)
+                if (isSimilar(strs[i], strs[j]) == true)
+                    sets.union(i, j);
+
+        int groups = 0;
+        for (int i = 0; i < strs.length; i++) {
+            if (sets.find(i) == i)
+                groups++;
+        }
+
+        return groups;
+    }
+}
+===================================================
+57. Evaluate Division.cpp
+------------------------------------
+// Leetcode 399 : https://leetcode.com/problems/evaluate-division/
+#include <bits/stdc++.h>
+using namespace std;
+
+struct node
+{
+    int parent = -1;
+    double val = 1.0;
+};
+
+vector<node> dsu;
+
+int Find(int x)
+{
+    if (dsu[x].parent == -1)
+        return x;
+    int root = Find(dsu[x].parent);
+    dsu[x].val *= dsu[dsu[x].parent].val;
+    dsu[x].parent = root;
+    return root;
+}
+void Union(int x, int y, double v)
+{
+    int a = Find(x), b = Find(y);
+    if (a == b)
+        return;
+    dsu[a].parent = b;
+    dsu[a].val = (v * dsu[y].val) / dsu[x].val;
+}
+
+class Solution
+{
+public:
+    vector<double> calcEquation(vector<vector<string>> &equations, vector<double> &values, vector<vector<string>> &queries)
+    {
+        unordered_map<string, int> idx;
+        int ptr = 0;
+        for (int i = 0; i < equations.size(); i++)
+        {
+            if (idx.find(equations[i][0]) == idx.end())
+                idx[equations[i][0]] = ptr++;
+            if (idx.find(equations[i][1]) == idx.end())
+                idx[equations[i][1]] = ptr++;
+        }
+
+        dsu.clear();
+        dsu.resize(idx.size());
+        for (int i = 0; i < equations.size(); i++)
+            Union(idx[equations[i][0]], idx[equations[i][1]], values[i]);
+
+        vector<double> res;
+        for (int i = 0; i < queries.size(); i++)
+        {
+            string x = queries[i][0], y = queries[i][1];
+            if (idx.find(x) == idx.end() || idx.find(y) == idx.end())
+                res.push_back(-1.0);
+            else if (Find(idx[x]) != Find(idx[y]))
+                res.push_back(-1.0);
+            else
+                res.push_back(dsu[idx[x]].val / dsu[idx[y]].val);
+        }
+        return res;
+    }
+};
+===================================================
+58. Lexicographical Smallest String.java 
+------------------------------------
+// CodeStudio (Coding Ninjas) Leetcode Locked:
+// https://www.codingninjas.com/codestudio/problems/smallest-equivalent-string_1381859
+
+// Time = O(L * 26) Where L = String Length
+
+class Solution {
+    public static int parent[] = new int[26];
+
+    public static void union(int i, int j) {
+        i = find(i);
+        j = find(j);
+
+        if (i <= j)
+            parent[j] = i;
+        else
+            parent[i] = j;
+    }
+
+    public static int find(int i) {
+        if (parent[i] == i)
+            return i;
+        return parent[i] = find(parent[i]);
+    }
+
+    public static String smallestString(String s, String t, String str) {
+        for (int i = 0; i < 26; i++)
+            parent[i] = i;
+
+        for (int i = 0; i < s.length(); i++)
+            union(s.charAt(i) - 'a', t.charAt(i) - 'a');
+
+        StringBuilder res = new StringBuilder("");
+        for (int i = 0; i < str.length(); i++) {
+            char ch = (char) (find(str.charAt(i) - 'a') + 'a');
+            res.append(ch);
+        }
+
+        return res.toString();
+    }
+}
+===================================================
+59. Smallest String Swaps.java
+------------------------------------
+import java.util.*;
+// leetcode 1202: https://leetcode.com/problems/smallest-string-with-swaps/
+
+class DSU {
+    int[] parent;
+
+    DSU(int n) {
+        parent = new int[n];
+        for (int i = 0; i < n; i++)
+            parent[i] = i;
+    }
+
+    public void union(int a, int b) {
+        a = find(a);
+        b = find(b);
+
+        if (a <= b)
+            parent[b] = a;
+        else
+            parent[a] = b;
+    }
+
+    public int find(int a) {
+        if (parent[a] == a)
+            return a;
+        return parent[a] = find(parent[a]);
+    }
+}
+
+class Solution {
+    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+        DSU sets = new DSU(s.length());
+        for (List<Integer> pair : pairs)
+            sets.union(pair.get(0), pair.get(1));
+
+        HashMap<Integer, List<Integer>> idx = new HashMap<>();
+        HashMap<Integer, List<Character>> ch = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            idx.put(i, new ArrayList<>());
+            idx.get(sets.find(i)).add(i);
+
+            ch.put(i, new ArrayList<>());
+            ch.get(sets.find(i)).add(s.charAt(i));
+        }
+
+        StringBuilder res = new StringBuilder(s);
+        for (int i = 0; i < s.length(); i++) {
+            Collections.sort(ch.get(i));
+            for (int j = 0; j < idx.get(i).size(); j++)
+                res.setCharAt(idx.get(i).get(j), ch.get(i).get(j));
+        }
+        return res.toString();
+    }
+}
+===================================================
+60. Graph Connectivity Threshold.java 
+------------------------------------
+import java.util.*;
+// leetcode 1627:
+// https://leetcode.com/problems/graph-connectivity-with-threshold/
+
+class DSU {
+    int[] parent;
+    int[] rank;
+
+    DSU(int n) {
+        parent = new int[n + 1];
+        Arrays.fill(parent, -1);
+
+        rank = new int[n + 1];
+        Arrays.fill(rank, 1);
+    }
+
+    public void union(int a, int b) {
+        a = find(a);
+        b = find(b);
+
+        if (a == b)
+            return;
+        if (rank[a] >= rank[b]) {
+            rank[a] += rank[b];
+            parent[b] = a;
+        } else {
+            rank[b] += rank[a];
+            parent[a] = b;
+        }
+    }
+
+    public int find(int a) {
+        if (parent[a] == -1)
+            return a;
+        return parent[a] = find(parent[a]);
+    }
+}
+
+class Solution {
+    public int gcd(int a, int b) {
+        if (b == 0)
+            return a;
+        return gcd(b, a % b);
+    }
+
+    public List<Boolean> areConnected(int n, int threshold, int[][] queries) {
+        DSU sets = new DSU(n);
+        for (int i = threshold + 1; i <= n; i++) {
+            for (int j = 2 * i; j <= n; j += i)
+                sets.union(i, j);
+        }
+
+        List<Boolean> res = new ArrayList<>();
+        for (int[] query : queries) {
+            if (sets.find(query[0]) == sets.find(query[1])) {
+                res.add(true);
+            } else {
+                res.add(false);
+            }
+        }
+        return res;
+    }
+}
+===================================================
+61. Has Path Queries.java 
+------------------------------------
+import java.util.*;
+// leetcode 1697:
+// https://leetcode.com/problems/checking-existence-of-edge-length-limited-paths/
+
+class Solution {
+    static class DSU {
+        int[] parent;
+        int[] rank;
+
+        DSU(int n) {
+            parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            rank = new int[n];
+            Arrays.fill(rank, 1);
+        }
+
+        public void union(int a, int b) {
+            a = find(a);
+            b = find(b);
+
+            if (a == b)
+                return;
+            if (rank[a] >= rank[b]) {
+                rank[a] += rank[b];
+                parent[b] = a;
+            } else {
+                rank[b] += rank[a];
+                parent[a] = b;
+            }
+        }
+
+        public int find(int a) {
+            if (parent[a] == -1)
+                return a;
+            return parent[a] = find(parent[a]);
+        }
+    }
+
+    static class Query implements Comparable<Query> {
+        int idx, src, nbr, limit;
+
+        Query(int idx, int src, int nbr, int limit) {
+            this.idx = idx;
+            this.src = src;
+            this.nbr = nbr;
+            this.limit = limit;
+        }
+
+        public int compareTo(Query other) {
+            return this.limit - other.limit;
+        }
+    }
+
+    public boolean[] distanceLimitedPathsExist(int n, int[][] edges, int[][] queries) {
+        List<Query> sortedQ = new ArrayList<>();
+        for (int i = 0; i < queries.length; i++)
+            sortedQ.add(new Query(i, queries[i][0], queries[i][1], queries[i][2]));
+        Collections.sort(sortedQ);
+
+        Arrays.sort(edges, (e1, e2) -> e1[2] - e2[2]);
+        int e = 0;
+        boolean[] ans = new boolean[queries.length];
+        DSU dsu = new DSU(n);
+
+        for (Query q : sortedQ) {
+            while (e < edges.length && edges[e][2] < q.limit) {
+                dsu.union(edges[e][0], edges[e][1]);
+                e++;
+            }
+
+            if (dsu.find(q.src) == dsu.find(q.nbr))
+                ans[q.idx] = true;
+        }
+        return ans;
+    }
+}
+===================================================
+62. Euler Path and Circuit.java
+------------------------------------
+import java.util.*;
+
+// GfG: https://practice.geeksforgeeks.org/problems/euler-circuit-and-path/1
+// Time = O(N) where N = Number of Nodes
+
+class Solution {
+    public int isEularCircuitExist(int V, ArrayList<ArrayList<Integer>> adj) {
+        int oddCount = 0;
+        for (int i = 0; i < V; i++) {
+            if (adj.get(i).size() % 2 == 1)
+                oddCount++;
+        }
+
+        if (oddCount == 0)
+            return 2; // Euler Circuit
+        if (oddCount == 2)
+            return 1; // Euler Path But No Euler Circuit
+        return 0; // No Euler Path and No Euler Circuit
+    }
+}
+===================================================
+63. Reconstruct Itinerary.java
+------------------------------------
+import java.util.*;
+
+// Leetcode 332: https://leetcode.com/problems/reconstruct-itinerary/
+// Time = O(N + E log E)
+
+class Solution {
+    List<String> path;
+
+    public void DFS(String src, HashMap<String, PriorityQueue<String>> adj) {
+        while (adj.get(src).size() > 0) {
+            String nbr = adj.get(src).remove();
+            DFS(nbr, adj);
+        }
+
+        path.add(src);
+    }
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        HashMap<String, PriorityQueue<String>> adj = new HashMap<>();
+        for (List<String> ticket : tickets) {
+            String src = ticket.get(0);
+            String dest = ticket.get(1);
+
+            if (adj.containsKey(src) == false)
+                adj.put(src, new PriorityQueue<>());
+            if (adj.containsKey(dest) == false)
+                adj.put(dest, new PriorityQueue<>());
+
+            adj.get(src).add(dest);
+        }
+
+        path = new ArrayList<>();
+        DFS("JFK", adj);
+        Collections.reverse(path);
+        return path;
+    }
+}
+===================================================
+64. Bridges or Cut Edge.java 
+------------------------------------
+import java.util.*;
+
+// Leetcode 1192: https://leetcode.com/problems/critical-connections-in-a-network/
+// Tarjan's Algorithm: Time = O(N + E) DFS, Space = O(N + E)
+
+class Solution {
+    // List of Bridges should be returned
+    public int[] disc;
+    public int[] low;
+    public int time = 0;
+    public List<List<Integer>> bridges;
+
+    public void DFS(int src, int parent, ArrayList<Integer>[] adj) {
+        disc[src] = low[src] = time;
+        time++;
+
+        for (Integer nbr : adj[src]) {
+
+            if (nbr == parent)
+                continue;
+
+            if (disc[nbr] >= 0) {
+                // Back Edge (Already Visited Neighbour)
+                low[src] = Math.min(low[src], disc[nbr]);
+            }
+
+            else {
+                // Unvisited Neighbour
+                DFS(nbr, src, adj);
+
+                if (low[nbr] > disc[src]) {
+                    // Neighbour cannot visit the already visited component ignoring the edge
+                    List<Integer> bridge = new ArrayList<>();
+                    bridge.add(src);
+                    bridge.add(nbr);
+                    bridges.add(bridge);
+                }
+
+                low[src] = Math.min(low[src], low[nbr]);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        disc = new int[n];
+        low = new int[n];
+        Arrays.fill(disc, -1); // Discovery is -1 => node is unvisited
+        bridges = new ArrayList<>();
+
+        ArrayList<Integer>[] adj = new ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new ArrayList<>();
+        for (List<Integer> edge : connections) {
+            adj[edge.get(0)].add(edge.get(1));
+            adj[edge.get(1)].add(edge.get(0));
+        }
+
+        DFS(0, -1, adj);
+        return bridges;
+    }
+}
+===================================================
+65. Articulation Point or Cut Vertex.java
+------------------------------------
+import java.util.*;
+
+// GfG : https://practice.geeksforgeeks.org/problems/articulation-point-1/1
+// Tarjan's Algorithm: Time = O(N + E), Space = O(N + E)
+
+class Solution {
+    public int[] disc;
+    public int[] low;
+    public int time = 0;
+    public TreeSet<Integer> articulationPoint = new TreeSet<>();
+
+    public void DFS(int src, int parent, ArrayList<ArrayList<Integer>> adj) {
+        disc[src] = low[src] = time;
+        time++;
+
+        int dfsCount = 0;
+
+        for (Integer nbr : adj.get(src)) {
+
+            if (nbr == parent)
+                continue;
+
+            if (disc[nbr] >= 0) {
+                // Back Edge (Already Visited Neighbour)
+                low[src] = Math.min(low[src], disc[nbr]);
+            }
+
+            else {
+                // Unvisited Neighbour
+                DFS(nbr, src, adj);
+                dfsCount++;
+
+                if (parent != -1 && low[nbr] >= disc[src]) {
+                    articulationPoint.add(src);
+                }
+
+                low[src] = Math.min(low[src], low[nbr]);
+            }
+        }
+
+        if (parent == -1 && dfsCount > 1) {
+            articulationPoint.add(src);
+            // Overall Source Node -> 2 Disconnected Children -> Articulation Point
+        }
+    }
+
+    public ArrayList<Integer> articulationPoints(int n, ArrayList<ArrayList<Integer>> adj) {
+        disc = new int[n];
+        low = new int[n];
+        Arrays.fill(disc, -1); // Discovery is -1 => node is unvisited
+
+        DFS(0, -1, adj);
+        ArrayList<Integer> res = new ArrayList<>();
+        for (Integer ap : articulationPoint)
+            res.add(ap);
+
+        if (res.size() == 0)
+            res.add(-1);
+        return res;
+    }
+}
+===================================================
+
+------------------------------------
+
+===================================================
